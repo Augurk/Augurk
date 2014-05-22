@@ -1,0 +1,52 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk", "Augurk\Augurk.csproj", "{13364A29-2A72-4F65-AE13-28B270801EB3}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "Augurk.Database", "Augurk.Database\Augurk.Database.sqlproj", "{916BC800-564C-4B72-A4D2-AFFE1FA2F4D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.MSBuild", "Augurk.MSBuild\Augurk.MSBuild.csproj", "{8E18EF20-0263-4692-9A07-E5692E7F298A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.MSBuild.UnitTest", "Augurk.MSBuild.UnitTest\Augurk.MSBuild.UnitTest.csproj", "{68043D2D-1D63-44AE-B3B2-592C4718AE77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.Entities", "Augurk.Entities\Augurk.Entities.csproj", "{8EA75685-A3A8-4852-B0A5-B067D4290382}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.Api", "Augurk.Api\Augurk.Api.csproj", "{C3981525-0902-402D-97F6-64CA2A8772D0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13364A29-2A72-4F65-AE13-28B270801EB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13364A29-2A72-4F65-AE13-28B270801EB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13364A29-2A72-4F65-AE13-28B270801EB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13364A29-2A72-4F65-AE13-28B270801EB3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{916BC800-564C-4B72-A4D2-AFFE1FA2F4D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{916BC800-564C-4B72-A4D2-AFFE1FA2F4D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{916BC800-564C-4B72-A4D2-AFFE1FA2F4D1}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{916BC800-564C-4B72-A4D2-AFFE1FA2F4D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{916BC800-564C-4B72-A4D2-AFFE1FA2F4D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{916BC800-564C-4B72-A4D2-AFFE1FA2F4D1}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{8E18EF20-0263-4692-9A07-E5692E7F298A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E18EF20-0263-4692-9A07-E5692E7F298A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E18EF20-0263-4692-9A07-E5692E7F298A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E18EF20-0263-4692-9A07-E5692E7F298A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68043D2D-1D63-44AE-B3B2-592C4718AE77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68043D2D-1D63-44AE-B3B2-592C4718AE77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68043D2D-1D63-44AE-B3B2-592C4718AE77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68043D2D-1D63-44AE-B3B2-592C4718AE77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EA75685-A3A8-4852-B0A5-B067D4290382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EA75685-A3A8-4852-B0A5-B067D4290382}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EA75685-A3A8-4852-B0A5-B067D4290382}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EA75685-A3A8-4852-B0A5-B067D4290382}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3981525-0902-402D-97F6-64CA2A8772D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3981525-0902-402D-97F6-64CA2A8772D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3981525-0902-402D-97F6-64CA2A8772D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3981525-0902-402D-97F6-64CA2A8772D0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
