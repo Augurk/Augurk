@@ -79,11 +79,6 @@ namespace Augurk.MSBuild
         public TestEngine TestEngine { get; set; }
 
         /// <summary>
-        /// Gets the uri that should be used to post the features to.
-        /// </summary>
-        private string TargetUri{get { return String.Format(CultureInfo.InvariantCulture, "{0}/api/features/{1}/{2}", AugurkUri.TrimEnd('/'), BranchName, GroupName ?? "Default"); }}
-
-        /// <summary>
         /// Publishes the features provided through the <see cref="FeatureFiles"/> property 
         /// to the Augurk site hosted at the <see cref="TargetUri"/>.
         /// </summary>
@@ -98,15 +93,15 @@ namespace Augurk.MSBuild
             SpecFlowLangParser parser = new SpecFlowLangParser(new CultureInfo(Language ?? "en-US"));
             var client = new HttpClient();
 
+            // Get the base uri for all further operations
+            string groupUri = GetGroupUri();
+
             // Clear any existing features in this group, if required
             if (ClearGroupBeforePublish)
             {
                 Log.LogMessage("Clearing existing features in group {0} for branch {1}.", GroupName ?? "Default", BranchName);
-                client.DeleteAsync(TargetUri).Wait();
+                client.DeleteAsync(groupUri).Wait();
             }
-
-            // Parse the restresults
-            Dictionary<string, FeatureTestResult> testResults = ParseTestResults();
 
             // Parse and publish each of the provided feature files
             foreach (var featureFile in FeatureFiles)
@@ -118,23 +113,11 @@ namespace Augurk.MSBuild
                         // Parse the feature and convert it to the correct format
                         Feature feature = parser.Parse(reader, featureFile.ItemSpec).ConvertToFeature();
 
-                        // Add the testresults, if present
-                        if (testResults.ContainsKey(feature.Title))
-                        {
-                            FeatureTestResult featureTestResult = testResults[feature.Title];
-                            feature.TestResult = featureTestResult.Result;
-
-                            foreach (var scenario in feature.Scenarios)
-                            {
-                                scenario.TestResult =
-                                    featureTestResult.ScenarioTestResults
-                                                     .Where(scenarioTestResult => scenarioTestResult.ScenarioTitle == scenario.Title)
-                                                     .Max(scenarioTestResult => scenarioTestResult.Result);
-                            }
-                        }
+                        // Get the uri to which the feature should be published
+                        string targetUri = GetFeatureUri(groupUri, feature.Title);
 
                         // Publish the feature
-                        var postTask = client.PostAsJsonAsync<Feature>(TargetUri, feature);
+                        var postTask = client.PostAsJsonAsync<Feature>(targetUri, feature);
                         postTask.Wait();
 
                         // Process the result
@@ -151,9 +134,48 @@ namespace Augurk.MSBuild
                             result = false;
                             Log.LogError("Publishing feature '{0}' to uri '{1}' resulted in statuscode '{2}'",
                                          feature.Title,
-                                         TargetUri,
+                                         targetUri,
                                          postTask.Result.StatusCode);
                         }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Log.LogErrorFromException(e);
+                }
+            }
+
+            // Parse the restresults
+            IEnumerable<FeatureTestResult> testResults = ParseTestResults();
+
+            // Publish the testresults, if present
+            foreach (var featureTestResult in testResults)
+            {
+                try
+                {
+                    // Get the uri to which the test result should be published
+                    string targetUri = GetTestResultUri(groupUri, featureTestResult.FeatureTitle);
+
+                    // Publish the test result
+                    var postTask = client.PostAsJsonAsync<FeatureTestResult>(targetUri, featureTestResult);
+                    postTask.Wait();
+
+                    // Process the result
+                    if (postTask.Result.IsSuccessStatusCode)
+                    {
+                        Log.LogMessage("Succesfully published test result of feature '{0}' to group {1} for branch {2}.",
+                                       featureTestResult.FeatureTitle,
+                                       GroupName ?? "Default",
+                                       BranchName);
+
+                    }
+                    else
+                    {
+                        result = false;
+                        Log.LogError("Publishing test result of feature '{0}' to uri '{1}' resulted in statuscode '{2}'",
+                                     featureTestResult.FeatureTitle,
+                                     targetUri,
+                                     postTask.Result.StatusCode);
                     }
                 }
                 catch (Exception e)
@@ -165,18 +187,18 @@ namespace Augurk.MSBuild
             return result;
         }
 
-        private Dictionary<string, FeatureTestResult> ParseTestResults()
+        private IEnumerable<FeatureTestResult> ParseTestResults()
         {
             if (TestResultsFile == null)
             {
                 Log.LogMessage("No testresults file has been provided, continuing without test results...");
-                return new Dictionary<string, FeatureTestResult>();
+                return Enumerable.Empty<FeatureTestResult>();
             }
 
             ITestResultParser parser = GetTestResultParser(TestEngine);
 
-            Log.LogMessage("Testresult has been configured to be {0}, available results will be added to features...", TestEngine);
-            return parser.Parse(TestResultsFile.ItemSpec).ToDictionary(result => result.FeatureTitle);
+            Log.LogMessage("Testresult has been configured to be {0}, available results will be published.", TestEngine);
+            return parser.Parse(TestResultsFile.ItemSpec);
         }
 
         private ITestResultParser GetTestResultParser(TestEngine testEngine)
@@ -188,6 +210,31 @@ namespace Augurk.MSBuild
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        private string GetGroupUri()
+        {
+            return String.Format(CultureInfo.InvariantCulture,
+                                 "{0}/api/features/{1}/{2}",
+                                 AugurkUri.TrimEnd('/'),
+                                 BranchName,
+                                 GroupName ?? "Default");
+        }
+
+        private string GetTestResultUri(string groupUri, string featureTitle)
+        {
+            return String.Format(CultureInfo.InvariantCulture, 
+                                 "{0}/{1}/testresult", 
+                                 groupUri, 
+                                 featureTitle);
+        }
+
+        private string GetFeatureUri(string groupUri, string featureTitle)
+        {
+            return String.Format(CultureInfo.InvariantCulture,
+                                 "{0}/{1}",
+                                 groupUri,
+                                 featureTitle);
         }
     }
 }

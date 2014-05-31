@@ -14,18 +14,16 @@
  limitations under the License.
 */
 
-CREATE TABLE [dbo].[Feature]
-(
-	[Id] INT NOT NULL IDENTITY, 
-    [Title] NVARCHAR(255) NOT NULL, 
-    [BranchName] NVARCHAR(255) NOT NULL, 
-	[GroupName] NVARCHAR(255) NOT NULL,
-	[ParentTitle] NVARCHAR(255) NULL,
-    [SerializedFeature] TEXT NOT NULL,
-    [SerializedTestResult] TEXT NULL, 
-    CONSTRAINT [PK_Feature] PRIMARY KEY NONCLUSTERED ([Id] ASC)
-)
-
-GO
-
-CREATE UNIQUE CLUSTERED INDEX [IXU001_Feature] ON [dbo].[Feature] ([BranchName] ASC, [GroupName] ASC, [Title] ASC)
+CREATE PROCEDURE [dbo].[PersistFeatureTestResult]
+	@title VARCHAR(255),
+	@branchName VARCHAR(255),
+	@groupName VARCHAR(255),
+	@serializedTestResult TEXT
+AS
+BEGIN
+	UPDATE Feature 
+	SET SerializedTestResult = @serializedTestResult
+	WHERE Title = @title
+	  AND BranchName = @branchName
+	  AND GroupName = @groupName;
+END

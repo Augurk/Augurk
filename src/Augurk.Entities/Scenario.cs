@@ -47,10 +47,5 @@ namespace Augurk.Entities
         /// Gets or sets the example sets for this scenario.
         /// </summary>
         public IEnumerable<ExampleSet> ExampleSets { get; set; }
-
-        /// <summary>
-        /// Gets or sets the testresult of this scenario.
-        /// </summary>
-        public TestResult TestResult { get; set; }
     }
 }

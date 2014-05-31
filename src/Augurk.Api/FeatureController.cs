@@ -40,17 +40,24 @@ namespace Augurk.Api
         [HttpGet]
         public DisplayableFeature Get(string branchName, string groupName, string title)
         {
-            // Get the feature from storage
-            DisplayableFeature feature = _featureManager.GetFeature(branchName, groupName, title);
-
-            // Process the server tags
-            if (feature != null)
+            try
             {
-                var processor = new FeatureProcessor();
-                processor.Process(feature);
-            }
+                // Get the feature from storage
+                DisplayableFeature feature = _featureManager.GetFeature(branchName, groupName, title);
 
-            return feature;
+                // Process the server tags
+                if (feature != null)
+                {
+                    var processor = new FeatureProcessor();
+                    processor.Process(feature);
+                }
+
+                return feature;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         [Route("api/features/{branchName}/{groupName}/{title}")]
@@ -75,6 +82,14 @@ namespace Augurk.Api
             return response;
         }
 
+        [Obsolete]
+        [Route("api/features/{branchName}/{groupName}")]
+        [HttpPost]
+        public HttpResponseMessage Post(Feature feature, string branchName, string groupName)
+        {
+            return Post(feature, branchName, groupName, feature.Title);
+        }
+
         [Route("api/features/{branchName}/{groupName}/{title}/testresult")]
         [HttpPost]
         public HttpResponseMessage Post(FeatureTestResult testResult, string branchName, string groupName, string title)
@@ -88,27 +103,7 @@ namespace Augurk.Api
 
             try
             {
-                // TODO Implement InsertOrUpdateTestRest
-                //_featureManager.InsertOrUpdateTestRest(testResult, branchName, groupName, title);
-            }
-            catch (Exception exception)
-            {
-                response = Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exception);
-            }
-            return response;
-        }
-
-
-        //TODO Perhaps split into PUT and POST?
-        [Route("api/features/{branchName}/{groupName}")]
-        [HttpPost]
-        public HttpResponseMessage Post(Feature feature, string branchName, string groupName)
-        {
-            var response = Request.CreateResponse(HttpStatusCode.Created);
-
-            try
-            {
-                _featureManager.InsertOrUpdateFeature(feature, branchName, groupName);
+                _featureManager.PersistFeatureTestResult(testResult, branchName, groupName);
             }
             catch (Exception exception)
             {

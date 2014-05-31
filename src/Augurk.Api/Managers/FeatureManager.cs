@@ -18,8 +18,10 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using Augurk.Entities;
+using Augurk.Entities.Test;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 
@@ -71,7 +73,15 @@ namespace Augurk.Api.Managers
                     {
                         if (reader.Read())
                         {
-                            return DeserializeFeature(reader.GetString(0));
+                            DisplayableFeature feature = DeserializeFeature(reader.GetString(0));
+
+                            // Deserialize the test result, if present
+                            if (!reader.IsDBNull(1))
+                            {
+                                feature.TestResult = DeserializeTestResult(reader.GetString(1));
+                            }
+
+                            return feature;
                         }
                     }
                 }
@@ -212,6 +222,55 @@ namespace Augurk.Api.Managers
             }
         }
 
+        public void PersistFeatureTestResult(FeatureTestResult testResult, string branchName, string groupName)
+        {
+            using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["FeatureStore"].ConnectionString))
+            {
+                connection.Open();
+                using (IDbCommand command = connection.CreateCommand())
+                {
+                    command.CommandText = "PersistFeatureTestResult";
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    var titleParameter = command.CreateParameter();
+                    titleParameter.ParameterName = "title";
+                    titleParameter.Value = testResult.FeatureTitle;
+                    titleParameter.DbType = DbType.String;
+                    command.Parameters.Add(titleParameter);
+
+                    var branchNameParameter = command.CreateParameter();
+                    branchNameParameter.ParameterName = "branchName";
+                    branchNameParameter.Value = branchName;
+                    branchNameParameter.DbType = DbType.String;
+                    command.Parameters.Add(branchNameParameter);
+
+                    var groupNameParameter = command.CreateParameter();
+                    groupNameParameter.ParameterName = "groupName";
+                    groupNameParameter.Value = groupName;
+                    groupNameParameter.DbType = DbType.String;
+                    command.Parameters.Add(groupNameParameter);
+
+                    var serializedFeatureParameter = command.CreateParameter();
+                    serializedFeatureParameter.ParameterName = "serializedTestResult";
+                    serializedFeatureParameter.Value = SerializeTestResult(testResult);
+                    serializedFeatureParameter.DbType = DbType.String;
+                    command.Parameters.Add(serializedFeatureParameter);
+
+                    int updatedRowCount = command.ExecuteNonQuery();
+
+                    // There is no need to check for scenario where more than 1 is returned due to the unique index
+                    if (updatedRowCount == 0)
+                    {
+                        throw new Exception(String.Format(CultureInfo.InvariantCulture, 
+                                                          "Feature {0} does not exist in branch {1} under group {2}.",
+                                                          testResult.FeatureTitle,
+                                                          branchName,
+                                                          groupName));
+                    }
+                }
+            }
+        }
+
         public void DeleteFeature(string branchName, string title)
         {
             using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["FeatureStore"].ConnectionString))
@@ -288,7 +347,23 @@ namespace Augurk.Api.Managers
         }
 
         /// <summary>
-        /// Serializes the provided <see cref="Feature"/> to Json.
+        /// Serializes the provided <see cref="FeatureTestResult"/> instance to Json.
+        /// </summary>
+        private string SerializeTestResult(FeatureTestResult testResult)
+        {
+            return JsonConvert.SerializeObject(testResult, JsonSerializerSettings);
+        }
+
+        /// <summary>
+        /// Deserializes the provided Json string to a <see cref="FeatureTestResult"/> instance.
+        /// </summary>
+        private FeatureTestResult DeserializeTestResult(string testResult)
+        {
+            return JsonConvert.DeserializeObject<FeatureTestResult>(testResult, JsonSerializerSettings);
+        }
+
+        /// <summary>
+        /// Serializes the provided <see cref="Feature"/> instance to Json.
         /// </summary>
         private string SerializeFeature(Feature feature)
         {
@@ -296,7 +371,7 @@ namespace Augurk.Api.Managers
         }
 
         /// <summary>
-        /// Deserializes the provided Json string to an <see cref="DisplayableFeature"/>.
+        /// Deserializes the provided Json string to a <see cref="DisplayableFeature"/> instance.
         /// </summary>
         private DisplayableFeature DeserializeFeature(string serializedFeature)
         {

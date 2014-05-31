@@ -26,6 +26,24 @@ AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$rou
 
         // Set the current group on the rootscope
         $rootScope.currentGroupName = $routeParams.groupName;
+        
+        // Define a function to merge the test results into the feature
+        $scope.mergeTestResults = function() {
+            if (!$scope.feature.testResult) {
+                return;
+            }
+
+            $.each($scope.feature.testResult.scenarioTestResults, function (index, testResult) {
+                $.each($scope.feature.scenarios, function (index1, scenario) {
+                    //var scenario = $scope.feature.scenarios.filter(function (s) { return s.title = testResult.scenarioTitle; })[0];
+                    scenario.testResult = testResult;
+                });
+                //var scenario = $scope.feature.scenarios.filter(function (s) { return s.title = testResult.scenarioTitle; })[0];
+                //scenario.testResult = testResult;
+            });
+
+            $scope.feature.testResult.merged = true;
+        };
     }
 ]);
 

@@ -14,6 +14,8 @@
  limitations under the License.
 */
 
+using Augurk.Entities.Test;
+
 namespace Augurk.Entities
 {
     /// <summary>
@@ -25,5 +27,10 @@ namespace Augurk.Entities
         /// Gets or sets the properties for this feature.
         /// </summary>
         public FeatureProperties Properties { get; set; }
+
+        /// <summary>
+        /// Gets or sets the the test result
+        /// </summary>
+        public FeatureTestResult TestResult { get; set; }
     }
 }

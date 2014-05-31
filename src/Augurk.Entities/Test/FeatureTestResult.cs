@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 
 namespace Augurk.Entities.Test
@@ -34,8 +35,13 @@ namespace Augurk.Entities.Test
         public TestResult Result { get; set; }
 
         /// <summary>
-        /// Gets or sets an enumerable collection of the test results of the scenario's that are part of the feature.s
+        /// Gets or sets an enumerable collection of the test results of the scenario's that are part of the feature.
         /// </summary>
         public IEnumerable<ScenarioTestResult> ScenarioTestResults { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date and time on which this test has been executed.
+        /// </summary>
+        public DateTime TestExecutionDate { get; set; }
     }
 }

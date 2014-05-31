@@ -19,7 +19,7 @@ CREATE PROCEDURE [dbo].[GetFeature]
 	@branchName VARCHAR(255)
 AS
 BEGIN
-	SELECT SerializedFeature
+	SELECT SerializedFeature, SerializedTestResult
 	FROM Feature
 	WHERE Title = @title
 	  AND BranchName = @branchName;

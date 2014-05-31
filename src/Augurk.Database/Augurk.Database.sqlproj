@@ -67,6 +67,7 @@
     <Build Include="GetFeatureDescriptions.sql" />
     <Build Include="DeleteGroup.sql" />
     <Build Include="GetBranches.sql" />
+    <Build Include="PersistFeatureTestResult.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Augurk.Database.publish.xml" />

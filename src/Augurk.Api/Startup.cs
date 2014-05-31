@@ -19,6 +19,7 @@ using System.Linq;
 using System.Web.Http;
 using Augurk.Api.Filters;
 using Augurk.Api.Managers;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Owin;
@@ -52,6 +53,8 @@ namespace Augurk.Api
             config.Formatters.JsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
             // Serialize enums using their string value
             config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new StringEnumConverter());
+            // Be flexible with additional data, for backwards compatability purposes
+            config.Formatters.JsonFormatter.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
 
             // Share the formatter settings with the manager
             FeatureManager.JsonSerializerSettings = config.Formatters.JsonFormatter.SerializerSettings;
