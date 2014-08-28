@@ -14,8 +14,12 @@
  limitations under the License.
 */
 
+using System;
+using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
+using System.Web.Configuration;
 using System.Web.Http;
 using Augurk.Api.Filters;
 using Augurk.Api.Managers;
@@ -61,6 +65,39 @@ namespace Augurk.Api
 
             // Make sure that Web API is enabled for our application
             app.UseWebApi(config);
+
+            SetErrorDetailPolicy(config);
+        }
+
+        /// <summary>
+        /// Sets the Error Detail Policy based on the customErrors setting in the config.
+        /// </summary>
+        /// <param name="config">The configuration.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "customErrors", Justification = "Valid reference to XML Element.")]
+        private void SetErrorDetailPolicy(HttpConfiguration config)
+        {
+            var configSection = (CustomErrorsSection)ConfigurationManager.GetSection("system.web/customErrors");
+
+            IncludeErrorDetailPolicy errorDetailPolicy;
+
+            switch (configSection.Mode)
+            {
+                case CustomErrorsMode.RemoteOnly:
+                    errorDetailPolicy = IncludeErrorDetailPolicy.LocalOnly;
+                    break;
+                case CustomErrorsMode.On:
+                    errorDetailPolicy = IncludeErrorDetailPolicy.Never;
+                    break;
+                case CustomErrorsMode.Off:
+                    errorDetailPolicy = IncludeErrorDetailPolicy.Always;
+                    break;
+                default:
+                    throw new NotSupportedException(String.Format(CultureInfo.InvariantCulture,
+                                                                  "The customErrors mode '{0}' is not supported.",
+                                                                  configSection.Mode));
+            }
+
+            config.IncludeErrorDetailPolicy = errorDetailPolicy;
         }
     }
 }
