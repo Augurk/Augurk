@@ -45,7 +45,8 @@ namespace Augurk.Entities
                     Title = feature.Title,
                     Description = feature.Description,
                     Tags = feature.Tags.ConvertToStrings(),
-                    Scenarios = feature.Scenarios.Select(scenario => scenario.ConvertToScenario()).ToArray()
+                    Scenarios = feature.Scenarios.Select(scenario => scenario.ConvertToScenario()).ToArray(),
+                    Background = feature.Background.ConvertToBackground()
                 };
         }
 
@@ -111,6 +112,26 @@ namespace Augurk.Entities
                     Steps = scenarioOutline.Steps.ConvertToSteps(),
                     ExampleSets = scenarioOutline.Examples.ConvertToExampleSets()
                 };
+        }
+
+        /// <summary>
+        /// Converts the provided <see cref="SpecFlow.Background"/> instance into a <see cref="Augurk.Entities.Background"/> instance.
+        /// </summary>
+        /// <param name="background">The <see cref="SpecFlow.Background"/> instance that should be converted.</param>
+        /// <returns>The converted <see cref="Augurk.Entities.Background"/> instance.</returns>
+        public static Background ConvertToBackground(this SpecFlow.Background background)
+        {
+            if (background == null)
+            {
+                return null;
+            }
+
+            return new Background()
+            {
+                Title = background.Title,
+                Keyword = background.Keyword,
+                Steps = background.Steps.ConvertToSteps()
+            };
         }
 
         /// <summary>

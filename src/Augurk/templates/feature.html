@@ -56,6 +56,37 @@
 </div>
 
 <div class="well" ng-bind-html="feature.description|markdown|featurereferences"></div>
+
+<div class="panel panel-default" ng-show="feature.background">
+    <div class="panel-heading"
+         data-toggle="collapse"
+         data-target="#background"><span class="keyword">{{feature.background.keyword}}</span><span ng-show="feature.background.title">: {{feature.background.title}}</span></div>
+    <div class="panel-body panel-collapse collapse in" id="background">
+        <ul>
+                <li class="step" ng-repeat="step in feature.background.steps">
+                    <span class="keyword">{{step.keyword}}</span>
+                    <span ng-bind-html="step.content|exampleparameters"></span>
+                    <div class="horizontal-scrollview">
+                        <table class="table table-bordered table-condensed table-striped argument-table" ng-show="step.tableArgument">
+                            <thead data-toggle="collapse"
+                                   data-target="#tableBody{{feature.scenarios.indexOf(scenario)}}_{{scenario.steps.indexOf(step)}}">
+                                <tr>
+                                    <th ng-repeat="column in step.tableArgument.columns">{{column}}</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="Tbody1" class="table-body-collapse collapse in">
+                                <tr ng-repeat="row in step.tableArgument.rows">
+                                    <td class="argument" ng-repeat="cell in row track by $index" ng-bind-html="cell|exampleparameters"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </li>
+            </ul>
+    </div>
+</div>
+
 <div ng-repeat="scenario in feature.scenarios">
     <span class="glyphicon glyphicon-tags" ng-if="scenario.tags.length > 1"></span>
     <span class="glyphicon glyphicon-tag" ng-if="scenario.tags.length == 1"></span>

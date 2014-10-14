@@ -14,36 +14,29 @@
  limitations under the License.
 */
 
+using System.Collections.Generic;
+
 namespace Augurk.Entities
 {
     /// <summary>
-    /// Represents a single step within a scenario
+    /// Represents a feature background
     /// </summary>
-    public class Step
+    public class Background
     {
         /// <summary>
-        /// Gets or sets the block keyword for this step.
+        /// Gets or sets the title of this background.
         /// </summary>
-        public BlockKeyword BlockKeyword { get; set; }
+        public string Title { get; set; }
 
         /// <summary>
-        /// Gets or sets the keyword for this step.
-        /// </summary>
-        public StepKeyword StepKeyword { get; set; }
-
-        /// <summary>
-        /// Gets or sets the localized keyword for this step.
+        /// Gets or sets the localized keyword for this background.
         /// </summary>
         public string Keyword { get; set; }
 
-        /// <summary>
-        /// Gets or sets the content of this step.
-        /// </summary>
-        public string Content { get; set; }
 
         /// <summary>
-        /// Gets or sets the table argument for this step.
+        /// Gets or sets the steps of this background.
         /// </summary>
-        public Table TableArgument {get ;set;}
+        public IEnumerable<Step> Steps { get; set; }
     }
 }

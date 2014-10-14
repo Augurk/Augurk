@@ -80,7 +80,7 @@ namespace Augurk.MSBuild
 
         /// <summary>
         /// Publishes the features provided through the <see cref="FeatureFiles"/> property 
-        /// to the Augurk site hosted at the <see cref="TargetUri"/>.
+        /// to the Augurk site hosted at the <see cref="AugurkUri"/>.
         /// </summary>
         /// <returns>
         /// true if the publish was completed successfully; otherwise, false.

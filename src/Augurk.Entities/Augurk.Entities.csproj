@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Background.cs" />
     <Compile Include="DisplayableFeature.cs" />
     <Compile Include="ExampleSet.cs" />
     <Compile Include="Feature.cs" />
