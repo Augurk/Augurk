@@ -167,10 +167,12 @@ namespace Augurk.Api.Managers
 
         private void AddChildren(FeatureDescription feature, Dictionary<string, List<FeatureDescription>> childRepository)
         {
-            if (childRepository.ContainsKey(feature.Title))
+            var strippedTitle = feature.Title.Replace(" ", String.Empty);
+
+            if (childRepository.ContainsKey(strippedTitle))
             {
-                feature.ChildFeatures = childRepository[feature.Title];
-                childRepository[feature.Title].ForEach(f => AddChildren(f, childRepository));
+                feature.ChildFeatures = childRepository[strippedTitle];
+                childRepository[strippedTitle].ForEach(f => AddChildren(f, childRepository));
             }
         }
 

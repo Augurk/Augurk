@@ -18,8 +18,8 @@
     <div class="panel-heading">
         <h4>{{featureGroup.name}}</h4>
     </div>
-    <ul class="list-group" ng-class="(feature.level > 1) ? (feature.parentTitle) ? feature.parentTitle + 'Child collapse' : 'collapse' : ''" ng-repeat="feature in featureGroup.features">
-        <li ng-if="feature.hasChildren" class="list-group-item bottomless menu-item lvl{{feature.level}} collapsed" data-toggle="collapse" data-target=".{{feature.title}}Child"><span class="glyphicon glyphicon-menu-group"></span><a href="{{feature.uri}}">{{feature.title}}</a></li>
+    <ul class="list-group" ng-class="(feature.level > 1) ? (feature.parentTitle.replace(' ', '')) ? feature.parentTitle.replace(' ', '') + 'Child collapse' : 'collapse' : ''" ng-repeat="feature in featureGroup.features">
+        <li ng-if="feature.hasChildren" class="list-group-item bottomless menu-item lvl{{feature.level}} collapsed" data-toggle="collapse" data-target=".{{feature.title.replace(' ', '')}}Child"><span class="glyphicon glyphicon-menu-group"></span><a href="{{feature.uri}}">{{feature.title}}</a></li>
         <li ng-if="!feature.hasChildren" class="list-group-item bottomless menu-item lvl{{feature.level}}"><a href="{{feature.uri}}">{{feature.title}}</a></li>
     </ul>
 </div>

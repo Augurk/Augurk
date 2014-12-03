@@ -32,7 +32,7 @@ AugurkFilters.filter('markdown', function() {
 // e.g. [Feature1] will be replaced with <a href="correctLink">Feature1</a>
 AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
     return function (input) {
-        return input.replace(/\[(\w*)\]/gm,
+        return input.replace(/\[([\w\s]*)\]/gm,
 		    function (originalContent, featureTitle) {
 		        var group = $.grep($rootScope.featureGroups, function (group) { return group.name == $rootScope.currentGroupName; })[0];
 		        var featureDescriptions = $.grep(group.features, function (feature) { return feature.title == featureTitle; });
