@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,10 +14,16 @@
  limitations under the License.
 */
 
+using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Augurk.Api.Indeces;
+using Raven.Client;
+using Raven.Client.Linq;
 
 namespace Augurk.Api.Managers
 {
@@ -30,29 +36,16 @@ namespace Augurk.Api.Managers
         /// Gets the names of all available branches.
         /// </summary>
         /// <returns>An enumerable collection of branch names representend as a <see cref="string"/>.</returns>
-        public IEnumerable<string> GetBranches()
+        public async Task<IEnumerable<string>> GetBranchesAsync()
         {
-            var branchNames = new List<string>();
 
-            using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["FeatureStore"].ConnectionString))
+            using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "GetBranches";
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    using (IDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            branchNames.Add(reader.GetString(0));
-                        }
-                    }
-                }
+                return await session.Query<DbFeature, Features_ByTitleBranchAndGroup>()
+                                    .Select(feature => feature.Branch)
+                                    .Distinct()
+                                    .ToListAsync();
             }
-
-            return branchNames;
         }
     }
 }

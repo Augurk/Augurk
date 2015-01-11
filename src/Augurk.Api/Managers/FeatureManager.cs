@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
 */
 
 using System;
-using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
+using Augurk.Api.Indeces;
 using Augurk.Entities;
 using Augurk.Entities.Test;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using Raven.Client;
 
 namespace Augurk.Api.Managers
 {
@@ -47,47 +47,26 @@ namespace Augurk.Api.Managers
         /// A <see cref="DisplayableFeature"/> instance describing the requested feature; 
         /// or <c>null</c> if the feature cannot be found.
         /// </returns>
-        public DisplayableFeature GetFeature(string branchName, string groupName, string title)
+        public async Task<DisplayableFeature> GetFeatureAsync(string branchName, string groupName, string title)
         {
-            using (IDbConnection connection =new SqlConnection(ConfigurationManager.ConnectionStrings["FeatureStore"].ConnectionString))
+            using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
+                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(branchName, groupName, title));
+
+                if (dbFeature == null)
                 {
-                    command.CommandText = "GetFeature";
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    var featureNameParameter = command.CreateParameter();
-                    featureNameParameter.ParameterName = "title";
-                    featureNameParameter.Value = title;
-                    featureNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(featureNameParameter);
-
-                    var branchNameParameter = command.CreateParameter();
-                    branchNameParameter.ParameterName = "branchName";
-                    branchNameParameter.Value = branchName;
-                    branchNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(branchNameParameter);
-
-                    using (IDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            DisplayableFeature feature = DeserializeFeature(reader.GetString(0));
-
-                            // Deserialize the test result, if present
-                            if (!reader.IsDBNull(1))
-                            {
-                                feature.TestResult = DeserializeTestResult(reader.GetString(1));
-                            }
-
-                            return feature;
-                        }
-                    }
+                    return null;
                 }
-            }
 
-            return null;
+                var feature = new DisplayableFeature(dbFeature);
+                feature.TestResult = dbFeature.TestResult;
+
+                // Process the server tags
+                var processor = new FeatureProcessor();
+                processor.Process(feature);
+
+                return feature;
+            }
         }
 
         /// <summary>
@@ -95,70 +74,61 @@ namespace Augurk.Api.Managers
         /// </summary>
         /// <param name="branchName">The name of the branch for which the feature descriptions should be retrieved.</param>
         /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
-        public IEnumerable<Group> GetGroupedFeatureDescriptions(string branchName)
+        public async Task<IEnumerable<Group>> GetGroupedFeatureDescriptionsAsync(string branchName)
         {
             Dictionary<string, List<FeatureDescription>> featureDescriptions = new Dictionary<string, List<FeatureDescription>>();
             Dictionary<string, Group> groups = new Dictionary<string, Group>();
 
-            using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["FeatureStore"].ConnectionString))
+            using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
+                var data = await session.Query<DbFeature, Features_ByTitleBranchAndGroup>()
+                                        .Where(feature => feature.Branch.Equals(branchName, StringComparison.OrdinalIgnoreCase))
+                                        .Select(feature =>
+                                                new
+                                                    {
+                                                        feature.Group,
+                                                        feature.ParentTitle,
+                                                        feature.Title
+                                                    })
+                                        .ToListAsync();
+
+                foreach (var record in data.OrderBy(record => record.ParentTitle))
                 {
-                    command.CommandText = "GetFeatureDescriptions";
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    var branchNameParameter = command.CreateParameter();
-                    branchNameParameter.ParameterName = "branchName";
-                    branchNameParameter.Value = branchName;
-                    branchNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(branchNameParameter);
-
-                    using (IDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
+                    var featureDescription = new FeatureDescription()
                         {
-                            var featureDescription = new FeatureDescription()
-                                {
-                                    Title = reader.GetString(0),
-                                };
+                            Title = record.Title
+                        };
 
-                            string groupName = reader.GetString(1);
-
-                            if (reader.IsDBNull(2))
-                            {
-                                if (!groups.ContainsKey(groupName))
-                                {
-                                    // Create a new group
-                                    groups.Add(groupName, new Group()
-                                        {
-                                            Name=groupName,
-                                            Features = new List<FeatureDescription>()
-                                        });
-                                }
-
-                                // Add the feature to the group
-                                ((List<FeatureDescription>) groups[groupName].Features).Add(featureDescription);
-                            }
-                            else
-                            {
-                                string parentTitle = reader.GetString(2);
-
-                                if (!featureDescriptions.ContainsKey(parentTitle))
-                                {
-                                    featureDescriptions.Add(parentTitle, new List<FeatureDescription>());
-                                }
-
-                                featureDescriptions[parentTitle].Add(featureDescription);
-                            }
-                        }
-                    }
-
-                    // Map the lower levels
-                    foreach (var feature in groups.Values.SelectMany(group => group.Features))
+                    if (String.IsNullOrWhiteSpace(record.ParentTitle))
                     {
-                        AddChildren(feature, featureDescriptions);
+                        if (!groups.ContainsKey(record.Group))
+                        {
+                            // Create a new group
+                            groups.Add(record.Group, new Group()
+                                {
+                                    Name = record.Group,
+                                    Features = new List<FeatureDescription>()
+                                });
+                        }
+
+                        // Add the feature to the group
+                        ((List<FeatureDescription>) groups[record.Group].Features).Add(featureDescription);
                     }
+                    else
+                    {
+                        if (!featureDescriptions.ContainsKey(record.ParentTitle))
+                        {
+                            featureDescriptions.Add(record.ParentTitle, new List<FeatureDescription>());
+                        }
+
+                        featureDescriptions[record.ParentTitle].Add(featureDescription);
+                    }
+                }
+
+                // Map the lower levels
+                foreach (var feature in groups.Values.SelectMany(group => group.Features))
+                {
+                    AddChildren(feature, featureDescriptions);
                 }
             }
 
@@ -176,208 +146,84 @@ namespace Augurk.Api.Managers
             }
         }
 
-        public void InsertOrUpdateFeature(Feature feature, string branchName, string groupName)
+        public async Task InsertOrUpdateFeatureAsync(Feature feature, string branchName, string groupName)
         {
             var processor = new FeatureProcessor();
             string parentTitle = processor.DetermineParent(feature);
 
-            using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["FeatureStore"].ConnectionString))
+            DbFeature dbFeature = new DbFeature(feature, branchName, groupName, parentTitle);
+
+            using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "InsertOrUpdateFeature";
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    var titleParameter = command.CreateParameter();
-                    titleParameter.ParameterName = "title";
-                    titleParameter.Value = feature.Title;
-                    titleParameter.DbType = DbType.String;
-                    command.Parameters.Add(titleParameter);
-
-                    var branchNameParameter = command.CreateParameter();
-                    branchNameParameter.ParameterName = "branchName";
-                    branchNameParameter.Value = branchName;
-                    branchNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(branchNameParameter);
-
-                    var groupNameParameter = command.CreateParameter();
-                    groupNameParameter.ParameterName = "groupName";
-                    groupNameParameter.Value = groupName;
-                    groupNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(groupNameParameter);
-
-                    var parentTitleParameter = command.CreateParameter();
-                    parentTitleParameter.ParameterName = "parentTitle";
-                    parentTitleParameter.Value = String.IsNullOrWhiteSpace(parentTitle) ? (object)DBNull.Value : parentTitle;
-                    parentTitleParameter.DbType = DbType.String;
-                    command.Parameters.Add(parentTitleParameter);
-
-                    var serializedFeatureParameter = command.CreateParameter();
-                    serializedFeatureParameter.ParameterName = "serializedFeature";
-                    serializedFeatureParameter.Value = SerializeFeature(feature);
-                    serializedFeatureParameter.DbType = DbType.String;
-                    command.Parameters.Add(serializedFeatureParameter);
-
-                    command.ExecuteNonQuery();
-                }
+                // Using the store method when the feature already exists in the database will override it completely, this is acceptable
+                await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
+                await session.SaveChangesAsync();
             }
         }
 
-        public void PersistFeatureTestResult(FeatureTestResult testResult, string branchName, string groupName)
+        public async Task PersistFeatureTestResultAsync(FeatureTestResult testResult, string branchName, string groupName)
         {
-            using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["FeatureStore"].ConnectionString))
+            using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
+                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(branchName, groupName, testResult.FeatureTitle));
+
+                if (dbFeature == null)
                 {
-                    command.CommandText = "PersistFeatureTestResult";
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    var titleParameter = command.CreateParameter();
-                    titleParameter.ParameterName = "title";
-                    titleParameter.Value = testResult.FeatureTitle;
-                    titleParameter.DbType = DbType.String;
-                    command.Parameters.Add(titleParameter);
-
-                    var branchNameParameter = command.CreateParameter();
-                    branchNameParameter.ParameterName = "branchName";
-                    branchNameParameter.Value = branchName;
-                    branchNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(branchNameParameter);
-
-                    var groupNameParameter = command.CreateParameter();
-                    groupNameParameter.ParameterName = "groupName";
-                    groupNameParameter.Value = groupName;
-                    groupNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(groupNameParameter);
-
-                    var serializedFeatureParameter = command.CreateParameter();
-                    serializedFeatureParameter.ParameterName = "serializedTestResult";
-                    serializedFeatureParameter.Value = SerializeTestResult(testResult);
-                    serializedFeatureParameter.DbType = DbType.String;
-                    command.Parameters.Add(serializedFeatureParameter);
-
-                    int updatedRowCount = command.ExecuteNonQuery();
-
-                    // There is no need to check for scenario where more than 1 is returned due to the unique index
-                    if (updatedRowCount == 0)
-                    {
-                        throw new Exception(String.Format(CultureInfo.InvariantCulture, 
-                                                          "Feature {0} does not exist in branch {1} under group {2}.",
-                                                          testResult.FeatureTitle,
-                                                          branchName,
-                                                          groupName));
-                    }
+                    throw new Exception(String.Format(CultureInfo.InvariantCulture,
+                                  "Feature {0} does not exist in branch {1} under group {2}.",
+                                  testResult.FeatureTitle,
+                                  branchName,
+                                  groupName));
                 }
+
+                dbFeature.TestResult = testResult;
+
+                await session.SaveChangesAsync();
             }
         }
 
-        public void DeleteFeature(string branchName, string title)
+        public async Task DeleteFeatureAsync(string branchName, string groupName, string title)
         {
-            using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["FeatureStore"].ConnectionString))
+            using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
-                {
-                    command.CommandText = "DeleteFeature";
-                    command.CommandType = CommandType.StoredProcedure;
+                // The delete method only marks the entity with the provided id for deletion, as such it is not asynchronous
+                session.Delete(DbFeatureExtensions.GetIdentifier(branchName, groupName, title));
 
-                    var titleParameter = command.CreateParameter();
-                    titleParameter.ParameterName = "title";
-                    titleParameter.Value = title;
-                    titleParameter.DbType = DbType.String;
-                    command.Parameters.Add(titleParameter);
-
-                    var branchNameParameter = command.CreateParameter();
-                    branchNameParameter.ParameterName = "branchName";
-                    branchNameParameter.Value = branchName;
-                    branchNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(branchNameParameter);
-
-                    command.ExecuteNonQuery();
-                }
+                await session.SaveChangesAsync();
             }
         }
 
-        public void DeleteFeatures(string branchName)
+        public async Task DeleteFeaturesAsync(string branchName)
         {
-            using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["FeatureStore"].ConnectionString))
+            using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
+                var featuresQuery = session.Query<DbFeature>().Where(feature => feature.Branch.Equals(branchName, StringComparison.OrdinalIgnoreCase));
+
+                foreach (var feature in featuresQuery)
                 {
-                    command.CommandText = "DeleteBranch";
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    var branchNameParameter = command.CreateParameter();
-                    branchNameParameter.ParameterName = "branchName";
-                    branchNameParameter.Value = branchName;
-                    branchNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(branchNameParameter);
-
-                    command.ExecuteNonQuery();
+                    // The delete method only marks the entity for deletion, as such it is not asynchronous
+                    session.Delete(feature);
                 }
+
+                await session.SaveChangesAsync();
             }
         }
 
-        public void DeleteFeatures(string branchName, string groupName)
+        public async Task DeleteFeaturesAsync(string branchName, string groupName)
         {
-            using (IDbConnection connection = new SqlConnection(ConfigurationManager.ConnectionStrings["FeatureStore"].ConnectionString))
+            using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                connection.Open();
-                using (IDbCommand command = connection.CreateCommand())
+                var featuresQuery = session.Query<DbFeature>().Where(feature => feature.Branch.Equals(branchName, StringComparison.OrdinalIgnoreCase)
+                                                                             && feature.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase));
+
+                foreach (var feature in featuresQuery)
                 {
-                    command.CommandText = "DeleteGroup";
-                    command.CommandType = CommandType.StoredProcedure;
-
-                    var branchNameParameter = command.CreateParameter();
-                    branchNameParameter.ParameterName = "branchName";
-                    branchNameParameter.Value = branchName;
-                    branchNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(branchNameParameter);
-
-                    var groupNameParameter = command.CreateParameter();
-                    groupNameParameter.ParameterName = "groupName";
-                    groupNameParameter.Value = groupName;
-                    groupNameParameter.DbType = DbType.String;
-                    command.Parameters.Add(groupNameParameter);
-
-                    command.ExecuteNonQuery();
+                    // The delete method only marks the entity for deletion, as such it is not asynchronous
+                    session.Delete(feature);
                 }
+
+                await session.SaveChangesAsync();
             }
-        }
-
-        /// <summary>
-        /// Serializes the provided <see cref="FeatureTestResult"/> instance to Json.
-        /// </summary>
-        private string SerializeTestResult(FeatureTestResult testResult)
-        {
-            return JsonConvert.SerializeObject(testResult, JsonSerializerSettings);
-        }
-
-        /// <summary>
-        /// Deserializes the provided Json string to a <see cref="FeatureTestResult"/> instance.
-        /// </summary>
-        private FeatureTestResult DeserializeTestResult(string testResult)
-        {
-            return JsonConvert.DeserializeObject<FeatureTestResult>(testResult, JsonSerializerSettings);
-        }
-
-        /// <summary>
-        /// Serializes the provided <see cref="Feature"/> instance to Json.
-        /// </summary>
-        private string SerializeFeature(Feature feature)
-        {
-            return JsonConvert.SerializeObject(feature, JsonSerializerSettings);
-        }
-
-        /// <summary>
-        /// Deserializes the provided Json string to a <see cref="DisplayableFeature"/> instance.
-        /// </summary>
-        private DisplayableFeature DeserializeFeature(string serializedFeature)
-        {
-            return JsonConvert.DeserializeObject<DisplayableFeature>(serializedFeature, JsonSerializerSettings);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Web.Configuration;
 using System.Web.Http;
 using Augurk.Api.Filters;
@@ -27,6 +28,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Owin;
+using Raven.Client;
+using Raven.Client.Embedded;
+using Raven.Client.Indexes;
 
 namespace Augurk.Api
 {
@@ -39,10 +43,13 @@ namespace Augurk.Api
         /// Called when the supplied <paramref name="app"/> is to be configured.
         /// </summary>
         /// <param name="app">An <see cref="IAppBuilder"/> instance that represents the application.</param>
-        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Configuration is used by infrastructure so must be done this way.")]
-        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by infrastructure so must be done this way.")]
+        [SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Configuration is used by infrastructure, so must be implemented this way.")]
+        [SuppressMessage("Microsoft.Performance", "CA1822:MarkMembersAsStatic", Justification = "Called by infrastructure, so must be implemented this way.")]
         public void Configuration(IAppBuilder app)
         {
+            // Before configuring the API, first initialize the database
+            InitializeRavenDB();
+
             // Build the configuration for Web API
             var config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
@@ -66,6 +73,7 @@ namespace Augurk.Api
             // Make sure that Web API is enabled for our application
             app.UseWebApi(config);
 
+            // Set the error detail policy to match the asp.net configuration
             SetErrorDetailPolicy(config);
         }
 
@@ -98,6 +106,21 @@ namespace Augurk.Api
             }
 
             config.IncludeErrorDetailPolicy = errorDetailPolicy;
+        }
+
+
+        /// <summary>
+        /// Initialized RavenDB based upon the configuration.
+        /// </summary>
+        private void InitializeRavenDB()
+        {
+            Database.DocumentStore = new EmbeddableDocumentStore
+            {
+                ConnectionStringName = "RavenDB"
+            };
+            Database.DocumentStore.Conventions.IdentityPartsSeparator = "-";
+            Database.DocumentStore.Initialize();
+            IndexCreation.CreateIndexes(Assembly.GetCallingAssembly(), Database.DocumentStore);
         }
     }
 }

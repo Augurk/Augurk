@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+using System.Linq;
 using Augurk.Entities.Test;
 
 namespace Augurk.Entities
@@ -32,5 +33,20 @@ namespace Augurk.Entities
         /// Gets or sets the the test result
         /// </summary>
         public FeatureTestResult TestResult { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DisplayableFeature"/> class using the provided <see cref="Feature"/> to provide initial values.
+        /// </summary>
+        /// <param name="feature">The <see cref="Feature"/>that should be used when determining the the initial values.</param>
+        /// <remarks>This constructor does not wrap the provided feature, it will result in an actual copy with shared scenarios and a shared background.</remarks>
+        public DisplayableFeature(Feature feature)
+        {
+            // Copy the properties from the provided feature
+            Title = feature.Title;
+            Description = feature.Description;
+            Tags = feature.Tags.ToList();
+            Scenarios = feature.Scenarios;
+            Background = feature.Background;
+        }
     }
 }

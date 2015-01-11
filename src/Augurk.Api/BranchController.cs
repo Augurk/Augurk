@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 */
 
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Augurk.Api.Managers;
 
@@ -26,9 +27,9 @@ namespace Augurk.Api
 
         [Route("api/branches")]
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IEnumerable<string>> GetAsync()
         {
-            return _branchManager.GetBranches();
+            return await _branchManager.GetBranchesAsync();
         }
     }
 }

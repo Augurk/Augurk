@@ -94,6 +94,9 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="license.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="templates\feature.html" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="templates\home.html" />
@@ -122,7 +125,6 @@
     <Content Include="Scripts\angular-resource.min.js.map" />
     <Content Include="Scripts\angular-sanitize.min.js.map" />
     <Content Include="Scripts\angular-route.min.js.map" />
-    <None Include="Properties\PublishProfiles\zeusportal02.pubxml" />
     <None Include="Scripts\jquery-2.1.0.intellisense.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<license id="2ca35bfa-47ac-4b19-bed5-e04372f26e61" expiration="9999-12-31T23:59:59.9999999" type="Standard" version="3.0" maxRamUtilization="12884901888" maxParallelism="6" allowWindowsClustering="false" OEM="false" numberOfDatabases="unlimited" fips="false" periodicBackup="true" quotas="false" authorization="true" documentExpiration="true" replication="true" versioning="true" maxSizeInMb="unlimited" ravenfs="false" encryption="false" compression="false" updatesExpiration="2015-Dec-29">
+  <name>Mark Taling</name>
+  <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+    <SignedInfo>
+      <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+      <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+      <Reference URI="">
+        <Transforms>
+          <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+        </Transforms>
+        <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+        <DigestValue>A/vkQIcxlqtejTp8Pjg9g1y0SRg=</DigestValue>
+      </Reference>
+    </SignedInfo>
+    <SignatureValue>OSlKupKYOuhzEoJMCdanJSBMBlB87rfzJERQDq1QSdIbUcsloJsIYAucAv0VA57Aib+d70qDVD63kgdIns/0d3BHq9oEJ1sWXWotHsuFe7hDDlaKG/A+OyFxV1NIZ0bo1OqFySo6w7gEBaOpG+ZMYhyxzHCrQUUmE79uebXHrUY=</SignatureValue>
+  </Signature>
+</license>

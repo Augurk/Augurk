@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -96,7 +96,7 @@ namespace Augurk
         }
 
         /// <summary>
-        /// Removes all tags that are recognized as server tags from the provide <see cref="Feature"/>
+        /// Removes all tags that are recognized as server tags from the provided <see cref="Feature"/>
         /// and all underlying <see cref="Scenario"/>s.
         /// </summary>
         /// <param name="feature">The <see cref="Feature"/> instance </param>

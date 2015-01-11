@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using Augurk.Api.Managers;
 using Augurk.Entities;
@@ -31,38 +32,24 @@ namespace Augurk.Api
 
         [Route("api/features/{branchName}")]
         [HttpGet]
-        public IEnumerable<Group> Get(string branchName)
+        public async Task<IEnumerable<Group>> GetAsync(string branchName)
         {
-            return _featureManager.GetGroupedFeatureDescriptions(branchName);
+            return await _featureManager.GetGroupedFeatureDescriptionsAsync(branchName);
         }
 
         [Route("api/features/{branchName}/{groupName}/{title}")]
         [HttpGet]
-        public DisplayableFeature Get(string branchName, string groupName, string title)
+        public async Task<DisplayableFeature> GetAsync(string branchName, string groupName, string title)
         {
-            try
-            {
-                // Get the feature from storage
-                DisplayableFeature feature = _featureManager.GetFeature(branchName, groupName, title);
+            // Get the feature from storage
+            DisplayableFeature feature = await _featureManager.GetFeatureAsync(branchName, groupName, title);
 
-                // Process the server tags
-                if (feature != null)
-                {
-                    var processor = new FeatureProcessor();
-                    processor.Process(feature);
-                }
-
-                return feature;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
+            return feature;
         }
 
         [Route("api/features/{branchName}/{groupName}/{title}")]
         [HttpPost]
-        public HttpResponseMessage Post(Feature feature, string branchName, string groupName, string title)
+        public async Task<HttpResponseMessage> PostAsync(Feature feature, string branchName, string groupName, string title)
         {
             if (!feature.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
             {
@@ -73,26 +60,27 @@ namespace Augurk.Api
 
             try
             {
-                _featureManager.InsertOrUpdateFeature(feature, branchName, groupName);
+                await _featureManager.InsertOrUpdateFeatureAsync(feature, branchName, groupName);
             }
             catch (Exception exception)
             {
                 response = Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exception);
             }
+
             return response;
         }
 
         [Obsolete]
         [Route("api/features/{branchName}/{groupName}")]
         [HttpPost]
-        public HttpResponseMessage Post(Feature feature, string branchName, string groupName)
+        public async Task<HttpResponseMessage> PostAsync(Feature feature, string branchName, string groupName)
         {
-            return Post(feature, branchName, groupName, feature.Title);
+            return await PostAsync(feature, branchName, groupName, feature.Title);
         }
 
         [Route("api/features/{branchName}/{groupName}/{title}/testresult")]
         [HttpPost]
-        public HttpResponseMessage Post(FeatureTestResult testResult, string branchName, string groupName, string title)
+        public async Task<HttpResponseMessage> PostAsync(FeatureTestResult testResult, string branchName, string groupName, string title)
         {
             if (!testResult.FeatureTitle.Equals(title, StringComparison.OrdinalIgnoreCase))
             {
@@ -103,34 +91,35 @@ namespace Augurk.Api
 
             try
             {
-                _featureManager.PersistFeatureTestResult(testResult, branchName, groupName);
+                await _featureManager.PersistFeatureTestResultAsync(testResult, branchName, groupName);
             }
             catch (Exception exception)
             {
                 response = Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exception);
             }
+
             return response;
         }
 
         [Route("api/features/{branchName}")]
         [HttpDelete]
-        public void Delete(string branchName)
+        public async Task DeleteAsync(string branchName)
         {
-            _featureManager.DeleteFeatures(branchName);
+            await _featureManager.DeleteFeaturesAsync(branchName);
         }
 
         [Route("api/features/{branchName}/{groupName}")]
         [HttpDelete]
-        public void Delete(string branchName, string groupName)
+        public async Task DeleteAsync(string branchName, string groupName)
         {
-            _featureManager.DeleteFeatures(branchName, groupName);
+            await _featureManager.DeleteFeaturesAsync(branchName, groupName);
         }
 
         [Route("api/features/{branchName}/{groupName}/{title}")]
         [HttpDelete]
-        public void Delete(string branchName, string groupName, string title)
+        public async Task DeleteAsync(string branchName, string groupName, string title)
         {
-            _featureManager.DeleteFeature(branchName, title);
+            await _featureManager.DeleteFeatureAsync(branchName, groupName, title);
         }
     }
 }

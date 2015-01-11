@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Web.Http.Filters;
 
@@ -30,6 +31,11 @@ namespace Augurk.Api.Filters
         /// <param name="actionExecutedContext">The current context.</param>
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
         {
+            if (actionExecutedContext.Response == null)
+            {
+                actionExecutedContext.Response = new HttpResponseMessage();
+            }
+
             if (actionExecutedContext.Response.Headers.CacheControl == null)
             {
                 actionExecutedContext.Response.Headers.CacheControl = new CacheControlHeaderValue();
