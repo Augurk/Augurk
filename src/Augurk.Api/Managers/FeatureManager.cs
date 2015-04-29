@@ -197,7 +197,7 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                var featuresQuery = session.Query<DbFeature>().Where(feature => feature.Branch.Equals(branchName, StringComparison.OrdinalIgnoreCase));
+                var featuresQuery = await session.Query<DbFeature>().Where(feature => feature.Branch.Equals(branchName, StringComparison.OrdinalIgnoreCase)).ToListAsync();
 
                 foreach (var feature in featuresQuery)
                 {
@@ -213,9 +213,8 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                var featuresQuery = session.Query<DbFeature>().Where(feature => feature.Branch.Equals(branchName, StringComparison.OrdinalIgnoreCase)
-                                                                             && feature.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase));
-
+                var featuresQuery = await session.Query<DbFeature, Features_ByTitleBranchAndGroup>().Where(feature => feature.Branch.Equals(branchName, StringComparison.OrdinalIgnoreCase)
+                                                                                                                      && feature.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase)).ToListAsync();
                 foreach (var feature in featuresQuery)
                 {
                     // The delete method only marks the entity for deletion, as such it is not asynchronous
