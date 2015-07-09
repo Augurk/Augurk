@@ -1,0 +1,79 @@
+{
+    "id": "304DF4EB-62E8-450C-9D79-8F186798F803",
+    "name": "PublishFeaturesToAugurk",
+    "friendlyName": "Publish Features To Augurk",
+    "description": "Publishes Gherkin .feature files to Augurk.",
+    "category": "Utility",
+    "author": "Jonathan Mezach",
+    "version": {
+        "Major": 0,
+        "Minor": 1,
+        "Patch": 7
+    },
+    "instanceNameFormat": "Publish features from $(features) to Augurk",
+    "groups": [
+        {
+            "name": "advanced",
+            "displayName": "Advanced",
+            "isExpanded": false
+        }
+    ],
+    "inputs": [
+        {
+            "name": "features",
+            "type": "filePath",
+            "label": "Feature(s)",
+            "defaultValue": "**\\*.feature",
+            "required": true,
+            "helpMarkDown": "Relative path from repo root of the feature file(s) to publish. Wildcards can be used. For example, `**\\*.feature` for all feature files in all sub folders."
+        },
+        {
+            "name": "connectedServiceName",
+            "type": "connectedService:Generic",
+            "label": "Augurk Instance",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Augurk instance to which the features should be published."
+        },
+        {
+            "name": "branchName",
+            "type": "string",
+            "label": "Branch Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Name of the branch under which the features should be published to Augurk."
+        },
+        {
+            "name": "groupName",
+            "type": "string",
+            "label": "Group Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Name of the group under which the features should be published to Augurk."
+        },
+        {
+            "name": "clearGroup",
+            "type": "boolean",
+            "label": "Clear Group",
+            "defaultValue": false,
+            "required": true,
+            "helpMarkDown": "Indicates whether the group should be cleared of existing features when new features are published."
+        },
+        {
+            "name": "language",
+            "type": "string",
+            "label": "Language",
+            "defaultValue": "en-US",
+            "required": true,
+            "helpMarkDown": "Language in which the feature files have been written. For example: `en-US` or `nl-NL`.",
+            "groupName": "advanced"
+        }
+    ],
+    "execution": {
+        "PowerShell": {
+            "target": "$(currentDirectory)\\PublishFeaturesToAugurk.ps1",
+            "argumentFormat": "",
+            "workingDirectory": "$(currentDirectory)"
+        }
+    }    
+}
