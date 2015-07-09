@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.23103.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk", "Augurk\Augurk.csproj", "{13364A29-2A72-4F65-AE13-28B270801EB3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.MSBuild", "Augurk.MSBuild\Augurk.MSBuild.csproj", "{8E18EF20-0263-4692-9A07-E5692E7F298A}"
@@ -10,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.Entities", "Augurk.Entities\Augurk.Entities.csproj", "{8EA75685-A3A8-4852-B0A5-B067D4290382}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.Api", "Augurk.Api\Augurk.Api.csproj", "{C3981525-0902-402D-97F6-64CA2A8772D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.CommandLine", "Augurk.CommandLine\Augurk.CommandLine.csproj", "{3D0E1E13-76C3-4CB7-B864-0F3D93672144}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +41,10 @@ Global
 		{C3981525-0902-402D-97F6-64CA2A8772D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3981525-0902-402D-97F6-64CA2A8772D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3981525-0902-402D-97F6-64CA2A8772D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D0E1E13-76C3-4CB7-B864-0F3D93672144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D0E1E13-76C3-4CB7-B864-0F3D93672144}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D0E1E13-76C3-4CB7-B864-0F3D93672144}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D0E1E13-76C3-4CB7-B864-0F3D93672144}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
