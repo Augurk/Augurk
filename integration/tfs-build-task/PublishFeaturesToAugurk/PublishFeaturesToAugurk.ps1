@@ -11,7 +11,7 @@ param(
 )
 
 # Make sure that we stop processing when an error occurs
-$ErrorActionPreference = Stop
+$ErrorActionPreference = "Stop"
 
 $clearGroupBool = [System.Convert]::ToBoolean($clearGroup)
 $treatWarningsAsErrorsBool = [System.Convert]::ToBoolean($treatWarningsAsErrors)
@@ -54,7 +54,7 @@ else
 
 if (!$augurk)
 {
-	$message = "Could not find augurk.exe. If you don't have Augurk cCommand line tools installed, install the NuGet package Augurk.CommandLine."
+	$message = "Could not find augurk.exe. If you don't have Augurk command line tools installed, install the NuGet package Augurk.CommandLine."
 	if ($treatWarningsAsErrors)
 	{
 		Write-Error $message
