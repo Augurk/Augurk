@@ -104,3 +104,11 @@ li.step {
 .glyphbutton:hover {
     color: #000000;
 }
+
+.panel-heading .no-match{
+    color: #b5b2b2;
+}
+
+.menu-item .no-match{
+    color: #AAAAAA;
+}

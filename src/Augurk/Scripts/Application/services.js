@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -24,13 +24,25 @@ AugurkServices.factory('featureService', ['$resource', function ($resource) {
 }]);
 
 AugurkServices.factory('featureDescriptionService', ['$resource', function ($resource) {
+
     // The branchname might contain a period, which webapi only allows if you finish with a slash
     // Since AngularJS doesn't allow for trailing slashes, use a backslash instead
-    return $resource('api/features/:branchName\\',
-                     { branchName: '@branchName' });
+    var service = {
+        getFeaturesByBranch: function (branch, callback) {
+            $resource('api/features/:branchName\\', { branchName: '@branchName' })
+                .query({ branchName: branch }, callback);
+        },
+
+        getFeaturesByBranchAndTag: function (branch, tag, callback) {
+            $resource('api/tags/:branchName/:tag/features', { branchName: '@branchName', tag: '@tag' })
+                .query({ branchName: branch, tag: tag }, callback);
+        }
+    };
+    
+    return service;
 }]);
 
-AugurkServices.factory('branchService', ['$http', '$q', '$routeParams', '$rootScope', function($http, $q, $routeParams, $rootScope) {
+AugurkServices.factory('branchService', ['$http', '$q', '$routeParams', '$rootScope', function ($http, $q, $routeParams, $rootScope) {
 
     // create the service
     var service = {
@@ -41,21 +53,31 @@ AugurkServices.factory('branchService', ['$http', '$q', '$routeParams', '$rootSc
     // since AngularJS' $resource does not support primitive types, use $http instead.
     var branchesPromiseDeferrer = $q.defer();
     $http({ method: 'GET', url: 'api/branches' }).then(function (response) {
-            branchesPromiseDeferrer.resolve(response.data);
+        branchesPromiseDeferrer.resolve(response.data);
     });
-    
+
     service.branches = branchesPromiseDeferrer.promise;
+
+    service.getTags = function (branch) {
+        var tagsPromiseDeferrer = $q.defer();
+        $http({ method: 'GET', url: 'api/tags/' + branch }).then(function (response) {
+            tagsPromiseDeferrer.resolve(response.data);
+        });
+
+        return tagsPromiseDeferrer.promise;
+    }
 
     // set the current branch
     if ($routeParams.branchName) {
         service.currentBranch = $routeParams.branchName;
-    } else {
-        branchesPromiseDeferrer.promise.then(function(branches) {
+    }
+    else {
+        branchesPromiseDeferrer.promise.then(function (branches) {
             service.currentBranch = branches[0];
             $rootScope.$broadcast('currentBranchChanged', { branch: service.currentBranch });
         });
     }
-    
+
     // update the branch on navigation
     $rootScope.$on('$routeChangeSuccess', function () {
         if ($routeParams.branchName &&

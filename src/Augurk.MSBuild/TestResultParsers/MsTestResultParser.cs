@@ -54,7 +54,7 @@ namespace Augurk.MSBuild.TestResultParsers
                                          ScenarioTitle = scenario.unitTest.Element(NS + "Description").Value,
                                          VariantName = scenario.properties.ContainsKey("VariantName") ? scenario.properties["VariantName"] : String.Empty,
                                          Result = resultElement == null ? TestResult.None : (TestResult)Enum.Parse(typeof(TestResult), resultElement.Attribute("outcome").Value),
-                                         TestExecutionDate = resultElement == null ? (DateTime?)null : XmlConvert.ToDateTime(resultElement.Attribute("endTime").Value)
+                                         TestExecutionDate = resultElement == null ? (DateTime?)null : XmlConvert.ToDateTime(resultElement.Attribute("endTime").Value, XmlDateTimeSerializationMode.Utc)
                                      }).ToList()
                            select new FeatureTestResult()
                                {

@@ -121,7 +121,7 @@ namespace Augurk
         /// <summary>
         /// Returns a new collection containing the provided tags excluding any servertags.
         /// </summary>
-        private static IEnumerable<string> RemoveServerTags(IEnumerable<string> tags)
+        public static IEnumerable<string> RemoveServerTags(IEnumerable<string> tags)
         {
             List<string> filteredTags = new List<string>();
 

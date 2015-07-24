@@ -3,7 +3,7 @@
   <Role name="Augurk">
     <Instances count="1" />
     <ConfigurationSettings>
-      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="UseDevelopmentStorage=true" />
+      <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" value="DefaultEndpointsProtocol=https;AccountName=spoorplaza;AccountKey=7TN0X4rr/rSMfJCklIKsYfUDHJIxxH2t5VbriQHX2QvMsChT18yO3DcS7ZS1sdUEP2nIMBftjqEgZ9ffa5RZ5Q==" />
     </ConfigurationSettings>
   </Role>
 </ServiceConfiguration>

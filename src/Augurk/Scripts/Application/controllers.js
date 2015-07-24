@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$rou
 
         // Set the current group on the rootscope
         $rootScope.currentGroupName = $routeParams.groupName;
-        
+
         // Define a function to merge the test results into the feature
-        $scope.mergeTestResults = function() {
+        $scope.mergeTestResults = function () {
             if (!$scope.feature.testResult) {
                 return;
             }
@@ -47,36 +47,81 @@ AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$rou
     }
 ]);
 
-AugurkControllers.controller('menuController', ['$rootScope', '$routeParams', 'featureDescriptionService', 'branchService',
-    function ($rootScope, $routeParams, featureDescriptionService, branchService) {
+AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeParams', 'featureDescriptionService', 'branchService',
+    function ($rootScope, $scope, $routeParams, featureDescriptionService, branchService) {
 
         function createMenu(currentBranch) {
-            featureDescriptionService.query(
-                { branchName: currentBranch },
-                function(groups) {
+            featureDescriptionService.getFeaturesByBranch(currentBranch,
+                function (groups) {
                     $rootScope.featureGroups = processFeatureGroups(currentBranch, groups);
                 }
             );
+
+            branchService.getTags(currentBranch).then(function (tags) {
+                $scope.tags = $.makeArray();
+                $.each(tags, function (index, tag) {
+                    $scope.tags.push({ name: tag, features: $.makeArray() })
+                })
+                $scope.filter.tags = $.makeArray();
+            });
         }
-        
+
+        $scope.tags = $.makeArray();
+
+        $scope.filter = {
+            tags: $.makeArray(),
+            run: function () {
+                if ($scope.filter.tags.length == 0) {
+                    return;
+                }
+
+                var tag = $scope.filter.tags[$scope.filter.tags.length - 1];
+                featureDescriptionService.getFeaturesByBranchAndTag(
+                    branchService.currentBranch,
+                    tag.name,
+                    function (features) {
+                        tag.features = features;
+                    }
+                );
+            },
+            matchFeature: function (featureName) {
+                if ($scope.filter.tags.length == 0) {
+                    return true;
+                }
+
+                var result = false;
+                
+                $.each($scope.filter.tags, function (index, tag) {
+                    if (tag.features.some(function (feature) { return feature.title == featureName; })) {
+                        // Set the value
+                        result = true;
+                        // Break out of the loop
+                        return false;
+                    }
+                });
+
+                return result;
+            }
+        };
+
         if (branchService.currentBranch) {
             createMenu(branchService.currentBranch);
         }
-        
+
         $rootScope.$on('currentBranchChanged', function (event, data) {
             createMenu(data.branch);
         });
     }
 ]);
 
-AugurkControllers.controller('navbarController', ['$scope', 'branchService',
-    function ($scope, branchService) {
+AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'branchService',
+    function ($rootScope, $scope, branchService) {
 
         $scope.currentBranch = branchService.currentBranch;
-        $scope.$on('currentBranchChanged', function(event, data) {
-            $scope.currentBranch = data.branch;
+        $scope.$on('currentBranchChanged', function (event, data) {
+            $rootScope.currentBranch = data.branch;
         });
-        
+
         branchService.branches.then(function (branches) {
             $scope.branches = branches;
         });
@@ -101,7 +146,7 @@ function getFlatList(branchName, groupName, featureTree, level, parentTitle) {
             hasChildren: (feature.childFeatures && feature.childFeatures.length > 0),
             uri: '#feature/' + branchName + '/' + groupName + '/' + feature.title
         });
-        
+
         if (feature.childFeatures) {
             $.merge(featureList, getFlatList(branchName, groupName, feature.childFeatures, Math.min(level + 1, 5), feature.title));
         }

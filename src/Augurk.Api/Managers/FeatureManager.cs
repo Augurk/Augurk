@@ -73,7 +73,8 @@ namespace Augurk.Api.Managers
         /// Gets groups containing the descriptions for all features for the specified branch.
         /// </summary>
         /// <param name="branchName">The name of the branch for which the feature descriptions should be retrieved.</param>
-        /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
+        /// <param name="tagFilters">An optional set of tag which can be used to filter the results.</param>
+        /// <returns>An enumerable collection of <see cref="Group"/> instances.</returns>
         public async Task<IEnumerable<Group>> GetGroupedFeatureDescriptionsAsync(string branchName)
         {
             Dictionary<string, List<FeatureDescription>> featureDescriptions = new Dictionary<string, List<FeatureDescription>>();
@@ -85,19 +86,19 @@ namespace Augurk.Api.Managers
                                         .Where(feature => feature.Branch.Equals(branchName, StringComparison.OrdinalIgnoreCase))
                                         .Select(feature =>
                                                 new
-                                                    {
-                                                        feature.Group,
-                                                        feature.ParentTitle,
-                                                        feature.Title
-                                                    })
+                                                {
+                                                    feature.Group,
+                                                    feature.ParentTitle,
+                                                    feature.Title
+                                                })
                                         .ToListAsync();
 
                 foreach (var record in data.OrderBy(record => record.ParentTitle))
                 {
                     var featureDescription = new FeatureDescription()
-                        {
-                            Title = record.Title
-                        };
+                    {
+                        Title = record.Title
+                    };
 
                     if (String.IsNullOrWhiteSpace(record.ParentTitle))
                     {
@@ -105,14 +106,14 @@ namespace Augurk.Api.Managers
                         {
                             // Create a new group
                             groups.Add(record.Group, new Group()
-                                {
-                                    Name = record.Group,
-                                    Features = new List<FeatureDescription>()
-                                });
+                            {
+                                Name = record.Group,
+                                Features = new List<FeatureDescription>()
+                            });
                         }
 
                         // Add the feature to the group
-                        ((List<FeatureDescription>) groups[record.Group].Features).Add(featureDescription);
+                        ((List<FeatureDescription>)groups[record.Group].Features).Add(featureDescription);
                     }
                     else
                     {
@@ -133,6 +134,30 @@ namespace Augurk.Api.Managers
             }
 
             return groups.Values.OrderBy(group => group.Name).ToList();
+        }
+
+        /// <summary>
+        /// Gets a collection of features the specified tag.
+        /// </summary>
+        /// <param name="branchName">The name of the branch for which the feature descriptions should be retrieved.</param>
+        /// <param name="tag">A tag which should be used to filter the results.</param>
+        /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
+        public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsAsync(string branchName, string tag)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var titles = await session.Query<Features_ByTagAndBranch.TaggedFeature, Features_ByTagAndBranch>()
+                                        .Where(feature => feature.Branch.Equals(branchName, StringComparison.OrdinalIgnoreCase)
+                                                       && feature.Tag.Equals(tag, StringComparison.OrdinalIgnoreCase))
+                                        .Select(feature =>
+                                                new
+                                                {
+                                                    feature.Title
+                                                })
+                                        .ToListAsync();
+
+                return titles.Select(feature => new FeatureDescription() { Title = feature.Title });
+            }
         }
 
         private void AddChildren(FeatureDescription feature, Dictionary<string, List<FeatureDescription>> childRepository)

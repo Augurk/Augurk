@@ -47,5 +47,17 @@ namespace Augurk.Api.Managers
                                     .ToListAsync();
             }
         }
+
+        public async Task<IEnumerable<string>> GetTagsAsync(string branchName)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                return await session.Query<Features_ByTagAndBranch.TaggedFeature, Features_ByTagAndBranch>()
+                                    .Where(branchTag => branchTag.Branch.Equals(branchName, StringComparison.CurrentCultureIgnoreCase))
+                                    .Select(branchTag => branchTag.Tag)
+                                    .Distinct()
+                                    .ToListAsync();
+            }
+        }
     }
 }
