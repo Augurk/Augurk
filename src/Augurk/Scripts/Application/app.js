@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  limitations under the License.
 */
 
-var Augurk = angular.module('Augurk', ['AugurkControllers', 'AugurkServices', 'AugurkFilters', 'ngSanitize', 'ngRoute']);
+var Augurk = angular.module('Augurk', ['AugurkControllers', 'AugurkServices', 'AugurkFilters', 'ngSanitize', 'ngRoute', 'ui.select']);
 
 Augurk.config(['$routeProvider', '$locationProvider',
 function ($routeProvider, $locationProvider) {

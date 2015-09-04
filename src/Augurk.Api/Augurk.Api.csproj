@@ -78,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TagController.cs" />
     <Compile Include="BranchController.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DbFeature.cs" />
@@ -96,9 +97,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Raven.Studio.Html5.zip">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Augurk.Entities\Augurk.Entities.csproj">

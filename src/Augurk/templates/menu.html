@@ -1,25 +1,51 @@
 ﻿<!--
- Copyright 2014, Mark Taling
+    Copyright 2014-2015, Mark Taling
  
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
  
- http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
  
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+    -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4>
+            {{currentBranch}}
+            <span class="glyphicon glyphicon-filter pull-right glyphbutton"></span>
+        </h4>
+    </div>
+
+    <div class="panel-body" id="filterPanel">
+        <!--<span ng-repeat="tag in tagFilters"><span class="glyphicon glyphicon-tag"></span>{{tag}}</span>
+        <form class="navbar-form navbar-right" role="search" ng-submit="addTagFilter(tagToAdd);tagToAdd=null;">
+            <div class="form-group">
+                <input type="text" class="form-control small" placeholder="tag" ng-model="tagToAdd"/>
+                <button type="submit" class="btn btn-default" >Add filter</button>
+            </div>
+        </form>-->
+        <ui-select multiple ng-model="filter.tags"
+                   theme="bootstrap"
+                   data-ng-change="filter.run()">
+            <ui-select-match placeholder="Select one or more tags to filter">{{$item.name}}</ui-select-match>
+            <ui-select-choices repeat="tag in tags | filter: $select.search">
+                {{tag.name}}
+            </ui-select-choices>
+        </ui-select>
+    </div>
+</div>
 
 <div class="panel panel-default" id="Group{{featureGroup.name}}" ng-repeat="featureGroup in featureGroups">
     <div class="panel-heading">
         <h4>{{featureGroup.name}}</h4>
     </div>
-    <ul class="list-group" ng-class="(feature.level > 1) ? (feature.parentTitle.replace(' ', '')) ? feature.parentTitle.replace(' ', '') + 'Child collapse' : 'collapse' : ''" ng-repeat="feature in featureGroup.features">
-        <li ng-if="feature.hasChildren" class="list-group-item bottomless menu-item lvl{{feature.level}} collapsed" data-toggle="collapse" data-target=".{{feature.title.replace(' ', '')}}Child"><span class="glyphicon glyphicon-menu-group"></span><a href="{{feature.uri}}">{{feature.title}}</a></li>
-        <li ng-if="!feature.hasChildren" class="list-group-item bottomless menu-item lvl{{feature.level}}"><a href="{{feature.uri}}">{{feature.title}}</a></li>
+    <ul class="list-group" ng-class="(feature.level > 1) ? (feature.parentTitle.split(' ').join('_')) ? feature.parentTitle.split(' ').join('_') + 'Child collapse' : 'collapse' : ''" ng-repeat="feature in featureGroup.features">
+        <li ng-if="feature.hasChildren" class="list-group-item bottomless menu-item lvl{{feature.level}} collapsed" data-toggle="collapse" data-target=".{{feature.title.split(' ').join('_')}}Child"><span class="glyphicon glyphicon-menu-group"></span><a href="{{feature.uri}}" ng-class="{'no-match': !filter.matchFeature(feature.title)}">{{feature.title}}</a></li>
+        <li ng-if="!feature.hasChildren" class="list-group-item bottomless menu-item lvl{{feature.level}}"><a href="{{feature.uri}}" ng-class="{'no-match': !filter.matchFeature(feature.title)}">{{feature.title}}</a></li>
     </ul>
 </div>
