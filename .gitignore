@@ -215,3 +215,14 @@ FakesAssemblies/
 **/*.Server/GeneratedArtifacts
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
+
+# Publishing profiles
+**/*.pubxml
+
+# RavenDB stuff
+**/FeatureStore
+**/CompiledIndexCache
+**/Lucene.Net.dll
+
+# Zip files
+*.zip
