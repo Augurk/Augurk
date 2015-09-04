@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Augurk.Api.Managers;
 
-namespace Augurk.Api.Controllers.V1
+namespace Augurk.Api
 {
     public class BranchController : ApiController
     {

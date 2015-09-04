@@ -20,7 +20,7 @@ using System.Web.Http;
 using Augurk.Api.Managers;
 using Augurk.Entities;
 
-namespace Augurk.Api.Controllers.V1
+namespace Augurk.Api
 {
     public class TagController : ApiController
     {

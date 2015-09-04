@@ -78,12 +78,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controllers\V1\TagController.cs" />
-    <Compile Include="Controllers\V1\BranchController.cs" />
+    <Compile Include="TagController.cs" />
+    <Compile Include="BranchController.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DbFeature.cs" />
     <Compile Include="Extensions\DbFeatureExtensions.cs" />
-    <Compile Include="Controllers\V1\FeatureController.cs" />
+    <Compile Include="FeatureController.cs" />
     <Compile Include="FeatureProcessor.cs" />
     <Compile Include="Filters\NoCacheHeaderFilter.cs" />
     <Compile Include="Indeces\Features_ByTitleBranchAndGroup.cs" />
