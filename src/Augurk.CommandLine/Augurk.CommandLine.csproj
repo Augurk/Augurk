@@ -87,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Augurk.CommandLine.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
