@@ -24,7 +24,7 @@ using Augurk.Api.Managers;
 using Augurk.Entities;
 using Augurk.Entities.Test;
 
-namespace Augurk.Api
+namespace Augurk.Api.Controllers
 {
     public class FeatureController : ApiController
     {

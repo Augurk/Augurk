@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2015, Mark Taling
+ Copyright 2014-2015, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,27 +18,18 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Augurk.Api.Managers;
-using Augurk.Entities;
 
-namespace Augurk.Api
+namespace Augurk.Api.Controllers
 {
-    public class TagController : ApiController
+    public class BranchController : ApiController
     {
         private readonly BranchManager _branchManager = new BranchManager();
-        private readonly FeatureManager _featureManager = new FeatureManager();
 
-        [Route("api/tags/{branchName}")]
+        [Route("api/branches")]
         [HttpGet]
-        public async Task<IEnumerable<string>> GetAsync(string branchName)
+        public async Task<IEnumerable<string>> GetAsync()
         {
-            return FeatureProcessor.RemoveServerTags(await _branchManager.GetTagsAsync(branchName));
-        }
-
-        [Route("api/tags/{branchName}/{tag}/features")]
-        [HttpGet]
-        public async Task<IEnumerable<FeatureDescription>> GetFeaturesAsync(string branchName, string tag)
-        {
-            return await _featureManager.GetFeatureDescriptionsAsync(branchName, tag);
+            return await _branchManager.GetBranchesAsync();
         }
     }
 }
