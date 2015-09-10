@@ -70,12 +70,12 @@ namespace Augurk.Api.Managers
         }
 
         /// <summary>
-        /// Gets groups containing the descriptions for all features for the specified branch.
+        /// Gets groups by branch names containing the descriptions for all features for the specified branch.
         /// </summary>
         /// <param name="branchName">The name of the branch for which the feature descriptions should be retrieved.</param>
         /// <param name="tagFilters">An optional set of tag which can be used to filter the results.</param>
         /// <returns>An enumerable collection of <see cref="Group"/> instances.</returns>
-        public async Task<IEnumerable<Group>> GetGroupedFeatureDescriptionsAsync(string branchName)
+        public async Task<IEnumerable<Group>> GetGroupedByBranchFeatureDescriptionsAsync(string branchName)
         {
             Dictionary<string, List<FeatureDescription>> featureDescriptions = new Dictionary<string, List<FeatureDescription>>();
             Dictionary<string, Group> groups = new Dictionary<string, Group>();
@@ -137,18 +137,109 @@ namespace Augurk.Api.Managers
         }
 
         /// <summary>
-        /// Gets a collection of features the specified tag.
+        /// Gets groups containing the descriptions for all features for the specified branch.
         /// </summary>
-        /// <param name="branchName">The name of the branch for which the feature descriptions should be retrieved.</param>
-        /// <param name="tag">A tag which should be used to filter the results.</param>
+        /// <param name="productName">The name of the product for which the feature descriptions should be retrieved.</param>
+        /// <param name="tagFilters">An optional set of tag which can be used to filter the results.</param>
+        /// <returns>An enumerable collection of <see cref="Group"/> instances.</returns>
+        public async Task<IEnumerable<Group>> GetGroupedFeatureDescriptionsAsync(string productName)
+        {
+            Dictionary<string, List<FeatureDescription>> featureDescriptions = new Dictionary<string, List<FeatureDescription>>();
+            Dictionary<string, Group> groups = new Dictionary<string, Group>();
+
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var data = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                                        .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase))
+                                        .Select(feature =>
+                                                new
+                                                {
+                                                    feature.Group,
+                                                    feature.ParentTitle,
+                                                    feature.Title
+                                                })
+                                        .ToListAsync();
+
+                foreach (var record in data.OrderBy(record => record.ParentTitle))
+                {
+                    var featureDescription = new FeatureDescription()
+                    {
+                        Title = record.Title
+                    };
+
+                    if (String.IsNullOrWhiteSpace(record.ParentTitle))
+                    {
+                        if (!groups.ContainsKey(record.Group))
+                        {
+                            // Create a new group
+                            groups.Add(record.Group, new Group()
+                            {
+                                Name = record.Group,
+                                Features = new List<FeatureDescription>()
+                            });
+                        }
+
+                        // Add the feature to the group
+                        ((List<FeatureDescription>)groups[record.Group].Features).Add(featureDescription);
+                    }
+                    else
+                    {
+                        if (!featureDescriptions.ContainsKey(record.ParentTitle))
+                        {
+                            featureDescriptions.Add(record.ParentTitle, new List<FeatureDescription>());
+                        }
+
+                        featureDescriptions[record.ParentTitle].Add(featureDescription);
+                    }
+                }
+
+                // Map the lower levels
+                foreach (var feature in groups.Values.SelectMany(group => group.Features))
+                {
+                    AddChildren(feature, featureDescriptions);
+                }
+            }
+
+            return groups.Values.OrderBy(group => group.Name).ToList();
+        }
+
+        /// <summary>
+        /// Gets a collection of features for the specified <paramref name="productName">branch</paramref> and tag.
+        /// </summary>
+        /// <param name="productName">The name of the branch for which the feature descriptions should be retrieved.</param>
+        /// <param name="groupName">A tag which should be used to filter the results.</param>
         /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
-        public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsAsync(string branchName, string tag)
+        public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByBranchAndTagAsync(string branchName, string tag)
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
                 var titles = await session.Query<Features_ByTagAndBranch.TaggedFeature, Features_ByTagAndBranch>()
                                         .Where(feature => feature.Branch.Equals(branchName, StringComparison.OrdinalIgnoreCase)
                                                        && feature.Tag.Equals(tag, StringComparison.OrdinalIgnoreCase))
+                                        .Select(feature =>
+                                                new
+                                                {
+                                                    feature.Title
+                                                })
+                                        .ToListAsync();
+
+                return titles.Select(feature => new FeatureDescription() { Title = feature.Title });
+            }
+        }
+
+        /// <summary>
+        /// Gets a collection of features for the specified <paramref name="productName">product</paramref> and <paramref name="groupName">group</paramref>.
+        /// </summary>
+        /// <param name="productName">The name of the branch for which the feature descriptions should be retrieved.</param>
+        /// <param name="groupName">A tag which should be used to filter the results.</param>
+        /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
+        public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByProductAndGroupAsync(string productName, string groupName)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var titles = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                                        .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
+                                                       && feature.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase))
                                         .Select(feature =>
                                                 new
                                                 {

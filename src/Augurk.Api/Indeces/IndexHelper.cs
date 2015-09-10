@@ -34,6 +34,7 @@ namespace Augurk.Api.Indeces
         {
             // Store the branch so it can be used to create the top menu
             stores.Add(feature => feature.Branch, FieldStorage.Yes);
+            stores.Add(feature => feature.Product, FieldStorage.Yes);
 
             // Store the three fields that are used to create the menu
             stores.Add(feature => feature.Group, FieldStorage.Yes);

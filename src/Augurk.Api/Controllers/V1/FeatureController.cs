@@ -34,7 +34,7 @@ namespace Augurk.Api.Controllers
         [HttpGet]
         public async Task<IEnumerable<Group>> GetAsync(string branchName)
         {
-            return await _featureManager.GetGroupedFeatureDescriptionsAsync(branchName);
+            return await _featureManager.GetGroupedByBranchFeatureDescriptionsAsync(branchName);
         }
 
         [Route("api/features/{branchName}/{groupName}/{title}")]

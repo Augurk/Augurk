@@ -16,6 +16,7 @@
 
 using Augurk.Entities;
 using Augurk.Entities.Test;
+using System;
 
 namespace Augurk.Api
 {
@@ -27,6 +28,7 @@ namespace Augurk.Api
         /// <summary>
         /// Gets or sets the branch this feature falls under.
         /// </summary>
+        [Obsolete("Support for branches will be dropped in a future version.")]
         public string Branch { get; set; }
 
         /// <summary>
@@ -62,6 +64,7 @@ namespace Augurk.Api
         /// <remarks>This constructor does not wrap the provided feature, it will result in an actual copy with shared scenarios and a shared background.</remarks>
         public DbFeature(Feature feature, string branch, string group, string parentTitle)
         {
+            Product = feature.Product;
             Branch = branch;
             Group = group;
             ParentTitle = parentTitle;

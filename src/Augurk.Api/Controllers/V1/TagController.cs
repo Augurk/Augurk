@@ -38,7 +38,7 @@ namespace Augurk.Api.Controllers
         [HttpGet]
         public async Task<IEnumerable<FeatureDescription>> GetFeaturesAsync(string branchName, string tag)
         {
-            return await _featureManager.GetFeatureDescriptionsAsync(branchName, tag);
+            return await _featureManager.GetFeatureDescriptionsByBranchAndTagAsync(branchName, tag);
         }
     }
 }

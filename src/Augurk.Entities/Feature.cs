@@ -29,6 +29,11 @@ namespace Augurk.Entities
         public string Title { get; set; }
 
         /// <summary>
+        /// Gets or sets the product to which this feature belongs.
+        /// </summary>
+        public string Product { get; set; }
+
+        /// <summary>
         /// Gets or sets the description of this feature.
         /// </summary>
         public string Description { get; set; }

@@ -60,6 +60,7 @@ namespace Augurk.CommandLine.Commands
                     {
                         // Parse the feature and convert it to the correct format
                         Feature feature = parser.Parse(reader, featureFile).ConvertToFeature();
+                        feature.Product = "SomeProduct";
 
                         // Get the uri to which the feature should be published
                         string targetUri = GetFeatureUri(groupUri, feature.Title);

@@ -80,6 +80,9 @@
   <ItemGroup>
     <Compile Include="Controllers\V1\TagController.cs" />
     <Compile Include="Controllers\V1\BranchController.cs" />
+    <Compile Include="Controllers\V2\FeatureV2Controller.cs" />
+    <Compile Include="Controllers\V2\GroupsController.cs" />
+    <Compile Include="Controllers\V2\ProductsController.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DbFeature.cs" />
     <Compile Include="Extensions\DbFeatureExtensions.cs" />
@@ -88,9 +91,11 @@
     <Compile Include="Filters\NoCacheHeaderFilter.cs" />
     <Compile Include="Indeces\Features_ByTitleBranchAndGroup.cs" />
     <Compile Include="Indeces\Features_ByTagAndBranch.cs" />
+    <Compile Include="Indeces\Features_ByTitleProductAndGroup.cs" />
     <Compile Include="Indeces\IndexHelper.cs" />
     <Compile Include="Managers\BranchManager.cs" />
     <Compile Include="Managers\FeatureManager.cs" />
+    <Compile Include="Managers\ProductsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
