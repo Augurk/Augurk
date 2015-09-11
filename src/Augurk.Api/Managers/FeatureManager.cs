@@ -51,7 +51,7 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, title, branchName));
+                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, title, branchName, null));
 
                 if (dbFeature == null)
                 {
@@ -281,7 +281,7 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, testResult.FeatureTitle, branchName));
+                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, testResult.FeatureTitle, branchName, null));
 
                 if (dbFeature == null)
                 {
@@ -303,7 +303,7 @@ namespace Augurk.Api.Managers
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
                 // The delete method only marks the entity with the provided id for deletion, as such it is not asynchronous
-                session.Delete(DbFeatureExtensions.GetIdentifier(productName, groupName, title, branchName));
+                session.Delete(DbFeatureExtensions.GetIdentifier(productName, groupName, title, branchName, null));
 
                 await session.SaveChangesAsync();
             }

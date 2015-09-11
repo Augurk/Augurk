@@ -26,13 +26,13 @@ namespace Augurk.Api
     {
         public static string GetIdentifier(this DbFeature feature)
         {
-            return GetIdentifier(feature.Product, feature.Group, feature.Title, feature.Branch ?? "unknown");
+            return GetIdentifier(feature.Product, feature.Group, feature.Title, feature.Branch, feature.Version);
         }
 
-        public static string GetIdentifier(string product, string branch, string group, string title)
+        public static string GetIdentifier(string product, string group, string title, string branchName, string version)
         {
 
-            string combinedTitle = String.Join("/", product.ToLowerInvariant(), group.ToLowerInvariant(), title.ToLowerInvariant(), branch.ToLowerInvariant());
+            string combinedTitle = String.Join("/", product.ToLowerInvariant(), group.ToLowerInvariant(), title.ToLowerInvariant(), (branchName ?? version).ToLowerInvariant());
 
             using (var cryptoServiceProvider = new MD5CryptoServiceProvider())
             {
@@ -40,7 +40,7 @@ namespace Augurk.Api
                 var guid = new Guid(cryptoServiceProvider.ComputeHash(bytes));
                 var id = String.Format(CultureInfo.InvariantCulture,
                                        "{0}/{1}",
-                                       branch.ToLowerInvariant(),
+                                       version.ToLowerInvariant(),
                                        guid);
                 return id;
             }
