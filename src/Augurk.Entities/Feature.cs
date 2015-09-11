@@ -29,11 +29,6 @@ namespace Augurk.Entities
         public string Title { get; set; }
 
         /// <summary>
-        /// Gets or sets the version of the feature.
-        /// </summary>
-        public string Version { get; set; }
-
-        /// <summary>
         /// Gets or sets the description of this feature.
         /// </summary>
         public string Description { get; set; }

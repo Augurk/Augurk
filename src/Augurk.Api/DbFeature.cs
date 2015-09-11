@@ -42,6 +42,11 @@ namespace Augurk.Api
         public string Group { get; set; }
 
         /// <summary>
+        /// Gets or sets the version of the feature.
+        /// </summary>
+        public string Version { get; set; }
+
+        /// <summary>
         /// Gets or sets the title of the parent feature.
         /// </summary>
         public string ParentTitle { get; set; }
@@ -66,12 +71,14 @@ namespace Augurk.Api
         /// <param name="group">The group this feature falls under.</param>
         /// <param name="parentTitle">The title of the parent feature.</param>
         /// <param name="branch">The branch this feature falls under.</param>
+        /// <param name="version">Version of the feature.</param>
         /// <remarks>This constructor does not wrap the provided feature, it will result in an actual copy with shared scenarios and a shared background.</remarks>
-        public DbFeature(Feature feature, string product, string group, string parentTitle, string branch)
+        public DbFeature(Feature feature, string product, string group, string parentTitle, string branch, string version)
         {
             Product = product;
             Branch = branch;
             Group = group;
+            Version = version;
             ParentTitle = parentTitle;
 
             // Copy the properties from the provided feature

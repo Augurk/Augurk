@@ -29,6 +29,7 @@ namespace Augurk.Api.Controllers
     public class FeatureController : ApiController
     {
         private const string UNKNOWN_PRODUCT = "Unknown Product";
+        private const string UNKNOWN_VERSION = "0.0.0";
         private readonly FeatureManager _featureManager = new FeatureManager();
 
         [Route("api/features/{branchName}")]
@@ -61,7 +62,7 @@ namespace Augurk.Api.Controllers
 
             try
             {
-                await _featureManager.InsertOrUpdateFeatureAsync(feature, UNKNOWN_PRODUCT, groupName, branchName);
+                await _featureManager.InsertOrUpdateFeatureAsync(feature, UNKNOWN_PRODUCT, groupName, branchName, UNKNOWN_VERSION);
             }
             catch (Exception exception)
             {

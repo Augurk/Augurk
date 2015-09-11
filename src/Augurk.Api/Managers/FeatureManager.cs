@@ -262,12 +262,12 @@ namespace Augurk.Api.Managers
             }
         }
 
-        public async Task InsertOrUpdateFeatureAsync(Feature feature, string productName, string groupName, string branchName)
+        public async Task InsertOrUpdateFeatureAsync(Feature feature, string productName, string groupName, string branchName, string version)
         {
             var processor = new FeatureProcessor();
             string parentTitle = processor.DetermineParent(feature);
 
-            DbFeature dbFeature = new DbFeature(feature, productName, groupName, parentTitle, branchName);
+            DbFeature dbFeature = new DbFeature(feature, productName, groupName, parentTitle, branchName, version);
 
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {

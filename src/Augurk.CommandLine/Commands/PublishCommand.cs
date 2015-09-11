@@ -21,7 +21,7 @@ namespace Augurk.CommandLine.Commands
         /// <summary>
         /// Stores the <see cref="PublishOptions"/> passed to the command.
         /// </summary>
-        private PublishOptions _options;
+        private readonly PublishOptions _options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PublishCommand"/> class.
@@ -37,78 +37,121 @@ namespace Augurk.CommandLine.Commands
         /// </summary>
         public void Execute()
         {
+            // Determine the version of the API we're going to use
+            if (string.IsNullOrWhiteSpace(_options.ProductName))
+            {
+                // Execute the command by using V1 of the API
+                ExecuteUsingV1Api();
+            }
+            else
+            {
+                // Execute the command by using V2 of the API
+                ExecuteUsingV2Api();
+            }
+        }
+
+        private void ExecuteUsingV1Api()
+        {
             // Instantiate a new parser, using the provided language
             SpecFlowLangParser parser = new SpecFlowLangParser(new CultureInfo(_options.Language ?? "en-US"));
-            var client = new HttpClient();
-
-            // Get the base uri for all further operations
-            string groupUri = GetGroupUri();
-
-            // Clear any existing features in this group, if required
-            if (_options.ClearGroup)
+            using (var client = new HttpClient())
             {
-                Console.WriteLine("Clearing existing features in group {0} for branch {1}.", _options.GroupName ?? "Default", _options.BranchName);
-                client.DeleteAsync(groupUri).Wait();
-            }
+                // Get the base uri for all further operations
+                string groupUri = $"{_options.AugurkUrl.TrimEnd('/')}/api/features/{_options.BranchName}/{_options.GroupName ?? "Default"}";
 
-            // Parse and publish each of the provided feature files
-            foreach (var featureFile in _options.FeatureFiles)
-            {
-                try
+                // Clear any existing features in this group, if required
+                if (_options.ClearGroup)
                 {
-                    using (TextReader reader = File.OpenText(featureFile))
+                    Console.WriteLine($"Clearing existing features in group {_options.GroupName ?? "Default"} for branch {_options.BranchName}.");
+                    client.DeleteAsync(groupUri).Wait();
+                }
+
+                // Parse and publish each of the provided feature files
+                foreach (var featureFile in _options.FeatureFiles)
+                {
+                    try
                     {
-                        // Parse the feature and convert it to the correct format
-                        Feature feature = parser.Parse(reader, featureFile).ConvertToFeature();
-                        feature.Product = "SomeProduct";
-
-                        // Get the uri to which the feature should be published
-                        string targetUri = GetFeatureUri(groupUri, feature.Title);
-
-                        // Publish the feature
-                        var postTask = client.PostAsJsonAsync<Feature>(targetUri, feature);
-                        postTask.Wait();
-
-                        // Process the result
-                        if (postTask.Result.IsSuccessStatusCode)
+                        using (TextReader reader = File.OpenText(featureFile))
                         {
-                            Console.WriteLine("Succesfully published feature '{0}' to group {1} for branch {2}.",
-                                              feature.Title,
-                                              _options.GroupName ?? "Default",
-                                              _options.BranchName);
+                            // Parse the feature and convert it to the correct format
+                            Feature feature = parser.Parse(reader, featureFile).ConvertToFeature();
 
-                        }
-                        else
-                        {
-                            Console.Error.WriteLine("Publishing feature '{0}' to uri '{1}' resulted in statuscode '{2}'",
-                                                    feature.Title,
-                                                    targetUri,
-                                                    postTask.Result.StatusCode);
+                            // Get the uri to which the feature should be published
+                            string targetUri = $"{groupUri}/{feature.Title}";
+
+                            // Publish the feature
+                            var postTask = client.PostAsJsonAsync<Feature>(targetUri, feature);
+                            postTask.Wait();
+
+                            // Process the result
+                            if (postTask.Result.IsSuccessStatusCode)
+                            {
+                                Console.WriteLine("Succesfully published feature '{0}' to group {1} for branch {2}.",
+                                                  feature.Title,
+                                                  _options.GroupName ?? "Default",
+                                                  _options.BranchName);
+
+                            }
+                            else
+                            {
+                                Console.Error.WriteLine("Publishing feature '{0}' to uri '{1}' resulted in statuscode '{2}'",
+                                                        feature.Title,
+                                                        targetUri,
+                                                        postTask.Result.StatusCode);
+                            }
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    Console.Error.WriteLine(e.ToString());
+                    catch (Exception e)
+                    {
+                        Console.Error.WriteLine(e.ToString());
+                    }
                 }
             }
         }
 
-        private string GetGroupUri()
+        private void ExecuteUsingV2Api()
         {
-            return String.Format(CultureInfo.InvariantCulture,
-                                 "{0}/api/features/{1}/{2}",
-                                 _options.AugurkUrl.TrimEnd('/'),
-                                 _options.BranchName,
-                                 _options.GroupName ?? "Default");
-        }
+            // Instantiate a new parser, using the provided language
+            SpecFlowLangParser parser = new SpecFlowLangParser(new CultureInfo(_options.Language ?? "en-US"));
+            using (var client = new HttpClient())
+            {
+                // Get the base uri for all further operations
+                string groupUri = $"{_options.AugurkUrl.TrimEnd('/')}/api/v2/products/{_options.ProductName}/groups/{_options.GroupName}/features";
 
-        private string GetFeatureUri(string groupUri, string featureTitle)
-        {
-            return String.Format(CultureInfo.InvariantCulture,
-                                 "{0}/{1}",
-                                 groupUri,
-                                 featureTitle);
+                // Parse and publish each of the provided feature files
+                foreach (var featureFile in _options.FeatureFiles)
+                {
+                    try
+                    {
+                        using (TextReader reader = File.OpenText(featureFile))
+                        {
+                            // Parse the feature and convert it to the correct format
+                            Feature feature = parser.Parse(reader, featureFile).ConvertToFeature();
+
+                            // Get the uri to which the feature should be published
+                            string targetUri = $"{groupUri}/{feature.Title}/versions/{_options.Version}/";
+
+                            // Publish the feature
+                            var postTask = client.PostAsJsonAsync<Feature>(targetUri, feature);
+                            postTask.Wait();
+
+                            // Process the result
+                            if (postTask.Result.IsSuccessStatusCode)
+                            {
+                                Console.WriteLine($"Succesfully published feature '{feature.Title}' version '{_options.Version}' for product '{_options.ProductName}' to group '{_options.GroupName}'.");
+                            }
+                            else
+                            {
+                                Console.Error.WriteLine($"Publishing feature '{feature.Title}' version '{_options.Version}' to uri '{targetUri}' resulted in statuscode '{postTask.Result.StatusCode}'");
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.Error.WriteLine(e.ToString());
+                    }
+                }
+            }
         }
     }
 }

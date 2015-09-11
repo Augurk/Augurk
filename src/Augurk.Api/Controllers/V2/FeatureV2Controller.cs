@@ -40,10 +40,11 @@ namespace Augurk.Api.Controllers.V2
         /// <param name="productName">Name of the product that the feature belongs to.</param>
         /// <param name="groupName">Name of the group that the feature belongs to.</param>
         /// <param name="title">Title of the feature.</param>
+        /// <param name="version">Version of feature.</param>
         /// <returns>Returns a reponse message indicating whether saving the feature succeeded.</returns>
-        [Route("{title}")]
+        [Route("{title}/versions/{version}")]
         [HttpPost]
-        public async Task<HttpResponseMessage> PostAsync(Feature feature, string productName, string groupName, string title)
+        public async Task<HttpResponseMessage> PostAsync(Feature feature, string productName, string groupName, string title, string version)
         {
             if (!feature.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
             {
@@ -54,7 +55,7 @@ namespace Augurk.Api.Controllers.V2
 
             try
             {
-                await _featureManager.InsertOrUpdateFeatureAsync(feature, productName, groupName, null);
+                await _featureManager.InsertOrUpdateFeatureAsync(feature, productName, groupName, null, version);
             }
             catch (Exception exception)
             {
