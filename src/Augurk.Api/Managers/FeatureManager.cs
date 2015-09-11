@@ -47,11 +47,11 @@ namespace Augurk.Api.Managers
         /// A <see cref="DisplayableFeature"/> instance describing the requested feature; 
         /// or <c>null</c> if the feature cannot be found.
         /// </returns>
-        public async Task<DisplayableFeature> GetFeatureAsync(string branchName, string groupName, string title)
+        public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string title, string branchName)
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(branchName, groupName, title));
+                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, title, branchName));
 
                 if (dbFeature == null)
                 {
@@ -262,12 +262,12 @@ namespace Augurk.Api.Managers
             }
         }
 
-        public async Task InsertOrUpdateFeatureAsync(Feature feature, string branchName, string groupName)
+        public async Task InsertOrUpdateFeatureAsync(Feature feature, string productName, string groupName, string branchName)
         {
             var processor = new FeatureProcessor();
             string parentTitle = processor.DetermineParent(feature);
 
-            DbFeature dbFeature = new DbFeature(feature, branchName, groupName, parentTitle);
+            DbFeature dbFeature = new DbFeature(feature, productName, groupName, parentTitle, branchName);
 
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
@@ -277,11 +277,11 @@ namespace Augurk.Api.Managers
             }
         }
 
-        public async Task PersistFeatureTestResultAsync(FeatureTestResult testResult, string branchName, string groupName)
+        public async Task PersistFeatureTestResultAsync(FeatureTestResult testResult, string productName, string groupName, string branchName)
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(branchName, groupName, testResult.FeatureTitle));
+                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, testResult.FeatureTitle, branchName));
 
                 if (dbFeature == null)
                 {
@@ -298,12 +298,12 @@ namespace Augurk.Api.Managers
             }
         }
 
-        public async Task DeleteFeatureAsync(string branchName, string groupName, string title)
+        public async Task DeleteFeatureAsync(string productName, string groupName, string title, string branchName)
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
                 // The delete method only marks the entity with the provided id for deletion, as such it is not asynchronous
-                session.Delete(DbFeatureExtensions.GetIdentifier(branchName, groupName, title));
+                session.Delete(DbFeatureExtensions.GetIdentifier(productName, groupName, title, branchName));
 
                 await session.SaveChangesAsync();
             }

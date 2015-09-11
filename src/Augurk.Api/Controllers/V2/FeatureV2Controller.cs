@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -29,6 +31,37 @@ namespace Augurk.Api.Controllers.V2
         public async Task<IEnumerable<FeatureDescription>> GetAsync(string productName, string groupName)
         {
             return await _featureManager.GetFeatureDescriptionsByProductAndGroupAsync(productName, groupName);
+        }
+
+        /// <summary>
+        /// Saves a new feature into the database.
+        /// </summary>
+        /// <param name="feature">A <see cref="Feature"/> instance to save.</param>
+        /// <param name="productName">Name of the product that the feature belongs to.</param>
+        /// <param name="groupName">Name of the group that the feature belongs to.</param>
+        /// <param name="title">Title of the feature.</param>
+        /// <returns>Returns a reponse message indicating whether saving the feature succeeded.</returns>
+        [Route("{title}")]
+        [HttpPost]
+        public async Task<HttpResponseMessage> PostAsync(Feature feature, string productName, string groupName, string title)
+        {
+            if (!feature.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "The title provided by the POST data and the title in uri do not match!");
+            }
+
+            var response = Request.CreateResponse(HttpStatusCode.Created);
+
+            try
+            {
+                await _featureManager.InsertOrUpdateFeatureAsync(feature, productName, groupName, null);
+            }
+            catch (Exception exception)
+            {
+                response = Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exception);
+            }
+
+            return response;
         }
     }
 }

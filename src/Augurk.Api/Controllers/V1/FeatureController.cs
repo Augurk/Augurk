@@ -28,6 +28,7 @@ namespace Augurk.Api.Controllers
 {
     public class FeatureController : ApiController
     {
+        private const string UNKNOWN_PRODUCT = "Unknown Product";
         private readonly FeatureManager _featureManager = new FeatureManager();
 
         [Route("api/features/{branchName}")]
@@ -42,7 +43,7 @@ namespace Augurk.Api.Controllers
         public async Task<DisplayableFeature> GetAsync(string branchName, string groupName, string title)
         {
             // Get the feature from storage
-            DisplayableFeature feature = await _featureManager.GetFeatureAsync(branchName, groupName, title);
+            DisplayableFeature feature = await _featureManager.GetFeatureAsync(UNKNOWN_PRODUCT, groupName, title, branchName);
 
             return feature;
         }
@@ -60,7 +61,7 @@ namespace Augurk.Api.Controllers
 
             try
             {
-                await _featureManager.InsertOrUpdateFeatureAsync(feature, branchName, groupName);
+                await _featureManager.InsertOrUpdateFeatureAsync(feature, UNKNOWN_PRODUCT, groupName, branchName);
             }
             catch (Exception exception)
             {
@@ -91,7 +92,7 @@ namespace Augurk.Api.Controllers
 
             try
             {
-                await _featureManager.PersistFeatureTestResultAsync(testResult, branchName, groupName);
+                await _featureManager.PersistFeatureTestResultAsync(testResult, UNKNOWN_PRODUCT, groupName, branchName);
             }
             catch (Exception exception)
             {
@@ -119,7 +120,7 @@ namespace Augurk.Api.Controllers
         [HttpDelete]
         public async Task DeleteAsync(string branchName, string groupName, string title)
         {
-            await _featureManager.DeleteFeatureAsync(branchName, groupName, title);
+            await _featureManager.DeleteFeatureAsync(UNKNOWN_PRODUCT, groupName, title, branchName);
         }
     }
 }

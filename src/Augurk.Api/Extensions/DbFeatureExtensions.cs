@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+using Augurk.Api.Managers;
 using System;
 using System.Globalization;
 using System.Security.Cryptography;
@@ -25,13 +26,13 @@ namespace Augurk.Api
     {
         public static string GetIdentifier(this DbFeature feature)
         {
-            return GetIdentifier(feature.Branch, feature.Group, feature.Title);
+            return GetIdentifier(feature.Product, feature.Group, feature.Title, feature.Branch ?? "unknown");
         }
 
-        public static string GetIdentifier(string branch, string group, string title)
+        public static string GetIdentifier(string product, string branch, string group, string title)
         {
 
-            string combinedTitle = String.Join("/", branch.ToLowerInvariant(), group.ToLowerInvariant(), title.ToLowerInvariant());
+            string combinedTitle = String.Join("/", product.ToLowerInvariant(), group.ToLowerInvariant(), title.ToLowerInvariant(), branch.ToLowerInvariant());
 
             using (var cryptoServiceProvider = new MD5CryptoServiceProvider())
             {
