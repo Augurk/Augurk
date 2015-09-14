@@ -15,11 +15,11 @@ namespace Augurk.Api.Controllers.V2
     [RoutePrefix("api/v2/products")]
     public class ProductsController : ApiController
     {
-        private readonly ProductsManager _productsManager = new ProductsManager();
+        private readonly ProductManager _productsManager = new ProductManager();
 
         [Route("")]
         [HttpGet]
-        public async Task<IEnumerable<Product>> GetProducts()
+        public async Task<IEnumerable<string>> GetProducts()
         {
             return await _productsManager.GetProductsAsync();
         }

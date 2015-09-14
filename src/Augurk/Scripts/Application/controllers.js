@@ -47,16 +47,17 @@ AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$rou
     }
 ]);
 
-AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeParams', 'featureDescriptionService', 'branchService',
-    function ($rootScope, $scope, $routeParams, featureDescriptionService, branchService) {
+AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeParams', 'featureDescriptionService', 'productService',
+    function ($rootScope, $scope, $routeParams, featureDescriptionService, productService) {
 
-        function createMenu(currentBranch) {
-            featureDescriptionService.getFeaturesByBranch(currentBranch,
+        function createMenu(currentProduct) {
+            featureDescriptionService.getGroupsByProduct(currentProduct,
                 function (groups) {
-                    $rootScope.featureGroups = processFeatureGroups(currentBranch, groups);
+                    $rootScope.featureGroups = processFeatureGroups(currentProduct, groups);
                 }
             );
 
+            /*
             branchService.getTags(currentBranch).then(function (tags) {
                 $scope.tags = $.makeArray();
                 $.each(tags, function (index, tag) {
@@ -64,6 +65,7 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
                 })
                 $scope.filter.tags = $.makeArray();
             });
+            */
         }
 
         $scope.tags = $.makeArray();
@@ -104,39 +106,39 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
             }
         };
 
-        if (branchService.currentBranch) {
-            createMenu(branchService.currentBranch);
+        if (productService.currentProduct) {
+            createMenu(productService.currentProduct);
         }
 
-        $rootScope.$on('currentBranchChanged', function (event, data) {
-            createMenu(data.branch);
+        $rootScope.$on('currentProductChanged', function (event, data) {
+            createMenu(data.product);
         });
     }
 ]);
 
-AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'branchService',
-    function ($rootScope, $scope, branchService) {
+AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'productService',
+    function ($rootScope, $scope, productService) {
 
-        $scope.currentBranch = branchService.currentBranch;
-        $scope.$on('currentBranchChanged', function (event, data) {
-            $rootScope.currentBranch = data.branch;
+        $scope.currentProduct = productService.currentProduct;
+        $scope.$on('currentProductChanged', function (event, data) {
+            $rootScope.currentProduct = data.product;
         });
 
-        branchService.branches.then(function (branches) {
-            $scope.branches = branches;
+        productService.products.then(function (products) {
+            $scope.products = products;
         });
     }
 ]);
 
-function processFeatureGroups(branchName, groups) {
+function processFeatureGroups(productName, groups) {
     $.each(groups, function (index, group) {
-        group.features = getFlatList(branchName, group.name, group.features, 1, null);
+        group.features = getFlatList(productName, group.name, group.features, 1, null);
     });
 
     return groups;
 }
 
-function getFlatList(branchName, groupName, featureTree, level, parentTitle) {
+function getFlatList(productName, groupName, featureTree, level, parentTitle) {
     var featureList = $.makeArray();
     $.each(featureTree, function (index, feature) {
         featureList.push({
@@ -144,11 +146,11 @@ function getFlatList(branchName, groupName, featureTree, level, parentTitle) {
             level: level,
             parentTitle: parentTitle,
             hasChildren: (feature.childFeatures && feature.childFeatures.length > 0),
-            uri: '#feature/' + branchName + '/' + groupName + '/' + feature.title
+            uri: '#feature/' + productName + '/' + groupName + '/' + feature.title
         });
 
         if (feature.childFeatures) {
-            $.merge(featureList, getFlatList(branchName, groupName, feature.childFeatures, Math.min(level + 1, 5), feature.title));
+            $.merge(featureList, getFlatList(productName, groupName, feature.childFeatures, Math.min(level + 1, 5), feature.title));
         }
     });
 

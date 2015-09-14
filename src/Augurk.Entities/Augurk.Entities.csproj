@@ -46,7 +46,6 @@
     <Compile Include="FeatureDescription.cs" />
     <Compile Include="FeatureOptions.cs" />
     <Compile Include="Group.cs" />
-    <Compile Include="Product.cs" />
     <Compile Include="StepKeyword.cs" />
     <Compile Include="BlockKeyword.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -23,10 +23,10 @@ function ($routeProvider, $locationProvider) {
         .when('/home', {
             templateUrl: 'templates/home.html'
         })
-        .when('/home/:branchName', {
+        .when('/home/:productName', {
             templateUrl: 'templates/home.html'
         })
-        .when('/feature/:branchName/:groupName/:featureName', {
+        .when('/feature/:productName/:groupName/:featureName', {
             templateUrl: 'templates/feature.html',
             controller: 'featureController'
         })

@@ -27,19 +27,16 @@ namespace Augurk.Api.Managers
     /// <summary>
     /// Provides methods for retrieving products from storage.
     /// </summary>
-    public class ProductsManager
+    public class ProductManager
     {
-        public async Task<IEnumerable<Product>> GetProductsAsync()
+        public async Task<IEnumerable<string>> GetProductsAsync()
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                var products = await session.Query<DbFeature, Features_ByTitleProductAndGroup>().ToListAsync();
-                return products.GroupBy(feature => feature.Product)
-                               .Select(group => new Product
-                               {
-                                   Name = group.Key,
-                                   GroupNames = group.Select(feature => feature.Group).ToList()
-                               });
+                return await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                                    .Select(feature => feature.Product)
+                                    .Distinct()
+                                    .ToListAsync();
             }
         }
     }

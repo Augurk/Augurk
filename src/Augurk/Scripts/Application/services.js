@@ -36,6 +36,11 @@ AugurkServices.factory('featureDescriptionService', ['$resource', function ($res
         getFeaturesByBranchAndTag: function (branch, tag, callback) {
             $resource('api/tags/:branchName/:tag/features', { branchName: '@branchName', tag: '@tag' })
                 .query({ branchName: branch, tag: tag }, callback);
+        },
+
+        getGroupsByProduct: function (product, callback) {
+            $resource('api/v2/products/:productName/groups', { productName: '@productName' })
+                .query({ productName: product }, callback);
         }
     };
     
@@ -84,6 +89,45 @@ AugurkServices.factory('branchService', ['$http', '$q', '$routeParams', '$rootSc
             $routeParams.branchName != service.currentBranch) {
             service.currentBranch = $routeParams.branchName;
             $rootScope.$broadcast('currentBranchChanged', { branch: service.currentBranch });
+        }
+    });
+
+    return service;
+}]);
+
+AugurkServices.factory('productService', ['$http', '$q', '$routeParams', '$rootScope', function ($http, $q, $routeParams, $rootScope) {
+
+    // create the service
+    var service = {
+        products: null,
+        currentProduct: null
+    };
+
+    // since AngularJS' $resource does not support primitive types, use $http instead.
+    var productsPromiseDeferrer = $q.defer();
+    $http({ method: 'GET', url: 'api/v2/products' }).then(function (response) {
+        productsPromiseDeferrer.resolve(response.data);
+    });
+
+    service.products = productsPromiseDeferrer.promise;
+
+    // set the current product
+    if ($routeParams.productName) {
+        service.currentProduct = $routeParams.productName;
+    }
+    else {
+        productsPromiseDeferrer.promise.then(function (products) {
+            service.currentProduct = products[0];
+            $rootScope.$broadcast('currentProductChanged', { product: service.currentProduct });
+        });
+    }
+
+    // update the product on navigation
+    $rootScope.$on('$routeChangeSuccess', function () {
+        if ($routeParams.productName &&
+            $routeParams.productName != service.currentProduct) {
+            service.currentProduct = $routeParams.productName;
+            $rootScope.$broadcast('currentProductChanged', { product: service.currentProduct });
         }
     });
 

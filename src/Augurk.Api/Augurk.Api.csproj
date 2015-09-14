@@ -95,7 +95,7 @@
     <Compile Include="Indeces\IndexHelper.cs" />
     <Compile Include="Managers\BranchManager.cs" />
     <Compile Include="Managers\FeatureManager.cs" />
-    <Compile Include="Managers\ProductsManager.cs" />
+    <Compile Include="Managers\ProductManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
