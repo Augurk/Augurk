@@ -19,8 +19,8 @@ var AugurkServices = angular.module('AugurkServices', ['ngResource', 'ngRoute'])
 AugurkServices.factory('featureService', ['$resource', function ($resource) {
     // The featurename might contain a period, which webapi only allows if you finish with a slash
     // Since AngularJS doesn't allow for trailing slashes, use a backslash instead
-    return $resource('api/v2/products/:productName/groups/:groupName/features/:featureName\\',
-                     { productName: '@productName', groupName: '@groupName', featureName: '@featureName' });
+    return $resource('api/v2/products/:productName/groups/:groupName/features/:featureName/versions/:version\\',
+                     { productName: '@productName', groupName: '@groupName', featureName: '@featureName', version: '@version' });
 }]);
 
 AugurkServices.factory('featureDescriptionService', ['$resource', function ($resource) {
@@ -44,6 +44,49 @@ AugurkServices.factory('featureDescriptionService', ['$resource', function ($res
         }
     };
     
+    return service;
+}]);
+
+AugurkServices.factory('featureVersionService', ['$http', '$q', '$routeParams', '$rootScope', function ($http, $q, $routeParams, $rootScope) {
+    // create the service
+    var service = {
+        versions: null,
+        currentVersion: null
+    };
+
+    var versionsPromiseDeferrer = $q.defer();
+    $http({ method: 'GET', url: 'api/v2/products/' + $routeParams.productName + '/groups/' + $routeParams.groupName + '/features/' + $routeParams.featureName + '/versions' }).then(function (response) {
+        versionsPromiseDeferrer.resolve(response.data);
+    });
+
+    service.versions = versionsPromiseDeferrer.promise;
+
+    // set the current version
+    if ($routeParams.version) {
+        service.currentVersion = $routeParams.version;
+    } else {
+        versionsPromiseDeferrer.promise.then(function (versions) {
+            service.currentVersion = versions[0];
+            $rootScope.$broadcast('currentVersionChanged', { version: service.currentVersion });
+        });
+    }
+
+    // update the version on navigation
+    $rootScope.$on('$routeChangeSuccess', function () {
+        if ($routeParams.version && $routeParams.version != service.currentVersion) {
+            service.currentVersion = $routeParams.version;
+
+            var versionsPromiseDeferrer = $q.defer();
+            $http({ method: 'GET', url: 'api/v2/products/' + $routeParams.productName + '/groups/' + $routeParams.groupName + '/features/' + $routeParams.featureName + '/versions' }).then(function (response) {
+                versionsPromiseDeferrer.resolve(response.data);
+            });
+
+            service.versions = versionsPromiseDeferrer.promise;
+
+            $rootScope.$broadcast('currentVersionChanged', { product: service.currentVersion });
+        }
+    });
+
     return service;
 }]);
 

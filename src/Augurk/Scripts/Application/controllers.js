@@ -16,13 +16,23 @@
 
 var AugurkControllers = angular.module('AugurkControllers', ['AugurkServices']);
 
-AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$routeParams', 'featureService',
-    function ($rootScope, $scope, $routeParams, featureService) {
+AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$routeParams', 'featureService', 'featureVersionService',
+    function ($rootScope, $scope, $routeParams, featureService, featureVersionService) {
         $scope.feature = featureService.get({
             productName: $routeParams.productName,
             groupName: $routeParams.groupName,
-            featureName: $routeParams.featureName
+            featureName: $routeParams.featureName,
+            version: $routeParams.version
         });
+
+        $rootScope.$on('currentVersionChanged', function (event, data) {
+            featureVersionService.versions.then(function (data) {
+                $scope.availableVersions = data;
+            })
+        });
+
+        $scope.product = $routeParams.productName
+        $scope.group = $routeParams.groupName
 
         // Set the current group on the rootscope
         $rootScope.currentGroupName = $routeParams.groupName;
@@ -146,7 +156,7 @@ function getFlatList(productName, groupName, featureTree, level, parentTitle) {
             level: level,
             parentTitle: parentTitle,
             hasChildren: (feature.childFeatures && feature.childFeatures.length > 0),
-            uri: '#feature/' + productName + '/' + groupName + '/' + feature.title
+            uri: '#feature/' + productName + '/' + groupName + '/' + feature.title + '/' + feature.latestVersion
         });
 
         if (feature.childFeatures) {

@@ -34,17 +34,32 @@ namespace Augurk.Api.Controllers.V2
         }
 
         /// <summary>
+        /// Gets the available versions of a feature.
+        /// </summary>
+        /// <param name="productName">Name of the product to which the feature belongs.</param>
+        /// <param name="groupName">Name of the group to which the feature belongs.</param>
+        /// <param name="featureTitle">Title of the feature to get the available versions for.</param>
+        /// <returns>Returns a range of versions available for the requested feature.</returns>
+        [Route("{featureTitle}/versions")]
+        [HttpGet]
+        public async Task<IEnumerable<string>> GetFeatureVersions(string productName, string groupName, string featureTitle)
+        {
+            return await _featureManager.GetFeatureAvailableVersions(productName, groupName, featureTitle);
+        }
+
+        /// <summary>
         /// Gets a specific feature.
         /// </summary>
         /// <param name="productName">Name of the product to which the feature belongs.</param>
         /// <param name="groupName">Name of the group to which the feature belongs.</param>
         /// <param name="featureTitle">Title of the feature.</param>
+        /// <param name="version">Version of the feature to get.</param>
         /// <returns>Returns a <see cref="DisplayableFeature"/>.</returns>
-        [Route("{featureTitle}")]
+        [Route("{featureTitle}/versions/{version}")]
         [HttpGet]
-        public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string featureTitle)
+        public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string featureTitle, string version)
         {
-            return await _featureManager.GetFeatureAsync(productName, groupName, featureTitle, "1.0.0");
+            return await _featureManager.GetFeatureAsync(productName, groupName, featureTitle, version);
         }
 
         /// <summary>

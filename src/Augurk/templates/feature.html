@@ -20,13 +20,13 @@
 
 <h3>{{feature.title}}</h3>
 
-<div class="dropdown">
+<div class="dropdown" ng-hide="feature.version=='0.0.0'">
     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownVersion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         {{feature.version}}
         <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownVersion">
-        <li ng-repeat="version in feature.availableVersions | orderBy:'-'"><a href="#">{{version}}</a></li>
+        <li ng-repeat="version in availableVersions"><a href="#/feature/{{product}}/{{group}}/{{feature.title}}/{{version}}">{{version}}</a></li>
     </ul>
 </div>
 

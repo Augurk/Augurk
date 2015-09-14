@@ -29,9 +29,9 @@ namespace Augurk.Entities
         public string Title { get; set; }
 
         /// <summary>
-        /// Gets or sets the version of this feature.
+        /// Gets or sets the latest version available of this feature.
         /// </summary>
-        public string Version { get; set; }
+        public string LatestVersion { get; set; }
 
         /// <summary>
         /// Gets or sets an enumerable collection of the descriptions of the child features of this feature.

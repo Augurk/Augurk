@@ -31,11 +31,6 @@ namespace Augurk.Entities
         public string Version { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of available versions for this feature.
-        /// </summary>
-        public IEnumerable<string> AvailableVersions { get; set; }
-
-        /// <summary>
         /// Gets or sets the properties for this feature.
         /// </summary>
         public FeatureProperties Properties { get; set; }
