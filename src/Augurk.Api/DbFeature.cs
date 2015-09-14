@@ -26,12 +26,6 @@ namespace Augurk.Api
     public class DbFeature : Feature
     {
         /// <summary>
-        /// Gets or sets the branch this feature falls under.
-        /// </summary>
-        [Obsolete("Support for branches will be dropped in a future version.")]
-        public string Branch { get; set; }
-
-        /// <summary>
         /// Gets or sets the product to which this feature belongs.
         /// </summary>
         public string Product { get; set; }
@@ -70,13 +64,11 @@ namespace Augurk.Api
         /// <param name="feature">The <see cref="Feature"/>that should be used when determining the the initial values.</param>
         /// <param name="group">The group this feature falls under.</param>
         /// <param name="parentTitle">The title of the parent feature.</param>
-        /// <param name="branch">The branch this feature falls under.</param>
         /// <param name="version">Version of the feature.</param>
         /// <remarks>This constructor does not wrap the provided feature, it will result in an actual copy with shared scenarios and a shared background.</remarks>
-        public DbFeature(Feature feature, string product, string group, string parentTitle, string branch, string version)
+        public DbFeature(Feature feature, string product, string group, string parentTitle, string version)
         {
             Product = product;
-            Branch = branch;
             Group = group;
             Version = version;
             ParentTitle = parentTitle;

@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 using Raven.Client;
 using Raven.Client.Linq;
 using Augurk.Api.Indeces;
-using Augurk.Entities;
+using System;
 
 namespace Augurk.Api.Managers
 {
@@ -29,12 +29,33 @@ namespace Augurk.Api.Managers
     /// </summary>
     public class ProductManager
     {
+        /// <summary>
+        /// Gets all available products.
+        /// </summary>
+        /// <returns>Returns a range of product names.</returns>
         public async Task<IEnumerable<string>> GetProductsAsync()
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
                 return await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
                                     .Select(feature => feature.Product)
+                                    .Distinct()
+                                    .ToListAsync();
+            }
+        }
+
+        /// <summary>
+        /// Gets all available tags for the provided <paramref name="productName">product</paramref>.
+        /// </summary>
+        /// <param name="productName">Name of the product to get the available tags for.</param>
+        /// <returns>Returns a range of tags for the provided <paramref name="productName">product</paramref>.</returns>
+        public async Task<IEnumerable<string>> GetTagsAsync(string productName)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                return await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
+                                    .Where(feature => feature.Product.Equals(productName, StringComparison.CurrentCultureIgnoreCase))
+                                    .Select(feature => feature.Tag)
                                     .Distinct()
                                     .ToListAsync();
             }

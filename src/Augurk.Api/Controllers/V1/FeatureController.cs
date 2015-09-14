@@ -28,7 +28,6 @@ namespace Augurk.Api.Controllers
 {
     public class FeatureController : ApiController
     {
-        private const string UNKNOWN_PRODUCT = "Unknown Product";
         private const string UNKNOWN_VERSION = "0.0.0";
         private readonly FeatureManager _featureManager = new FeatureManager();
 
@@ -36,7 +35,8 @@ namespace Augurk.Api.Controllers
         [HttpGet]
         public async Task<IEnumerable<Group>> GetAsync(string branchName)
         {
-            return await _featureManager.GetGroupedByBranchFeatureDescriptionsAsync(branchName);
+            // NOTE: Using the branchName as product name because of backwards compatability
+            return await _featureManager.GetGroupedFeatureDescriptionsAsync(branchName);
         }
 
         [Route("api/features/{branchName}/{groupName}/{title}")]
@@ -44,7 +44,8 @@ namespace Augurk.Api.Controllers
         public async Task<DisplayableFeature> GetAsync(string branchName, string groupName, string title)
         {
             // Get the feature from storage
-            DisplayableFeature feature = await _featureManager.GetFeatureAsync(UNKNOWN_PRODUCT, groupName, title, branchName, null);
+            // NOTE: Using the branchName as product name because of backwards compatability
+            DisplayableFeature feature = await _featureManager.GetFeatureAsync(branchName, groupName, title, UNKNOWN_VERSION);
 
             return feature;
         }
@@ -62,7 +63,8 @@ namespace Augurk.Api.Controllers
 
             try
             {
-                await _featureManager.InsertOrUpdateFeatureAsync(feature, UNKNOWN_PRODUCT, groupName, branchName, UNKNOWN_VERSION);
+                // NOTE: Using the branchName as product name because of backwards compatability
+                await _featureManager.InsertOrUpdateFeatureAsync(feature, branchName, groupName, UNKNOWN_VERSION);
             }
             catch (Exception exception)
             {
@@ -93,7 +95,7 @@ namespace Augurk.Api.Controllers
 
             try
             {
-                await _featureManager.PersistFeatureTestResultAsync(testResult, UNKNOWN_PRODUCT, groupName, branchName);
+                await _featureManager.PersistFeatureTestResultAsync(testResult, branchName, groupName, UNKNOWN_VERSION);
             }
             catch (Exception exception)
             {
@@ -121,7 +123,7 @@ namespace Augurk.Api.Controllers
         [HttpDelete]
         public async Task DeleteAsync(string branchName, string groupName, string title)
         {
-            await _featureManager.DeleteFeatureAsync(UNKNOWN_PRODUCT, groupName, title, branchName);
+            await _featureManager.DeleteFeatureAsync(branchName, groupName, title, UNKNOWN_VERSION);
         }
     }
 }

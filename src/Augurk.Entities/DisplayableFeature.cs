@@ -25,6 +25,11 @@ namespace Augurk.Entities
     public class DisplayableFeature : Feature
     {
         /// <summary>
+        /// Gets or sets the version of this feature.
+        /// </summary>
+        public string Version { get; set; }
+
+        /// <summary>
         /// Gets or sets the properties for this feature.
         /// </summary>
         public FeatureProperties Properties { get; set; }

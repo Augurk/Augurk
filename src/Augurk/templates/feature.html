@@ -18,7 +18,7 @@
 <span class="glyphicon glyphicon-tag" ng-show="feature.tags.length == 1"></span>
 <span class="tag" ng-repeat="tag in feature.tags">{{tag}}</span>
 
-<h3>{{feature.title}}</h3>
+<h3>{{feature.title}}</h3><h6>({{feature.version}})</h6>
 
 <div class="panel panel-warning" ng-show="feature.properties.indexOf('NotImplemented') >= 0">
     <div class="panel-heading">

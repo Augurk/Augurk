@@ -47,54 +47,6 @@ AugurkServices.factory('featureDescriptionService', ['$resource', function ($res
     return service;
 }]);
 
-AugurkServices.factory('branchService', ['$http', '$q', '$routeParams', '$rootScope', function ($http, $q, $routeParams, $rootScope) {
-
-    // create the service
-    var service = {
-        branches: null,
-        currentBranch: null
-    };
-
-    // since AngularJS' $resource does not support primitive types, use $http instead.
-    var branchesPromiseDeferrer = $q.defer();
-    $http({ method: 'GET', url: 'api/branches' }).then(function (response) {
-        branchesPromiseDeferrer.resolve(response.data);
-    });
-
-    service.branches = branchesPromiseDeferrer.promise;
-
-    service.getTags = function (branch) {
-        var tagsPromiseDeferrer = $q.defer();
-        $http({ method: 'GET', url: 'api/tags/' + branch }).then(function (response) {
-            tagsPromiseDeferrer.resolve(response.data);
-        });
-
-        return tagsPromiseDeferrer.promise;
-    }
-
-    // set the current branch
-    if ($routeParams.branchName) {
-        service.currentBranch = $routeParams.branchName;
-    }
-    else {
-        branchesPromiseDeferrer.promise.then(function (branches) {
-            service.currentBranch = branches[0];
-            $rootScope.$broadcast('currentBranchChanged', { branch: service.currentBranch });
-        });
-    }
-
-    // update the branch on navigation
-    $rootScope.$on('$routeChangeSuccess', function () {
-        if ($routeParams.branchName &&
-            $routeParams.branchName != service.currentBranch) {
-            service.currentBranch = $routeParams.branchName;
-            $rootScope.$broadcast('currentBranchChanged', { branch: service.currentBranch });
-        }
-    });
-
-    return service;
-}]);
-
 AugurkServices.factory('productService', ['$http', '$q', '$routeParams', '$rootScope', function ($http, $q, $routeParams, $rootScope) {
 
     // create the service
