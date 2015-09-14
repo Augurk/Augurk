@@ -44,7 +44,7 @@ namespace Augurk.Api.Controllers
         public async Task<DisplayableFeature> GetAsync(string branchName, string groupName, string title)
         {
             // Get the feature from storage
-            DisplayableFeature feature = await _featureManager.GetFeatureAsync(UNKNOWN_PRODUCT, groupName, title, branchName);
+            DisplayableFeature feature = await _featureManager.GetFeatureAsync(UNKNOWN_PRODUCT, groupName, title, branchName, null);
 
             return feature;
         }

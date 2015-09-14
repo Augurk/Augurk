@@ -32,7 +32,7 @@ namespace Augurk.Api
         public static string GetIdentifier(string product, string group, string title, string branchName, string version)
         {
 
-            string combinedTitle = String.Join("/", product.ToLowerInvariant(), group.ToLowerInvariant(), title.ToLowerInvariant(), (branchName ?? version).ToLowerInvariant());
+            string combinedTitle = String.Join("/", product.ToLowerInvariant(), group.ToLowerInvariant(), title.ToLowerInvariant(), branchName?.ToLowerInvariant() ?? "unknown");
 
             using (var cryptoServiceProvider = new MD5CryptoServiceProvider())
             {

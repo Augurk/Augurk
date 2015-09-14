@@ -29,9 +29,23 @@ namespace Augurk.Api.Controllers.V2
         /// <returns>Returns a range of <see cref="FeatureDescription"/> instance describing the features.</returns>
         [Route("")]
         [HttpGet]
-        public async Task<IEnumerable<FeatureDescription>> GetAsync(string productName, string groupName)
+        public async Task<IEnumerable<FeatureDescription>> GetFeaturesForProductAndGroupAsync(string productName, string groupName)
         {
             return await _featureManager.GetFeatureDescriptionsByProductAndGroupAsync(productName, groupName);
+        }
+
+        /// <summary>
+        /// Gets a specific feature.
+        /// </summary>
+        /// <param name="productName">Name of the product to which the feature belongs.</param>
+        /// <param name="groupName">Name of the group to which the feature belongs.</param>
+        /// <param name="featureTitle">Title of the feature.</param>
+        /// <returns>Returns a <see cref="DisplayableFeature"/>.</returns>
+        [Route("{featureTitle}")]
+        [HttpGet]
+        public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string featureTitle)
+        {
+            return await _featureManager.GetFeatureAsync(productName, groupName, featureTitle, null, "1.0.0");
         }
 
         /// <summary>

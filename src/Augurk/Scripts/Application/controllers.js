@@ -19,7 +19,7 @@ var AugurkControllers = angular.module('AugurkControllers', ['AugurkServices']);
 AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$routeParams', 'featureService',
     function ($rootScope, $scope, $routeParams, featureService) {
         $scope.feature = featureService.get({
-            branchName: $routeParams.branchName,
+            productName: $routeParams.productName,
             groupName: $routeParams.groupName,
             featureName: $routeParams.featureName
         });

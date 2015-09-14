@@ -19,8 +19,8 @@ var AugurkServices = angular.module('AugurkServices', ['ngResource', 'ngRoute'])
 AugurkServices.factory('featureService', ['$resource', function ($resource) {
     // The featurename might contain a period, which webapi only allows if you finish with a slash
     // Since AngularJS doesn't allow for trailing slashes, use a backslash instead
-    return $resource('api/features/:branchName/:groupName/:featureName\\',
-                     { branchName: '@branchName', groupName: '@groupName', featureName: '@featureName' });
+    return $resource('api/v2/products/:productName/groups/:groupName/features/:featureName\\',
+                     { productName: '@productName', groupName: '@groupName', featureName: '@featureName' });
 }]);
 
 AugurkServices.factory('featureDescriptionService', ['$resource', function ($resource) {

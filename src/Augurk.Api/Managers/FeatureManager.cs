@@ -40,18 +40,20 @@ namespace Augurk.Api.Managers
         /// <summary>
         /// Gets the feature that matches the provided criteria.
         /// </summary>
-        /// <param name="branchName">The name of the branch in which the feature exists.</param>
+        /// <param name="productName">The name of the product under which the feature is positioned.</param>
         /// <param name="groupName">The name of the group under which the feature is positioned.</param>
         /// <param name="title">The title of the feature.</param>
+        /// <param name="branchName">The name of the branch in which the feature exists.</param>
+        /// <param name="version">Version of the feature to retrieve.</param>
         /// <returns>
         /// A <see cref="DisplayableFeature"/> instance describing the requested feature; 
         /// or <c>null</c> if the feature cannot be found.
         /// </returns>
-        public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string title, string branchName)
+        public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string title, string branchName, string version)
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, title, branchName, null));
+                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, title, branchName, version));
 
                 if (dbFeature == null)
                 {
