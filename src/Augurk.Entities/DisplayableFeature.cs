@@ -16,6 +16,7 @@
 
 using System.Linq;
 using Augurk.Entities.Test;
+using System.Collections.Generic;
 
 namespace Augurk.Entities
 {
@@ -28,6 +29,11 @@ namespace Augurk.Entities
         /// Gets or sets the version of this feature.
         /// </summary>
         public string Version { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of available versions for this feature.
+        /// </summary>
+        public IEnumerable<string> AvailableVersions { get; set; }
 
         /// <summary>
         /// Gets or sets the properties for this feature.

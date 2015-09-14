@@ -59,15 +59,21 @@ namespace Augurk.Api.Managers
                     return null;
                 }
 
-                var feature = new DisplayableFeature(dbFeature);
-                feature.TestResult = dbFeature.TestResult;
-                feature.Version = dbFeature.Version;
+                var featureVersions = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                                                   .Where(feature => feature.Product == productName && feature.Group == groupName && feature.Title == title)
+                                                   .Select(feature => feature.Version)
+                                                   .ToListAsync();
+
+                var result = new DisplayableFeature(dbFeature);
+                result.TestResult = dbFeature.TestResult;
+                result.Version = dbFeature.Version;
+                result.AvailableVersions = featureVersions;
 
                 // Process the server tags
                 var processor = new FeatureProcessor();
-                processor.Process(feature);
+                processor.Process(result);
 
-                return feature;
+                return result;
             }
         }
 
