@@ -67,15 +67,13 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
                 }
             );
 
-            /*
-            branchService.getTags(currentBranch).then(function (tags) {
+            productService.getTags(currentProduct).then(function (tags) {
                 $scope.tags = $.makeArray();
                 $.each(tags, function (index, tag) {
                     $scope.tags.push({ name: tag, features: $.makeArray() })
                 })
                 $scope.filter.tags = $.makeArray();
             });
-            */
         }
 
         $scope.tags = $.makeArray();
@@ -89,7 +87,7 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
 
                 var tag = $scope.filter.tags[$scope.filter.tags.length - 1];
                 featureDescriptionService.getFeaturesByBranchAndTag(
-                    branchService.currentBranch,
+                    productService.currentProduct,
                     tag.name,
                     function (features) {
                         tag.features = features;
