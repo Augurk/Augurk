@@ -19,17 +19,18 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Augurk.Api.Managers;
 
-namespace Augurk.Api
+namespace Augurk.Api.Controllers
 {
     public class BranchController : ApiController
     {
-        private readonly BranchManager _branchManager = new BranchManager();
+        private readonly ProductManager _productManager = new ProductManager();
 
         [Route("api/branches")]
         [HttpGet]
         public async Task<IEnumerable<string>> GetAsync()
         {
-            return await _branchManager.GetBranchesAsync();
+            // NOTE: Using the ProductManager for backwards compatability
+            return await _productManager.GetProductsAsync();
         }
     }
 }

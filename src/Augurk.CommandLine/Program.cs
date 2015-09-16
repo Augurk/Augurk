@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Augurk.CommandLine.Commands;
 using Augurk.CommandLine.Options;
 using CommandLine;
@@ -23,9 +19,12 @@ namespace Augurk.CommandLine
             // Parse the command line options
             var exitCode = 0;
             var options = new GlobalOptions();
-            if (!Parser.Default.ParseArguments(args, options, ExecuteVerb))
+            using (var parser = new Parser(settings => { settings.MutuallyExclusive = true; settings.HelpWriter = Console.Error; }))
             {
-                exitCode = Parser.DefaultExitCodeFail;
+                if (!parser.ParseArguments(args, options, ExecuteVerb))
+                {
+                    exitCode = Parser.DefaultExitCodeFail;
+                }
             }
 
             // Command line arguments not succesfully parsed

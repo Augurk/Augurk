@@ -16,6 +16,7 @@
 
 using Augurk.Entities;
 using Augurk.Entities.Test;
+using System;
 
 namespace Augurk.Api
 {
@@ -25,14 +26,19 @@ namespace Augurk.Api
     public class DbFeature : Feature
     {
         /// <summary>
-        /// Gets or sets the branch this feature falls under.
+        /// Gets or sets the product to which this feature belongs.
         /// </summary>
-        public string Branch { get; set; }
+        public string Product { get; set; }
 
         /// <summary>
         /// Gets or sets the title of the group this feature falls under.
         /// </summary>
         public string Group { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version of the feature.
+        /// </summary>
+        public string Version { get; set; }
 
         /// <summary>
         /// Gets or sets the title of the parent feature.
@@ -56,14 +62,15 @@ namespace Augurk.Api
         /// Initializes a new instance of the <see cref="DbFeature"/> class using the provided <see cref="Feature"/> to provide initial values.
         /// </summary>
         /// <param name="feature">The <see cref="Feature"/>that should be used when determining the the initial values.</param>
-        /// <param name="branch">The branch this feature falls under.</param>
         /// <param name="group">The group this feature falls under.</param>
         /// <param name="parentTitle">The title of the parent feature.</param>
+        /// <param name="version">Version of the feature.</param>
         /// <remarks>This constructor does not wrap the provided feature, it will result in an actual copy with shared scenarios and a shared background.</remarks>
-        public DbFeature(Feature feature, string branch, string group, string parentTitle)
+        public DbFeature(Feature feature, string product, string group, string parentTitle, string version)
         {
-            Branch = branch;
+            Product = product;
             Group = group;
+            Version = version;
             ParentTitle = parentTitle;
 
             // Copy the properties from the provided feature

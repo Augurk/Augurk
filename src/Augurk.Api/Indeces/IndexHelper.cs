@@ -32,8 +32,8 @@ namespace Augurk.Api.Indeces
         /// <param name="stores">The stores to which the fields should be added.</param>
         public static void AddDbFeatureStoredFields(this IDictionary<Expression<Func<DbFeature, object>>, FieldStorage> stores)
         {
-            // Store the branch so it can be used to create the top menu
-            stores.Add(feature => feature.Branch, FieldStorage.Yes);
+            // Store the product so it can be used to create the top menu
+            stores.Add(feature => feature.Product, FieldStorage.Yes);
 
             // Store the three fields that are used to create the menu
             stores.Add(feature => feature.Group, FieldStorage.Yes);

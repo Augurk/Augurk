@@ -38,6 +38,10 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="NuGet.Versioning, Version=1.0.7.0, Culture=neutral, PublicKeyToken=2e465378e3b1a8dd, processorArchitecture=MSIL">
+      <HintPath>..\packages\NuGet.Versioning.1.0.7\lib\portable-net40+win\NuGet.Versioning.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Owin">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
@@ -78,19 +82,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TagController.cs" />
-    <Compile Include="BranchController.cs" />
+    <Compile Include="Controllers\V1\TagController.cs" />
+    <Compile Include="Controllers\V1\BranchController.cs" />
+    <Compile Include="Controllers\V2\FeatureV2Controller.cs" />
+    <Compile Include="Controllers\V2\GroupsController.cs" />
+    <Compile Include="Controllers\V2\ProductsController.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DbFeature.cs" />
     <Compile Include="Extensions\DbFeatureExtensions.cs" />
-    <Compile Include="FeatureController.cs" />
+    <Compile Include="Controllers\V1\FeatureController.cs" />
     <Compile Include="FeatureProcessor.cs" />
     <Compile Include="Filters\NoCacheHeaderFilter.cs" />
-    <Compile Include="Indeces\Features_ByTitleBranchAndGroup.cs" />
     <Compile Include="Indeces\Features_ByTagAndBranch.cs" />
+    <Compile Include="Indeces\Features_ByTitleProductAndGroup.cs" />
     <Compile Include="Indeces\IndexHelper.cs" />
-    <Compile Include="Managers\BranchManager.cs" />
     <Compile Include="Managers\FeatureManager.cs" />
+    <Compile Include="Managers\ProductManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

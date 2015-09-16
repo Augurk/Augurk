@@ -14,23 +14,23 @@
  limitations under the License.
 */
 
-using System.Linq;
 using Raven.Client.Indexes;
+using System.Linq;
 
 namespace Augurk.Api.Indeces
 {
-    ///<summary>
-    /// This index creates a map from the title, branch and group found on a feature.
-    ///</summary>
-    public class Features_ByTitleBranchAndGroup : AbstractIndexCreationTask<DbFeature>
+    /// <summary>
+    /// This index creates a map from the title, product and group found on a feature.
+    /// </summary>
+    public class Features_ByTitleProductAndGroup : AbstractIndexCreationTask<DbFeature>
     {
-        public Features_ByTitleBranchAndGroup()
+        public Features_ByTitleProductAndGroup()
         {
             Map = features => from feature in features
                               select new
                               {
                                   feature.Title,
-                                  feature.Branch,
+                                  feature.Product,
                                   feature.Group
                               };
 
