@@ -99,6 +99,7 @@
     <Compile Include="Managers\FeatureManager.cs" />
     <Compile Include="Managers\ProductManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SemanticVersionComparer.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

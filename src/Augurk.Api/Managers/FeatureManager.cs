@@ -28,15 +28,15 @@ using NuGet.Versioning;
 
 namespace Augurk.Api.Managers
 {
-	/// <summary>
-	/// Provides methods to persist and retrieve features from storage.
-	/// </summary>
-	public class FeatureManager
-	{
-		/// <summary>
-		/// Gets or sets the JsonSerializerSettings that should be used when (de)serializing.
-		/// </summary>
-		internal static JsonSerializerSettings JsonSerializerSettings { get; set; }
+    /// <summary>
+    /// Provides methods to persist and retrieve features from storage.
+    /// </summary>
+    public class FeatureManager
+    {
+        /// <summary>
+        /// Gets or sets the JsonSerializerSettings that should be used when (de)serializing.
+        /// </summary>
+        internal static JsonSerializerSettings JsonSerializerSettings { get; set; }
 
         /// <summary>
         /// Gets the available versions of a particular feature.
@@ -54,251 +54,251 @@ namespace Augurk.Api.Managers
                                             .Select(feature => feature.Version)
                                             .ToListAsync();
 
-                return versions.OrderByDescending(version => SemanticVersion.Parse(version));
+                return versions.OrderByDescending(version => version, new SemanticVersionComparer());
             }
         }
 
-		/// <summary>
-		/// Gets the feature that matches the provided criteria.
-		/// </summary>
-		/// <param name="productName">The name of the product under which the feature is positioned.</param>
-		/// <param name="groupName">The name of the group under which the feature is positioned.</param>
-		/// <param name="title">The title of the feature.</param>
-		/// <param name="version">Version of the feature to retrieve.</param>
-		/// <returns>
-		/// A <see cref="DisplayableFeature"/> instance describing the requested feature; 
-		/// or <c>null</c> if the feature cannot be found.
-		/// </returns>
-		public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string title, string version)
-		{
-			using (var session = Database.DocumentStore.OpenAsyncSession())
-			{
-				var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));
+        /// <summary>
+        /// Gets the feature that matches the provided criteria.
+        /// </summary>
+        /// <param name="productName">The name of the product under which the feature is positioned.</param>
+        /// <param name="groupName">The name of the group under which the feature is positioned.</param>
+        /// <param name="title">The title of the feature.</param>
+        /// <param name="version">Version of the feature to retrieve.</param>
+        /// <returns>
+        /// A <see cref="DisplayableFeature"/> instance describing the requested feature; 
+        /// or <c>null</c> if the feature cannot be found.
+        /// </returns>
+        public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string title, string version)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));
 
-				if (dbFeature == null)
-				{
-					return null;
-				}
+                if (dbFeature == null)
+                {
+                    return null;
+                }
 
-				var result = new DisplayableFeature(dbFeature);
-				result.TestResult = dbFeature.TestResult;
-				result.Version = dbFeature.Version;
+                var result = new DisplayableFeature(dbFeature);
+                result.TestResult = dbFeature.TestResult;
+                result.Version = dbFeature.Version;
 
-				// Process the server tags
-				var processor = new FeatureProcessor();
-				processor.Process(result);
+                // Process the server tags
+                var processor = new FeatureProcessor();
+                processor.Process(result);
 
-				return result;
-			}
-		}
+                return result;
+            }
+        }
 
-		/// <summary>
-		/// Gets groups containing the descriptions for all features for the specified branch.
-		/// </summary>
-		/// <param name="productName">The name of the product for which the feature descriptions should be retrieved.</param>
-		/// <param name="tagFilters">An optional set of tag which can be used to filter the results.</param>
-		/// <returns>An enumerable collection of <see cref="Group"/> instances.</returns>
-		public async Task<IEnumerable<Group>> GetGroupedFeatureDescriptionsAsync(string productName)
-		{
-			Dictionary<string, List<FeatureDescription>> featureDescriptions = new Dictionary<string, List<FeatureDescription>>();
-			Dictionary<string, Group> groups = new Dictionary<string, Group>();
+        /// <summary>
+        /// Gets groups containing the descriptions for all features for the specified branch.
+        /// </summary>
+        /// <param name="productName">The name of the product for which the feature descriptions should be retrieved.</param>
+        /// <param name="tagFilters">An optional set of tag which can be used to filter the results.</param>
+        /// <returns>An enumerable collection of <see cref="Group"/> instances.</returns>
+        public async Task<IEnumerable<Group>> GetGroupedFeatureDescriptionsAsync(string productName)
+        {
+            Dictionary<string, List<FeatureDescription>> featureDescriptions = new Dictionary<string, List<FeatureDescription>>();
+            Dictionary<string, Group> groups = new Dictionary<string, Group>();
 
-			using (var session = Database.DocumentStore.OpenAsyncSession())
-			{
-				var data = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
-										.Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase))
-										.Select(feature =>
-												new
-												{
-													feature.Group,
-													feature.ParentTitle,
-													feature.Title,
-													feature.Version
-												})
-										.ToListAsync();
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var data = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                                        .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase))
+                                        .Select(feature =>
+                                                new
+                                                {
+                                                    feature.Group,
+                                                    feature.ParentTitle,
+                                                    feature.Title,
+                                                    feature.Version
+                                                })
+                                        .ToListAsync();
 
-				foreach (var uniqueFeature in data.GroupBy(record => record.Title))
-				{
-					var latestFeature = uniqueFeature.OrderByDescending(record => SemanticVersion.Parse(record.Version)).First();
-					var featureDescription = new FeatureDescription()
-					{
-						Title = uniqueFeature.Key,
-						LatestVersion = latestFeature.Version,
-					};
+                foreach (var uniqueFeature in data.GroupBy(record => record.Title))
+                {
+                    var latestFeature = uniqueFeature.OrderByDescending(record => record.Version, new SemanticVersionComparer()).First();
+                    var featureDescription = new FeatureDescription()
+                    {
+                        Title = uniqueFeature.Key,
+                        LatestVersion = latestFeature.Version,
+                    };
 
-					if (String.IsNullOrWhiteSpace(latestFeature.ParentTitle))
-					{
-						if (!groups.ContainsKey(latestFeature.Group))
-						{
-							// Create a new group
-							groups.Add(latestFeature.Group, new Group()
-							{
-								Name = latestFeature.Group,
-								Features = new List<FeatureDescription>()
-							});
-						}
+                    if (String.IsNullOrWhiteSpace(latestFeature.ParentTitle))
+                    {
+                        if (!groups.ContainsKey(latestFeature.Group))
+                        {
+                            // Create a new group
+                            groups.Add(latestFeature.Group, new Group()
+                            {
+                                Name = latestFeature.Group,
+                                Features = new List<FeatureDescription>()
+                            });
+                        }
 
-						// Add the feature to the group
-						((List<FeatureDescription>)groups[latestFeature.Group].Features).Add(featureDescription);
-					}
-					else
-					{
-						if (!featureDescriptions.ContainsKey(latestFeature.ParentTitle))
-						{
-							featureDescriptions.Add(latestFeature.ParentTitle, new List<FeatureDescription>());
-						}
+                        // Add the feature to the group
+                        ((List<FeatureDescription>)groups[latestFeature.Group].Features).Add(featureDescription);
+                    }
+                    else
+                    {
+                        if (!featureDescriptions.ContainsKey(latestFeature.ParentTitle))
+                        {
+                            featureDescriptions.Add(latestFeature.ParentTitle, new List<FeatureDescription>());
+                        }
 
-						featureDescriptions[latestFeature.ParentTitle].Add(featureDescription);
-					}
-				}
+                        featureDescriptions[latestFeature.ParentTitle].Add(featureDescription);
+                    }
+                }
 
-				// Map the lower levels
-				foreach (var feature in groups.Values.SelectMany(group => group.Features))
-				{
-					AddChildren(feature, featureDescriptions);
-				}
-			}
+                // Map the lower levels
+                foreach (var feature in groups.Values.SelectMany(group => group.Features))
+                {
+                    AddChildren(feature, featureDescriptions);
+                }
+            }
 
-			return groups.Values.OrderBy(group => group.Name).ToList();
-		}
+            return groups.Values.OrderBy(group => group.Name).ToList();
+        }
 
-		/// <summary>
-		/// Gets a collection of features for the specified <paramref name="productName">branch</paramref> and tag.
-		/// </summary>
-		/// <param name="productName">The name of the branch for which the feature descriptions should be retrieved.</param>
-		/// <param name="groupName">A tag which should be used to filter the results.</param>
-		/// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
-		public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByBranchAndTagAsync(string branchName, string tag)
-		{
-			using (var session = Database.DocumentStore.OpenAsyncSession())
-			{
-				var titles = await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
-										.Where(feature => feature.Product.Equals(branchName, StringComparison.OrdinalIgnoreCase)
-													   && feature.Tag.Equals(tag, StringComparison.OrdinalIgnoreCase))
-										.Select(feature =>
-												new
-												{
-													feature.Title
-												})
-										.ToListAsync();
+        /// <summary>
+        /// Gets a collection of features for the specified <paramref name="productName">branch</paramref> and tag.
+        /// </summary>
+        /// <param name="productName">The name of the branch for which the feature descriptions should be retrieved.</param>
+        /// <param name="groupName">A tag which should be used to filter the results.</param>
+        /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
+        public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByBranchAndTagAsync(string branchName, string tag)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var titles = await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
+                                        .Where(feature => feature.Product.Equals(branchName, StringComparison.OrdinalIgnoreCase)
+                                                       && feature.Tag.Equals(tag, StringComparison.OrdinalIgnoreCase))
+                                        .Select(feature =>
+                                                new
+                                                {
+                                                    feature.Title
+                                                })
+                                        .ToListAsync();
 
-				return titles.Select(feature => new FeatureDescription() { Title = feature.Title });
-			}
-		}
+                return titles.Select(feature => new FeatureDescription() { Title = feature.Title });
+            }
+        }
 
-		/// <summary>
-		/// Gets a collection of features for the specified <paramref name="productName">product</paramref> and <paramref name="groupName">group</paramref>.
-		/// </summary>
-		/// <param name="productName">The name of the branch for which the feature descriptions should be retrieved.</param>
-		/// <param name="groupName">A tag which should be used to filter the results.</param>
-		/// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
-		public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByProductAndGroupAsync(string productName, string groupName)
-		{
-			using (var session = Database.DocumentStore.OpenAsyncSession())
-			{
-				var titles = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
-										.Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
-													   && feature.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase))
-										.Select(feature =>
-												new
-												{
-													feature.Title
-												})
-										.ToListAsync();
+        /// <summary>
+        /// Gets a collection of features for the specified <paramref name="productName">product</paramref> and <paramref name="groupName">group</paramref>.
+        /// </summary>
+        /// <param name="productName">The name of the branch for which the feature descriptions should be retrieved.</param>
+        /// <param name="groupName">A tag which should be used to filter the results.</param>
+        /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
+        public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByProductAndGroupAsync(string productName, string groupName)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var titles = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                                        .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
+                                                       && feature.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase))
+                                        .Select(feature =>
+                                                new
+                                                {
+                                                    feature.Title
+                                                })
+                                        .ToListAsync();
 
-				return titles.Select(feature => new FeatureDescription() { Title = feature.Title });
-			}
-		}
+                return titles.Select(feature => new FeatureDescription() { Title = feature.Title });
+            }
+        }
 
-		private void AddChildren(FeatureDescription feature, Dictionary<string, List<FeatureDescription>> childRepository)
-		{
-			var strippedTitle = feature.Title.Replace(" ", String.Empty);
+        private void AddChildren(FeatureDescription feature, Dictionary<string, List<FeatureDescription>> childRepository)
+        {
+            var strippedTitle = feature.Title.Replace(" ", String.Empty);
 
-			if (childRepository.ContainsKey(strippedTitle))
-			{
-				feature.ChildFeatures = childRepository[strippedTitle];
-				childRepository[strippedTitle].ForEach(f => AddChildren(f, childRepository));
-			}
-		}
+            if (childRepository.ContainsKey(strippedTitle))
+            {
+                feature.ChildFeatures = childRepository[strippedTitle];
+                childRepository[strippedTitle].ForEach(f => AddChildren(f, childRepository));
+            }
+        }
 
-		public async Task InsertOrUpdateFeatureAsync(Feature feature, string productName, string groupName, string version)
-		{
-			var processor = new FeatureProcessor();
-			string parentTitle = processor.DetermineParent(feature);
+        public async Task InsertOrUpdateFeatureAsync(Feature feature, string productName, string groupName, string version)
+        {
+            var processor = new FeatureProcessor();
+            string parentTitle = processor.DetermineParent(feature);
 
-			DbFeature dbFeature = new DbFeature(feature, productName, groupName, parentTitle, version);
+            DbFeature dbFeature = new DbFeature(feature, productName, groupName, parentTitle, version);
 
-			using (var session = Database.DocumentStore.OpenAsyncSession())
-			{
-				// Using the store method when the feature already exists in the database will override it completely, this is acceptable
-				await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
-				await session.SaveChangesAsync();
-			}
-		}
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                // Using the store method when the feature already exists in the database will override it completely, this is acceptable
+                await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
+                await session.SaveChangesAsync();
+            }
+        }
 
-		public async Task PersistFeatureTestResultAsync(FeatureTestResult testResult, string productName, string groupName, string version)
-		{
-			using (var session = Database.DocumentStore.OpenAsyncSession())
-			{
-				var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, testResult.FeatureTitle, version));
+        public async Task PersistFeatureTestResultAsync(FeatureTestResult testResult, string productName, string groupName, string version)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, testResult.FeatureTitle, version));
 
-				if (dbFeature == null)
-				{
-					throw new Exception(String.Format(CultureInfo.InvariantCulture,
-								  "Feature {0} does not exist for product {1} under group {2}.",
-								  testResult.FeatureTitle,
-								  productName,
-								  groupName));
-				}
+                if (dbFeature == null)
+                {
+                    throw new Exception(String.Format(CultureInfo.InvariantCulture,
+                                  "Feature {0} does not exist for product {1} under group {2}.",
+                                  testResult.FeatureTitle,
+                                  productName,
+                                  groupName));
+                }
 
-				dbFeature.TestResult = testResult;
+                dbFeature.TestResult = testResult;
 
-				await session.SaveChangesAsync();
-			}
-		}
+                await session.SaveChangesAsync();
+            }
+        }
 
-		public async Task DeleteFeatureAsync(string productName, string groupName, string title, string version)
-		{
-			using (var session = Database.DocumentStore.OpenAsyncSession())
-			{
-				// The delete method only marks the entity with the provided id for deletion, as such it is not asynchronous
-				session.Delete(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));
+        public async Task DeleteFeatureAsync(string productName, string groupName, string title, string version)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                // The delete method only marks the entity with the provided id for deletion, as such it is not asynchronous
+                session.Delete(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));
 
-				await session.SaveChangesAsync();
-			}
-		}
+                await session.SaveChangesAsync();
+            }
+        }
 
-		public async Task DeleteFeaturesAsync(string productName)
-		{
-			using (var session = Database.DocumentStore.OpenAsyncSession())
-			{
-				var featuresQuery = session.Query<DbFeature>().Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase));
+        public async Task DeleteFeaturesAsync(string productName)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var featuresQuery = session.Query<DbFeature>().Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase));
 
-				foreach (var feature in featuresQuery)
-				{
-					// The delete method only marks the entity for deletion, as such it is not asynchronous
-					session.Delete(feature);
-				}
+                foreach (var feature in featuresQuery)
+                {
+                    // The delete method only marks the entity for deletion, as such it is not asynchronous
+                    session.Delete(feature);
+                }
 
-				await session.SaveChangesAsync();
-			}
-		}
+                await session.SaveChangesAsync();
+            }
+        }
 
-		public async Task DeleteFeaturesAsync(string productName, string groupName)
-		{
-			using (var session = Database.DocumentStore.OpenAsyncSession())
-			{
-				var featuresQuery = session.Query<DbFeature>().Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
-																			 && feature.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase));
+        public async Task DeleteFeaturesAsync(string productName, string groupName)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var featuresQuery = session.Query<DbFeature>().Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
+                                                                             && feature.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase));
 
-				foreach (var feature in featuresQuery)
-				{
-					// The delete method only marks the entity for deletion, as such it is not asynchronous
-					session.Delete(feature);
-				}
+                foreach (var feature in featuresQuery)
+                {
+                    // The delete method only marks the entity for deletion, as such it is not asynchronous
+                    session.Delete(feature);
+                }
 
-				await session.SaveChangesAsync();
-			}
-		}
-	}
+                await session.SaveChangesAsync();
+            }
+        }
+    }
 }

@@ -25,6 +25,10 @@ AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$rou
             version: $routeParams.version
         });
 
+        featureVersionService.versions.then(function (data) {
+            $scope.availableVersions = data;
+        })
+
         $rootScope.$on('currentVersionChanged', function (event, data) {
             featureVersionService.versions.then(function (data) {
                 $scope.availableVersions = data;
