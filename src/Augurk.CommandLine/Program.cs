@@ -2,6 +2,8 @@
 using Augurk.CommandLine.Commands;
 using Augurk.CommandLine.Options;
 using CommandLine;
+using System.ComponentModel.Composition.Hosting;
+using System.Reflection;
 
 namespace Augurk.CommandLine
 {

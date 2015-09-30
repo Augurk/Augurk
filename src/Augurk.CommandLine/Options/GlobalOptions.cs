@@ -20,6 +20,12 @@ namespace Augurk.CommandLine.Options
         public PublishOptions PublishVerb { get; set; }
 
         /// <summary>
+        /// Options when deleting features.
+        /// </summary>
+        [VerbOption(PublishOptions.VERB_NAME, HelpText = "Delete features from Augurk.")]
+        public DeleteOptions DeleteVerb { get; set; }
+
+        /// <summary>
         /// Gets the usage of the command line tool for the specified verb.
         /// </summary>
         /// <param name="verb">Name of the verb for which the usage should be retrieved.</param>

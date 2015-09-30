@@ -10,13 +10,15 @@ using System.Threading.Tasks;
 using Augurk.CommandLine.Options;
 using Augurk.Entities;
 using TechTalk.SpecFlow.Parser;
+using System.ComponentModel.Composition;
 
 namespace Augurk.CommandLine.Commands
 {
     /// <summary>
     /// Implements the publish command.
     /// </summary>
-    internal class PublishCommand
+    [Export(typeof(ICommand))]
+    internal class PublishCommand : ICommand
     {
         /// <summary>
         /// Stores the <see cref="PublishOptions"/> passed to the command.
