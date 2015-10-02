@@ -40,6 +40,7 @@ namespace Augurk.Api.Managers
                 return await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
                                     .Select(feature => feature.Product)
                                     .Distinct()
+                                    .OrderBy(product => product)
                                     .ToListAsync();
             }
         }
@@ -57,6 +58,7 @@ namespace Augurk.Api.Managers
                                     .Where(feature => feature.Product.Equals(productName, StringComparison.CurrentCultureIgnoreCase))
                                     .Select(feature => feature.Tag)
                                     .Distinct()
+                                    .OrderBy(tag => tag)
                                     .ToListAsync();
             }
         }

@@ -25,18 +25,18 @@ AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$rou
             version: $routeParams.version
         });
 
-        featureVersionService.versions.then(function (data) {
-            $scope.availableVersions = data;
-        })
+	    featureVersionService.versions.then(function(data) {
+		    $scope.availableVersions = data;
+	    });
 
         $rootScope.$on('currentVersionChanged', function (event, data) {
-            featureVersionService.versions.then(function (data) {
-                $scope.availableVersions = data;
-            })
+	        featureVersionService.versions.then(function(data) {
+		        $scope.availableVersions = data;
+	        });
         });
 
-        $scope.product = $routeParams.productName
-        $scope.group = $routeParams.groupName
+	    $scope.product = $routeParams.productName;
+	    $scope.group = $routeParams.groupName;
 
         // Set the current group on the rootscope
         $rootScope.currentGroupName = $routeParams.groupName;
@@ -73,9 +73,9 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
 
             productService.getTags(currentProduct).then(function (tags) {
                 $scope.tags = $.makeArray();
-                $.each(tags, function (index, tag) {
-                    $scope.tags.push({ name: tag, features: $.makeArray() })
-                })
+	            $.each(tags, function(index, tag) {
+		            $scope.tags.push({ name: tag, features: $.makeArray() });
+	            });
                 $scope.filter.tags = $.makeArray();
             });
         }
@@ -112,6 +112,8 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
                         // Break out of the loop
                         return false;
                     }
+
+	                return true;
                 });
 
                 return result;
@@ -137,7 +139,7 @@ AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'produ
         });
 
         productService.products.then(function (products) {
-            $scope.products = products;
+            $scope.products = products.sort();
         });
     }
 ]);

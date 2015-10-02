@@ -96,7 +96,6 @@ namespace Augurk.Api.Managers
         /// Gets groups containing the descriptions for all features for the specified branch.
         /// </summary>
         /// <param name="productName">The name of the product for which the feature descriptions should be retrieved.</param>
-        /// <param name="tagFilters">An optional set of tag which can be used to filter the results.</param>
         /// <returns>An enumerable collection of <see cref="Group"/> instances.</returns>
         public async Task<IEnumerable<Group>> GetGroupedFeatureDescriptionsAsync(string productName)
         {
@@ -163,10 +162,10 @@ namespace Augurk.Api.Managers
         }
 
         /// <summary>
-        /// Gets a collection of features for the specified <paramref name="productName">branch</paramref> and tag.
+        /// Gets a collection of features for the specified <paramref name="branchName">branch</paramref> and tag.
         /// </summary>
-        /// <param name="productName">The name of the branch for which the feature descriptions should be retrieved.</param>
-        /// <param name="groupName">A tag which should be used to filter the results.</param>
+        /// <param name="branchName">The name of the branch for which the feature descriptions should be retrieved.</param>
+        /// <param name="tag">A tag which should be used to filter the results.</param>
         /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
         public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByBranchAndTagAsync(string branchName, string tag)
         {
