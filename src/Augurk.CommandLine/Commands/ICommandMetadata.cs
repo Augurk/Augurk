@@ -1,5 +1,4 @@
-﻿using Augurk.CommandLine.Options;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,13 +7,13 @@ using System.Threading.Tasks;
 namespace Augurk.CommandLine.Commands
 {
     /// <summary>
-    /// Describes the interface for executable commands.
+    /// Describes the required metadata for a command.
     /// </summary>
-    internal interface ICommand
+    public interface ICommandMetadata
     {
         /// <summary>
-        /// Called when the command should be executed.
+        /// Gets the verb of the command.
         /// </summary>
-        void Execute();
+        string Verb { get; }
     }
 }

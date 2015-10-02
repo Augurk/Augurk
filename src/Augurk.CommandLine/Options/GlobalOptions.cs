@@ -22,7 +22,7 @@ namespace Augurk.CommandLine.Options
         /// <summary>
         /// Options when deleting features.
         /// </summary>
-        [VerbOption(PublishOptions.VERB_NAME, HelpText = "Delete features from Augurk.")]
+        [VerbOption(DeleteOptions.VERB_NAME, HelpText = "Delete features from Augurk.")]
         public DeleteOptions DeleteVerb { get; set; }
 
         /// <summary>

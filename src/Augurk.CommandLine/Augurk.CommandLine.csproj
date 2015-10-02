@@ -86,9 +86,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\CommandManager.cs" />
     <Compile Include="Commands\DeleteCommand.cs" />
     <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\ICommandMetadata.cs" />
     <Compile Include="Commands\PublishCommand.cs" />
+    <Compile Include="Extensions\CompositionContainerExtensions.cs" />
     <Compile Include="Extensions\SpecFlowEntityExtensions.cs" />
     <Compile Include="Options\DeleteOptions.cs" />
     <Compile Include="Options\GlobalOptions.cs" />
