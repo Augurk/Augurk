@@ -217,6 +217,9 @@ FakesAssemblies/
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
 
+# App_Data folder
+**/App_Data
+
 # RavenDB stuff
 **/FeatureStore
 **/CompiledIndexCache
