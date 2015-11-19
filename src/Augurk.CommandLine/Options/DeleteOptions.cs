@@ -33,7 +33,7 @@ namespace Augurk.CommandLine.Options
         /// <summary>
         /// Gets or sets the name of the group under which the feature files should be published.
         /// </summary>
-        [Option("groupName", HelpText = "Name of the feature to delete.", Required = false)]
+        [Option("featureName", HelpText = "Name of the feature to delete.", Required = false)]
         public string FeatureName { get; set; }
 
         /// <summary>
