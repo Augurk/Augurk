@@ -59,7 +59,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>DisplayGherkin.feature</DependentUpon>
     </Compile>
+    <Compile Include="NotImplementedTag.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NotImplementedTag.feature</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerSideTags.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ServerSideTags.feature</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -67,7 +77,15 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>DisplayGherkin.feature.cs</LastGenOutput>
     </None>
+    <None Include="NotImplementedTag.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>NotImplementedTag.feature.cs</LastGenOutput>
+    </None>
     <None Include="packages.config" />
+    <None Include="ServerSideTags.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>ServerSideTags.feature.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
