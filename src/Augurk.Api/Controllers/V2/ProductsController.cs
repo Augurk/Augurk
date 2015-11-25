@@ -1,5 +1,6 @@
 ﻿using Augurk.Api.Managers;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Web.Http;
 
@@ -22,6 +23,28 @@ namespace Augurk.Api.Controllers.V2
         public async Task<IEnumerable<string>> GetProducts()
         {
             return await _productsManager.GetProductsAsync();
+        }
+
+        /// <summary>
+        /// Deletes the provided product
+        /// </summary>
+        /// <returns>A range of product names.</returns>
+        [Route("{product}")]
+        [HttpDelete]
+        public async Task DeleteProducts(string product)
+        {
+            await _productsManager.DeleteProductAsync(product);
+        }
+
+        /// <summary>
+        /// Deletes the provided product
+        /// </summary>
+        /// <returns>A range of product names.</returns>
+        [Route("{product}/versions/{version}")]
+        [HttpDelete]
+        public async Task DeleteProducts(string product, string version)
+        {
+            await _productsManager.DeleteProductAsync(product, version);
         }
 
         /// <summary>

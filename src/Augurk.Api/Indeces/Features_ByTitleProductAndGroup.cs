@@ -31,7 +31,8 @@ namespace Augurk.Api.Indeces
                               {
                                   feature.Title,
                                   feature.Product,
-                                  feature.Group
+                                  feature.Group,
+                                  feature.Version
                               };
 
             // Store the fields that are used often in the application,
