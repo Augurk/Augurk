@@ -91,6 +91,7 @@ namespace Augurk.Api.Managers
                                                     feature.ParentTitle,
                                                     feature.Title
                                                 })
+                                        .Take(1000)
                                         .ToListAsync();
 
                 foreach (var record in data.OrderBy(record => record.ParentTitle))
