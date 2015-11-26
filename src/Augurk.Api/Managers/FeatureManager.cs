@@ -115,6 +115,7 @@ namespace Augurk.Api.Managers
                                                     feature.Title,
                                                     feature.Version
                                                 })
+                                        .Take(1000)
                                         .ToListAsync();
 
                 foreach (var uniqueFeature in data.GroupBy(record => record.Title))

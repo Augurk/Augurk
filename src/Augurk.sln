@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.Entities", "Augurk.E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.Api", "Augurk.Api\Augurk.Api.csproj", "{C3981525-0902-402D-97F6-64CA2A8772D0}"
 EndProject
+Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "Augurk.Azure", "Augurk.Azure\Augurk.Azure.ccproj", "{C97A59CE-685E-4886-B3A9-F96DE7C4EC9B}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.CommandLine", "Augurk.CommandLine\Augurk.CommandLine.csproj", "{3D0E1E13-76C3-4CB7-B864-0F3D93672144}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D764CFC4-3EEB-46A8-A93D-7DE418A839D4}"
@@ -46,6 +48,10 @@ Global
 		{C3981525-0902-402D-97F6-64CA2A8772D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3981525-0902-402D-97F6-64CA2A8772D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3981525-0902-402D-97F6-64CA2A8772D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C97A59CE-685E-4886-B3A9-F96DE7C4EC9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C97A59CE-685E-4886-B3A9-F96DE7C4EC9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C97A59CE-685E-4886-B3A9-F96DE7C4EC9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C97A59CE-685E-4886-B3A9-F96DE7C4EC9B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3D0E1E13-76C3-4CB7-B864-0F3D93672144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3D0E1E13-76C3-4CB7-B864-0F3D93672144}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3D0E1E13-76C3-4CB7-B864-0F3D93672144}.Release|Any CPU.ActiveCfg = Release|Any CPU
