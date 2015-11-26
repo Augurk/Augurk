@@ -19,8 +19,8 @@ var AugurkServices = angular.module('AugurkServices', ['ngResource', 'ngRoute'])
 AugurkServices.factory('featureService', ['$resource', function ($resource) {
     // The featurename might contain a period, which webapi only allows if you finish with a slash
     // Since AngularJS doesn't allow for trailing slashes, use a backslash instead
-    return $resource('api/features/:branchName/:groupName/:featureName\\',
-                     { branchName: '@branchName', groupName: '@groupName', featureName: '@featureName' });
+    return $resource('api/v2/products/:productName/groups/:groupName/features/:featureName/versions/:version\\',
+                     { productName: '@productName', groupName: '@groupName', featureName: '@featureName', version: '@version' });
 }]);
 
 AugurkServices.factory('featureDescriptionService', ['$resource', function ($resource) {
@@ -36,54 +36,102 @@ AugurkServices.factory('featureDescriptionService', ['$resource', function ($res
         getFeaturesByBranchAndTag: function (branch, tag, callback) {
             $resource('api/tags/:branchName/:tag/features', { branchName: '@branchName', tag: '@tag' })
                 .query({ branchName: branch, tag: tag }, callback);
+        },
+
+        getGroupsByProduct: function (product, callback) {
+            $resource('api/v2/products/:productName/groups', { productName: '@productName' })
+                .query({ productName: product }, callback);
         }
     };
     
     return service;
 }]);
 
-AugurkServices.factory('branchService', ['$http', '$q', '$routeParams', '$rootScope', function ($http, $q, $routeParams, $rootScope) {
+AugurkServices.factory('featureVersionService', ['$http', '$q', '$routeParams', '$rootScope', function ($http, $q, $routeParams, $rootScope) {
+    // create the service
+    var service = {
+        versions: null,
+        currentVersion: null
+    };
+
+    var versionsPromiseDeferrer = $q.defer();
+    $http({ method: 'GET', url: 'api/v2/products/' + $routeParams.productName + '/groups/' + $routeParams.groupName + '/features/' + $routeParams.featureName + '/versions' }).then(function (response) {
+        versionsPromiseDeferrer.resolve(response.data);
+    });
+
+    service.versions = versionsPromiseDeferrer.promise;
+
+    // set the current version
+    if ($routeParams.version) {
+        service.currentVersion = $routeParams.version;
+    } else {
+        versionsPromiseDeferrer.promise.then(function (versions) {
+            service.currentVersion = versions[0];
+            $rootScope.$broadcast('currentVersionChanged', { version: service.currentVersion });
+        });
+    }
+
+    // update the version on navigation
+    $rootScope.$on('$routeChangeSuccess', function () {
+        if ($routeParams.version && $routeParams.version != service.currentVersion) {
+            service.currentVersion = $routeParams.version;
+
+            var versionsPromiseDeferrer = $q.defer();
+            $http({ method: 'GET', url: 'api/v2/products/' + $routeParams.productName + '/groups/' + $routeParams.groupName + '/features/' + $routeParams.featureName + '/versions' }).then(function (response) {
+                versionsPromiseDeferrer.resolve(response.data);
+            });
+
+            service.versions = versionsPromiseDeferrer.promise;
+
+            $rootScope.$broadcast('currentVersionChanged', { product: service.currentVersion });
+        }
+    });
+
+    return service;
+}]);
+
+AugurkServices.factory('productService', ['$http', '$q', '$routeParams', '$rootScope', function ($http, $q, $routeParams, $rootScope) {
 
     // create the service
     var service = {
-        branches: null,
-        currentBranch: null
+        products: null,
+        currentProduct: null
     };
 
     // since AngularJS' $resource does not support primitive types, use $http instead.
-    var branchesPromiseDeferrer = $q.defer();
-    $http({ method: 'GET', url: 'api/branches' }).then(function (response) {
-        branchesPromiseDeferrer.resolve(response.data);
+    var productsPromiseDeferrer = $q.defer();
+    $http({ method: 'GET', url: 'api/v2/products' }).then(function (response) {
+        productsPromiseDeferrer.resolve(response.data);
     });
 
-    service.branches = branchesPromiseDeferrer.promise;
+    service.products = productsPromiseDeferrer.promise;
 
-    service.getTags = function (branch) {
+    service.getTags = function (productName) {
         var tagsPromiseDeferrer = $q.defer();
-        $http({ method: 'GET', url: 'api/tags/' + branch }).then(function (response) {
+        $http({ method: 'GET', url: 'api/v2/products/' + productName + '/tags' }).then(function (response) {
             tagsPromiseDeferrer.resolve(response.data);
         });
 
         return tagsPromiseDeferrer.promise;
     }
 
-    // set the current branch
-    if ($routeParams.branchName) {
-        service.currentBranch = $routeParams.branchName;
+    // set the current product
+    if ($routeParams.productName) {
+        service.currentProduct = $routeParams.productName;
     }
     else {
-        branchesPromiseDeferrer.promise.then(function (branches) {
-            service.currentBranch = branches[0];
-            $rootScope.$broadcast('currentBranchChanged', { branch: service.currentBranch });
+        productsPromiseDeferrer.promise.then(function (products) {
+            service.currentProduct = products[0];
+            $rootScope.$broadcast('currentProductChanged', { product: service.currentProduct });
         });
     }
 
-    // update the branch on navigation
+    // update the product on navigation
     $rootScope.$on('$routeChangeSuccess', function () {
-        if ($routeParams.branchName &&
-            $routeParams.branchName != service.currentBranch) {
-            service.currentBranch = $routeParams.branchName;
-            $rootScope.$broadcast('currentBranchChanged', { branch: service.currentBranch });
+        if ($routeParams.productName &&
+            $routeParams.productName != service.currentProduct) {
+            service.currentProduct = $routeParams.productName;
+            $rootScope.$broadcast('currentProductChanged', { product: service.currentProduct });
         }
     });
 

@@ -7,8 +7,8 @@
     "author": "Jonathan Mezach",
     "version": {
         "Major": 0,
-        "Minor": 1,
-        "Patch": 7
+        "Minor": 3,
+        "Patch": 2
     },
     "instanceNameFormat": "Publish features from $(features) to Augurk",
     "groups": [
@@ -36,12 +36,12 @@
             "helpMarkDown": "Augurk instance to which the features should be published."
         },
         {
-            "name": "branchName",
+            "name": "productName",
             "type": "string",
-            "label": "Branch Name",
+            "label": "Product Name",
             "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Name of the branch under which the features should be published to Augurk."
+            "helpMarkDown": "Name of the product under which the features should be published to Augurk."
         },
         {
             "name": "groupName",
@@ -52,12 +52,12 @@
             "helpMarkDown": "Name of the group under which the features should be published to Augurk."
         },
         {
-            "name": "clearGroup",
-            "type": "boolean",
-            "label": "Clear Group",
-            "defaultValue": false,
+            "name": "version",
+            "type": "string",
+            "label": "Version",
+            "defaultValue": "",
             "required": true,
-            "helpMarkDown": "Indicates whether the group should be cleared of existing features when new features are published."
+            "helpMarkDown": "Version of the feature files being published. Supports variables (in the format $(<variable-name>)."
         },
         {
             "name": "language",
@@ -66,6 +66,24 @@
             "defaultValue": "en-US",
             "required": true,
             "helpMarkDown": "Language in which the feature files have been written. For example: `en-US` or `nl-NL`.",
+            "groupName": "advanced"
+        },
+        {
+            "name": "augurkLocation",
+            "type": "filePath",
+            "label": "augurk.exe Location",
+            "defaultValue": "**/packages/**/tools/augurk.exe",
+            "required": true,
+            "helpMarkDown": "Path to where the command line augurk.exe tool is located. This is usually installed through the Augurk.CommandLine NuGet package. If this package is installed the default will suffice, otherwise another path must be specified.",
+            "groupName": "advanced"
+        },
+        {
+            "name": "treatWarningsAsErrors",
+            "type": "boolean",
+            "label": "Treat warning(s) as error(s)",
+            "defaultValue": false,
+            "required": true,
+            "helpMarkDown": "Indicates whether warnings issued by this task should be treated as errors.",
             "groupName": "advanced"
         }
     ],

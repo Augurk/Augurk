@@ -14,47 +14,48 @@
  limitations under the License.
 */
 
-using System;
-using System.Configuration;
-using System.Data;
-using System.Data.SqlClient;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Augurk.Api.Indeces;
 using Raven.Client;
 using Raven.Client.Linq;
+using Augurk.Api.Indeces;
+using System;
 
 namespace Augurk.Api.Managers
 {
     /// <summary>
-    /// Provides methods to retrieve branches from storage.
+    /// Provides methods for retrieving products from storage.
     /// </summary>
-    public class BranchManager
+    public class ProductManager
     {
         /// <summary>
-        /// Gets the names of all available branches.
+        /// Gets all available products.
         /// </summary>
-        /// <returns>An enumerable collection of branch names representend as a <see cref="string"/>.</returns>
-        public async Task<IEnumerable<string>> GetBranchesAsync()
+        /// <returns>Returns a range of product names.</returns>
+        public async Task<IEnumerable<string>> GetProductsAsync()
         {
-
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                return await session.Query<DbFeature, Features_ByTitleBranchAndGroup>()
-                                    .Select(feature => feature.Branch)
+                return await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                                    .Select(feature => feature.Product)
                                     .Distinct()
                                     .ToListAsync();
             }
         }
 
-        public async Task<IEnumerable<string>> GetTagsAsync(string branchName)
+        /// <summary>
+        /// Gets all available tags for the provided <paramref name="productName">product</paramref>.
+        /// </summary>
+        /// <param name="productName">Name of the product to get the available tags for.</param>
+        /// <returns>Returns a range of tags for the provided <paramref name="productName">product</paramref>.</returns>
+        public async Task<IEnumerable<string>> GetTagsAsync(string productName)
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                return await session.Query<Features_ByTagAndBranch.TaggedFeature, Features_ByTagAndBranch>()
-                                    .Where(branchTag => branchTag.Branch.Equals(branchName, StringComparison.CurrentCultureIgnoreCase))
-                                    .Select(branchTag => branchTag.Tag)
+                return await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
+                                    .Where(feature => feature.Product.Equals(productName, StringComparison.CurrentCultureIgnoreCase))
+                                    .Select(feature => feature.Tag)
                                     .Distinct()
                                     .ToListAsync();
             }

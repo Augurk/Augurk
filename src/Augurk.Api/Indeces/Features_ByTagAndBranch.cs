@@ -20,11 +20,11 @@ using Raven.Client.Indexes;
 namespace Augurk.Api.Indeces
 {
     ///<summary>
-    /// This index creates a map from the tags and branch found on a feature. For performance and memory reasons only the first 50 distinct tags will be indexed.
+    /// This index creates a map from the tags and product found on a feature. For performance and memory reasons only the first 50 distinct tags will be indexed.
     ///</summary>
-    public class Features_ByTagAndBranch : AbstractIndexCreationTask<DbFeature, Features_ByTagAndBranch.TaggedFeature>
+    public class Features_ByProductAndBranch : AbstractIndexCreationTask<DbFeature, Features_ByProductAndBranch.TaggedFeature>
     {
-        public Features_ByTagAndBranch()
+        public Features_ByProductAndBranch()
         {
             Map = features => from feature in features
                               from tag in
@@ -36,7 +36,7 @@ namespace Augurk.Api.Indeces
                                   {
                                       Tag = tag,
                                       feature.Title,
-                                      feature.Branch,
+                                      feature.Product,
                                       feature.Group
                               };
 
@@ -48,7 +48,7 @@ namespace Augurk.Api.Indeces
         public class TaggedFeature
         {
             public string Tag { get; set;}
-            public string Branch { get; set; }
+            public string Product { get; set; }
             public string Title { get; set; }
             public string Group { get; set; }
             public string ParentTitle { get; set; }

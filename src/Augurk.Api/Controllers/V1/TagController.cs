@@ -20,25 +20,25 @@ using System.Web.Http;
 using Augurk.Api.Managers;
 using Augurk.Entities;
 
-namespace Augurk.Api
+namespace Augurk.Api.Controllers
 {
     public class TagController : ApiController
     {
-        private readonly BranchManager _branchManager = new BranchManager();
+        private readonly ProductManager _productManager = new ProductManager();
         private readonly FeatureManager _featureManager = new FeatureManager();
 
         [Route("api/tags/{branchName}")]
         [HttpGet]
         public async Task<IEnumerable<string>> GetAsync(string branchName)
         {
-            return FeatureProcessor.RemoveServerTags(await _branchManager.GetTagsAsync(branchName));
+            return FeatureProcessor.RemoveServerTags(await _productManager.GetTagsAsync(branchName));
         }
 
         [Route("api/tags/{branchName}/{tag}/features")]
         [HttpGet]
         public async Task<IEnumerable<FeatureDescription>> GetFeaturesAsync(string branchName, string tag)
         {
-            return await _featureManager.GetFeatureDescriptionsAsync(branchName, tag);
+            return await _featureManager.GetFeatureDescriptionsByBranchAndTagAsync(branchName, tag);
         }
     }
 }
