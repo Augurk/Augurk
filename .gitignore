@@ -223,3 +223,7 @@ _Pvt_Extensions
 
 # Zip files
 *.zip
+*.rar
+
+# Ini files
+*.ini
