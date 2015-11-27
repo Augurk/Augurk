@@ -25,6 +25,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using Raven.Client;
 using NuGet.Versioning;
+using Raven.Abstractions.Data;
 
 namespace Augurk.Api.Managers
 {
@@ -256,45 +257,69 @@ namespace Augurk.Api.Managers
             }
         }
 
+        /// <summary>
+        /// Deletes all features in a specified group of the specified product.
+        /// </summary>
+        /// <param name="productName">The product under which he provided group falls.</param>
+        /// <param name="groupName">The group of which the features should be deleted.</param>
+        public async Task DeleteFeaturesAsync(string productName, string groupName)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
+                    nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
+                    new IndexQuery() { Query = "Product:" + productName + " AND Group:" + groupName },
+                    new BulkOperationOptions() { AllowStale = true });
+            }
+        }
+
+        /// <summary>
+        /// Deletes all features of specified version in a specified group of the specified product.
+        /// </summary>
+        /// <param name="productName">The product under which he provided group falls.</param>
+        /// <param name="groupName">The group of which the features should be deleted.</param>
+        /// <param name="version">The version of the features to delete.</param>
+        public async Task DeleteFeaturesAsync(string productName, string groupName, string version)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
+                    nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
+                    new IndexQuery() { Query = "Product:" + productName + " AND Version:" + version + " AND Group:" + groupName },
+                    new BulkOperationOptions() { AllowStale = true });
+            }
+        }
+
+        /// <summary>
+        /// Deletes al versions of the specified feature.
+        /// </summary>
+        /// <param name="productName">The product the feature falls under.</param>
+        /// <param name="groupName">The group the feature falls under.</param>
+        /// <param name="title">The feature that should be deleted.</param>
+        public async Task DeleteFeatureAsync(string productName, string groupName, string title)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
+                    nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
+                    new IndexQuery() { Query = "Product:" + productName + " AND Title:" + title + " AND Group:" + groupName },
+                    new BulkOperationOptions() { AllowStale = true });
+            }
+        }
+
+        /// <summary>
+        /// Deletes the specified version of the specified feature.
+        /// </summary>
+        /// <param name="productName">The product the feature falls under.</param>
+        /// <param name="groupName">The group the feature falls under.</param>
+        /// <param name="title">The feature that should be deleted.</param>
+        /// <param name="version">The version of the feature that should be deleted.</param>
         public async Task DeleteFeatureAsync(string productName, string groupName, string title, string version)
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
                 // The delete method only marks the entity with the provided id for deletion, as such it is not asynchronous
                 session.Delete(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));
-
-                await session.SaveChangesAsync();
-            }
-        }
-
-        public async Task DeleteFeaturesAsync(string productName)
-        {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
-            {
-                var featuresQuery = session.Query<DbFeature>().Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase));
-
-                foreach (var feature in featuresQuery)
-                {
-                    // The delete method only marks the entity for deletion, as such it is not asynchronous
-                    session.Delete(feature);
-                }
-
-                await session.SaveChangesAsync();
-            }
-        }
-
-        public async Task DeleteFeaturesAsync(string productName, string groupName)
-        {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
-            {
-                var featuresQuery = session.Query<DbFeature>().Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
-                                                                             && feature.Group.Equals(groupName, StringComparison.OrdinalIgnoreCase));
-
-                foreach (var feature in featuresQuery)
-                {
-                    // The delete method only marks the entity for deletion, as such it is not asynchronous
-                    session.Delete(feature);
-                }
 
                 await session.SaveChangesAsync();
             }

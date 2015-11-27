@@ -25,5 +25,30 @@ namespace Augurk.Api.Controllers.V2
         {
             return await _featureManager.GetGroupedFeatureDescriptionsAsync(productName);
         }
+
+        /// <summary>
+        /// Deletes all versions of the provided group from the database.
+        /// </summary>
+        /// <param name="productName">Name of the product that the group belongs to.</param>
+        /// <param name="groupName">Name of the group that should be deleted.</param>
+        [Route("")]
+        [HttpDelete]
+        public async Task DeleteGroupAsync(string productName, string groupName)
+        {
+            await _featureManager.DeleteFeaturesAsync(productName, groupName);
+        }
+
+        /// <summary>
+        /// Deletes the provided version of the provided group from the database.
+        /// </summary>
+        /// <param name="productName">Name of the product that the group belongs to.</param>
+        /// <param name="groupName">Name of the group that should be deleted.</param>
+        /// <param name="version">The version of the group that should be deleted.</param>
+        [Route("versions/{version}")]
+        [HttpDelete]
+        public async Task DeleteGroupAsync(string productName, string groupName, string version)
+        {
+            await _featureManager.DeleteFeaturesAsync(productName, groupName, version);
+        }
     }
 }

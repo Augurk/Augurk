@@ -26,23 +26,21 @@ namespace Augurk.Api.Controllers.V2
         }
 
         /// <summary>
-        /// Deletes the provided product
+        /// Deletes the provided product.
         /// </summary>
-        /// <returns>A range of product names.</returns>
         [Route("{product}")]
         [HttpDelete]
-        public async Task DeleteProducts(string product)
+        public async Task DeleteProduct(string product)
         {
             await _productsManager.DeleteProductAsync(product);
         }
 
         /// <summary>
-        /// Deletes the provided product
+        /// Deletes the provided version of the provided product.
         /// </summary>
-        /// <returns>A range of product names.</returns>
         [Route("{product}/versions/{version}")]
         [HttpDelete]
-        public async Task DeleteProducts(string product, string version)
+        public async Task DeleteProduct(string product, string version)
         {
             await _productsManager.DeleteProductAsync(product, version);
         }
