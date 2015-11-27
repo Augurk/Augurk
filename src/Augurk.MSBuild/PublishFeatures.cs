@@ -232,7 +232,7 @@ namespace Augurk.MSBuild
         private string GetFeatureUri(string groupUri, string featureTitle)
         {
             return String.Format(CultureInfo.InvariantCulture,
-                                 "{0}/{1}",
+                                 "{0}/{1}/",
                                  groupUri,
                                  featureTitle);
         }
