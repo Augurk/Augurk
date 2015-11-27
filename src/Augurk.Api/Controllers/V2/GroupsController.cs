@@ -31,7 +31,7 @@ namespace Augurk.Api.Controllers.V2
         /// </summary>
         /// <param name="productName">Name of the product that the group belongs to.</param>
         /// <param name="groupName">Name of the group that should be deleted.</param>
-        [Route("")]
+        [Route("{groupName}")]
         [HttpDelete]
         public async Task DeleteGroupAsync(string productName, string groupName)
         {
@@ -44,7 +44,7 @@ namespace Augurk.Api.Controllers.V2
         /// <param name="productName">Name of the product that the group belongs to.</param>
         /// <param name="groupName">Name of the group that should be deleted.</param>
         /// <param name="version">The version of the group that should be deleted.</param>
-        [Route("versions/{version}")]
+        [Route("{groupName}/versions/{version}")]
         [HttpDelete]
         public async Task DeleteGroupAsync(string productName, string groupName, string version)
         {

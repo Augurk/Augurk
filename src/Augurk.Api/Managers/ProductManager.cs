@@ -56,7 +56,7 @@ namespace Augurk.Api.Managers
             {
                 await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
                     nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
-                    new IndexQuery() {Query = "Product:" + product},
+                    new IndexQuery() {Query = $"Product:\"{product}\"" },
                     new BulkOperationOptions() {AllowStale = true});
             }
         }
@@ -72,7 +72,7 @@ namespace Augurk.Api.Managers
             {
                 await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
                     nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
-                    new IndexQuery() { Query = "Product:" + product + "AND Version:" + version },
+                    new IndexQuery() { Query = $"Product:\"{product}\"AND Version:\"{version}\"" },
                     new BulkOperationOptions() { AllowStale = true });
             }
         }

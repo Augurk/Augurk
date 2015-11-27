@@ -24,7 +24,6 @@ using Augurk.Entities.Test;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using Raven.Client;
-using NuGet.Versioning;
 using Raven.Abstractions.Data;
 
 namespace Augurk.Api.Managers
@@ -268,7 +267,7 @@ namespace Augurk.Api.Managers
             {
                 await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
                     nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
-                    new IndexQuery() { Query = "Product:" + productName + " AND Group:" + groupName },
+                    new IndexQuery() { Query = $"Product:\"{productName}\"AND Group:\"{groupName}\"" },
                     new BulkOperationOptions() { AllowStale = true });
             }
         }
@@ -285,7 +284,7 @@ namespace Augurk.Api.Managers
             {
                 await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
                     nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
-                    new IndexQuery() { Query = "Product:" + productName + " AND Version:" + version + " AND Group:" + groupName },
+                    new IndexQuery() { Query = $"Product:\"{productName}\"AND Group:\"{groupName}\"AND Version:\"{version}\"" },
                     new BulkOperationOptions() { AllowStale = true });
             }
         }
@@ -302,7 +301,7 @@ namespace Augurk.Api.Managers
             {
                 await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
                     nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
-                    new IndexQuery() { Query = "Product:" + productName + " AND Title:" + title + " AND Group:" + groupName },
+                    new IndexQuery() { Query = $"Product:\"{productName}\"AND Group:\"{groupName}\"AND Title:\"{title}\"" },
                     new BulkOperationOptions() { AllowStale = true });
             }
         }
