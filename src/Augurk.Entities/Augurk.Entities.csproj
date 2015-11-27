@@ -39,6 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Augurk\Properties\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
+    </Compile>
     <Compile Include="Background.cs" />
     <Compile Include="DisplayableFeature.cs" />
     <Compile Include="ExampleSet.cs" />

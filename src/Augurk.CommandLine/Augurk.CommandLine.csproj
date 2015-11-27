@@ -85,6 +85,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Augurk\Properties\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
+    </Compile>
     <Compile Include="Commands\PublishCommand.cs" />
     <Compile Include="Extensions\SpecFlowEntityExtensions.cs" />
     <Compile Include="Options\GlobalOptions.cs" />
