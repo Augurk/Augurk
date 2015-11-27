@@ -72,11 +72,25 @@ namespace Augurk.CommandLine.Commands
                 var response = client.DeleteAsync(deleteUri).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine($"Succesfully deleted feature {_options.FeatureName} from Augurk at {_options.AugurkUrl}");
+                    if (!String.IsNullOrWhiteSpace(_options.FeatureName))
+                    {
+                        Console.WriteLine($"Succesfully deleted feature {_options.FeatureName} from Augurk at {_options.AugurkUrl}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Succesfully deleted features from Augurk at {_options.AugurkUrl}");
+                    }
                 }
                 else
                 {
-                    Console.WriteLine($"Deleting feature {_options.FeatureName} from Augurk at {_options.AugurkUrl} failed with statuscode {response.StatusCode}");
+                    if (!String.IsNullOrWhiteSpace(_options.FeatureName))
+                    {
+                        Console.WriteLine($"Deleting feature {_options.FeatureName} from Augurk at {_options.AugurkUrl} failed with statuscode {response.StatusCode}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Deleting features from Augurk at {_options.AugurkUrl} failed with statuscode {response.StatusCode}");
+                    }
                 }
             }
         }
