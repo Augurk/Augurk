@@ -56,6 +56,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -88,10 +89,17 @@
     <Compile Include="..\Augurk\Properties\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="Commands\CommandManager.cs" />
+    <Compile Include="Commands\DeleteCommand.cs" />
+    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\ICommandMetadata.cs" />
     <Compile Include="Commands\PublishCommand.cs" />
+    <Compile Include="Extensions\CompositionContainerExtensions.cs" />
     <Compile Include="Extensions\SpecFlowEntityExtensions.cs" />
+    <Compile Include="Options\DeleteOptions.cs" />
     <Compile Include="Options\GlobalOptions.cs" />
     <Compile Include="Options\PublishOptions.cs" />
+    <Compile Include="Options\SharedOptions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

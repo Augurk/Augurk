@@ -4,7 +4,7 @@
 		<id>Augurk.CommandLine</id>
 		<version>$version$</version>
 		<title>Augurk.CommandLine</title>
-		<authors>Jonathan Mezach</authors>
+		<authors>Jonathan Mezach, Mark Taling</authors>
 		<owners>Mark Taling</owners>
 		<licenseUrl>https://marktaling.github.io/Augurk/License.md</licenseUrl>
 		<projectUrl>https://github.com/marktaling/Augurk</projectUrl>

@@ -21,6 +21,7 @@ using Raven.Client;
 using Raven.Client.Linq;
 using Augurk.Api.Indeces;
 using System;
+using Raven.Abstractions.Data;
 
 namespace Augurk.Api.Managers
 {
@@ -38,10 +39,42 @@ namespace Augurk.Api.Managers
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
                 return await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                                    .OrderBy(feature => feature.Product)
                                     .Select(feature => feature.Product)
                                     .Distinct()
                                     .OrderBy(product => product)
                                     .ToListAsync();
+            }
+        }
+
+        /// <summary>
+        /// Deletes the specified product.
+        /// </summary>
+        /// <param name="product">The product to delete.</param>
+        public async Task DeleteProductAsync(string product)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
+                    nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
+                    new IndexQuery() {Query = $"Product:\"{product}\"" },
+                    new BulkOperationOptions() {AllowStale = true});
+            }
+        }
+
+        /// <summary>
+        /// Deletes a specified version of the specified product.
+        /// </summary>
+        /// <param name="product">The product to delete.</param>
+        /// <param name="version">The version of the product to delete.</param>
+        public async Task DeleteProductAsync(string product, string version)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
+                    nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
+                    new IndexQuery() { Query = $"Product:\"{product}\"AND Version:\"{version}\"" },
+                    new BulkOperationOptions() { AllowStale = true });
             }
         }
 
@@ -56,6 +89,7 @@ namespace Augurk.Api.Managers
             {
                 return await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
                                     .Where(feature => feature.Product.Equals(productName, StringComparison.CurrentCultureIgnoreCase))
+                                    .OrderBy(feature => feature.Tag)
                                     .Select(feature => feature.Tag)
                                     .Distinct()
                                     .OrderBy(tag => tag)

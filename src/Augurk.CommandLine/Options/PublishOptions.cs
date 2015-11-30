@@ -10,7 +10,7 @@ namespace Augurk.CommandLine.Options
     /// <summary>
     /// Represents the available command line options when publishing features.
     /// </summary>
-    internal class PublishOptions
+    internal class PublishOptions : SharedOptions
     {
         /// <summary>
         /// Name of the verb for this set of options.
@@ -22,12 +22,6 @@ namespace Augurk.CommandLine.Options
         /// </summary>
         [OptionList("featureFiles", Separator = ',', HelpText = "Set of feature files that should be published to Augurk.", Required = true)]
         public IEnumerable<string> FeatureFiles { get; set; }
-
-        /// <summary>
-        /// Gets or sets the URL of the instance of Augurk to which the features files should be published.
-        /// </summary>
-        [Option("url", HelpText = "URL to the Augurk Instance to which the features files should be published.", Required = true)]
-        public string AugurkUrl { get; set; }
 
         /// <summary>
         /// Gets or sets the name of the product under which the feature files should be published.
