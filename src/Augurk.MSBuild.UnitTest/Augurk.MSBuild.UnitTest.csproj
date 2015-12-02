@@ -66,6 +66,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\Augurk\Properties\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestResultParsers\MsTestResultParserTest.cs" />
   </ItemGroup>

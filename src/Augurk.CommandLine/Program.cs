@@ -2,22 +2,26 @@
 using Augurk.CommandLine.Commands;
 using Augurk.CommandLine.Options;
 using CommandLine;
+using System.ComponentModel.Composition.Hosting;
+using System.Reflection;
+using System.ComponentModel.Composition;
 
 namespace Augurk.CommandLine
 {
     /// <summary>
     /// Entry-point for the command line tool.
     /// </summary>
-    class Program
+    static class Program
     {
+
         /// <summary>
         /// Called when the command line tool starts.
         /// </summary>
         /// <param name="args">Arguments for the application.</param>
         static void Main(string[] args)
         {
-            // Parse the command line options
-            var exitCode = 0;
+            // Parse the command line arguments
+            int exitCode = 0;
             var options = new GlobalOptions();
             using (var parser = new Parser(settings => { settings.MutuallyExclusive = true; settings.HelpWriter = Console.Error; }))
             {
@@ -27,19 +31,19 @@ namespace Augurk.CommandLine
                 }
             }
 
-            // Command line arguments not succesfully parsed
 #if DEBUG
             Console.ReadLine();
 #endif
             Environment.Exit(exitCode);
         }
 
+
         /// <summary>
         /// Called to execute a specific supported verb.
         /// </summary>
         /// <param name="verbName">Name of the verb to execute.</param>
         /// <param name="verbInstance">Instance of the options for the verb.</param>
-        static void ExecuteVerb(string verbName, object verbInstance)
+        private static void ExecuteVerb(string verbName, object verbInstance)
         {
             // Make sure that we have a verb instance
             if (verbInstance == null)
@@ -48,17 +52,23 @@ namespace Augurk.CommandLine
                 return;
             }
 
-            // Determine the verb that was executed
-            switch (verbName)
+            // Create the container so that it dynamically determines the commands
+            using (var catalog = new AssemblyCatalog(Assembly.GetExecutingAssembly()))
+            using (var container = new CompositionContainer(catalog))
             {
-                case PublishOptions.VERB_NAME:
-                    var verbOptions = (PublishOptions)verbInstance;
-                    var command = new PublishCommand(verbOptions);
-                    command.Execute();
-                    return;
-                default:
-                    // Unknown verb
-                    return;
+                try
+                {
+                    // Inject the options instance into the container
+                    container.ComposeExportedValue(verbInstance);
+
+                    // Get the command manager from the container and let it execute the command
+                    var commandManager = container.GetExportedValue<CommandManager>();
+                    commandManager.ExecuteCommand(verbName);
+                }
+                catch (CompositionException compositionException)
+                {
+                    Console.WriteLine(compositionException.ToString());
+                }
             }
         }
     }

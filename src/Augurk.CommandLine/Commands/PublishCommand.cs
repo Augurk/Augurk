@@ -10,23 +10,20 @@ using System.Threading.Tasks;
 using Augurk.CommandLine.Options;
 using Augurk.Entities;
 using TechTalk.SpecFlow.Parser;
+using System.ComponentModel.Composition;
 
 namespace Augurk.CommandLine.Commands
 {
     /// <summary>
     /// Implements the publish command.
     /// </summary>
-    internal class PublishCommand
+    [Export(typeof(ICommand))]
+    [ExportMetadata("Verb", PublishOptions.VERB_NAME)]
+    internal class PublishCommand : ICommand
     {
-        /// <summary>
-        /// Stores the <see cref="PublishOptions"/> passed to the command.
-        /// </summary>
         private readonly PublishOptions _options;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PublishCommand"/> class.
-        /// </summary>
-        /// <param name="options">An <see cref="PublishOptions"/> instance to use.</param>
+        [ImportingConstructor]
         public PublishCommand(PublishOptions options)
         {
             _options = options;

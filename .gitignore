@@ -140,7 +140,6 @@ publish/
 *.azurePubxml
 # TODO: Comment the next line if you want to checkin your web deploy settings 
 # but database connection strings (with potential passwords) will be unencrypted
-*.pubxml
 *.publishproj
 
 # NuGet Packages
@@ -217,6 +216,9 @@ FakesAssemblies/
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
 
+# App_Data folder
+**/App_Data
+
 # RavenDB stuff
 **/FeatureStore
 **/CompiledIndexCache
@@ -224,3 +226,7 @@ _Pvt_Extensions
 
 # Zip files
 *.zip
+*.rar
+
+# Ini files
+*.ini
