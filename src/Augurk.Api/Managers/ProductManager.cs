@@ -42,7 +42,6 @@ namespace Augurk.Api.Managers
                                     .OrderBy(feature => feature.Product)
                                     .Select(feature => feature.Product)
                                     .Distinct()
-                                    .OrderBy(product => product)
                                     .ToListAsync();
             }
         }
@@ -92,7 +91,6 @@ namespace Augurk.Api.Managers
                                     .OrderBy(feature => feature.Tag)
                                     .Select(feature => feature.Tag)
                                     .Distinct()
-                                    .OrderBy(tag => tag)
                                     .ToListAsync();
             }
         }
