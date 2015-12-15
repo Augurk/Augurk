@@ -18,9 +18,9 @@ namespace Augurk.CommandLine.Options
         public const string VERB_NAME = "publish";
 
         /// <summary>
-        /// Gets or sets the set of .feature files that should be published to Augurk.
+        /// Gets or sets the set of comma separated .feature files that should be published to Augurk.
         /// </summary>
-        [OptionList("featureFiles", Separator = ',', HelpText = "Set of feature files that should be published to Augurk.", Required = true)]
+        [OptionList("featureFiles", Separator = ',', HelpText = "Comma separated set of feature files that should be published to Augurk. Also supports * or ? wildcard characters.", Required = true)]
         public IEnumerable<string> FeatureFiles { get; set; }
 
         /// <summary>

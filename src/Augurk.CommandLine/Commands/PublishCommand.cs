@@ -64,8 +64,15 @@ namespace Augurk.CommandLine.Commands
                 }
 
                 // Parse and publish each of the provided feature files
-                foreach (var featureFile in _options.FeatureFiles)
+                IEnumerable<string> featureFiles = Expand(_options.FeatureFiles);
+                foreach (var featureFile in featureFiles)
                 {
+                    if (!File.Exists(featureFile))
+                    {
+                        Console.WriteLine($"Skipping file {featureFile} because it does not exist.");
+                        continue;
+                    }
+
                     try
                     {
                         using (TextReader reader = File.OpenText(featureFile))
@@ -106,6 +113,38 @@ namespace Augurk.CommandLine.Commands
             }
         }
 
+        /// <summary>
+        /// Expands a list of feature file specifications by resolving wildcards.
+        /// </summary>
+        /// <param name="featureFiles">List of feature files specified by the user.</param>
+        /// <returns>Expanded set of file names.</returns>
+        private static IEnumerable<string> Expand(IEnumerable<string> featureFiles)
+        {
+            var expandedList = new List<string>();
+
+            foreach (var fileSpec in featureFiles)
+            {
+                if (fileSpec.Contains('?') || fileSpec.Contains('*'))
+                {
+                    // resolve wildcard
+                    var directory = Path.GetDirectoryName(fileSpec);
+                    var spec = Path.GetFileName(fileSpec);
+
+                    if (!string.IsNullOrEmpty(directory) && !string.IsNullOrEmpty(spec))
+                    {
+                        var files = Directory.GetFiles(directory, spec);
+                        expandedList.AddRange(files);
+                    }
+                }
+                else
+                {
+                    expandedList.Add(fileSpec);
+                }
+            }
+
+            return expandedList;
+        }
+
         private void ExecuteUsingV2Api()
         {
             // Instantiate a new parser, using the provided language
@@ -116,8 +155,15 @@ namespace Augurk.CommandLine.Commands
                 string groupUri = $"{_options.AugurkUrl.TrimEnd('/')}/api/v2/products/{_options.ProductName}/groups/{_options.GroupName}/features";
 
                 // Parse and publish each of the provided feature files
-                foreach (var featureFile in _options.FeatureFiles)
+                var expandedList = Expand(_options.FeatureFiles);
+                foreach (var featureFile in expandedList)
                 {
+                    if (!File.Exists(featureFile))
+                    {
+                        Console.WriteLine($"Skipping file {featureFile} because it doesn't exist.");
+                        continue;
+                    }
+
                     try
                     {
                         using (TextReader reader = File.OpenText(featureFile))
