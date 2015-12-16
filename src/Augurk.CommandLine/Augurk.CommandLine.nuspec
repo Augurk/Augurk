@@ -11,7 +11,10 @@
 		<iconUrl>https://marktaling.github.io/Augurk/img/icon128.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Command line tools for publishing feature files to Augurk.</description>
-		<releaseNotes>Initial release</releaseNotes>
+		<releaseNotes>
+      This version contains logic to both upload to and delete files from an Augurk instance.
+      While uploading, wildcards are supported for the filenames.
+    </releaseNotes>
 		<copyright>Copyright 2015</copyright>
 		<tags>augurk gherkin specflow commandline</tags>
 	</metadata>
