@@ -64,15 +64,9 @@ namespace Augurk.CommandLine.Commands
                 }
 
                 // Parse and publish each of the provided feature files
-                IEnumerable<string> featureFiles = Expand(_options.FeatureFiles);
-                foreach (var featureFile in featureFiles)
+                var expandedList = Expand(_options.FeatureFiles);
+                foreach (var featureFile in expandedList)
                 {
-                    if (!File.Exists(featureFile))
-                    {
-                        Console.WriteLine($"Skipping file {featureFile} because it does not exist.");
-                        continue;
-                    }
-
                     try
                     {
                         using (TextReader reader = File.OpenText(featureFile))
@@ -114,8 +108,13 @@ namespace Augurk.CommandLine.Commands
         }
 
         /// <summary>
-        /// Expands a list of feature file specifications by resolving wildcards.
+        /// Expands a list of feature file specifications by resolving wildcards or getting all
+        /// .feature files when it's a directory.
         /// </summary>
+        /// <remarks>
+        /// Wildcard characters only work for file specifications, not for directories.
+        /// Specifications with * or ? in the directory specification will be ignored.
+        /// </remarks>
         /// <param name="featureFiles">List of feature files specified by the user.</param>
         /// <returns>Expanded set of file names.</returns>
         private static IEnumerable<string> Expand(IEnumerable<string> featureFiles)
@@ -124,21 +123,42 @@ namespace Augurk.CommandLine.Commands
 
             foreach (var fileSpec in featureFiles)
             {
+                if (Directory.Exists(fileSpec))
+                {
+                    // spec is a directory, automatically expand to *.feature
+                    var files = Directory.GetFiles(fileSpec, "*.feature");
+                    expandedList.AddRange(files);
+                    continue;
+                }
+
                 if (fileSpec.Contains('?') || fileSpec.Contains('*'))
                 {
-                    // resolve wildcard
+                    // resolve wildcard in file spec
                     var directory = Path.GetDirectoryName(fileSpec);
                     var spec = Path.GetFileName(fileSpec);
 
-                    if (!string.IsNullOrEmpty(directory) && !string.IsNullOrEmpty(spec))
+                    if (!string.IsNullOrEmpty(directory) && Directory.Exists(directory))
                     {
-                        var files = Directory.GetFiles(directory, spec);
-                        expandedList.AddRange(files);
+                        if (!string.IsNullOrEmpty(spec))
+                        {
+                            var files = Directory.GetFiles(directory, spec);
+                            expandedList.AddRange(files);
+                        }
                     }
+                    else
+                    {
+                        Console.WriteLine($"Skipping invalid directory specification '{directory}'.");
+                    }
+                    continue;
+                }
+
+                if (File.Exists(fileSpec))
+                {
+                    expandedList.Add(fileSpec);
                 }
                 else
                 {
-                    expandedList.Add(fileSpec);
+                    Console.WriteLine($"Skipping file '{fileSpec}' because it does not exist.");
                 }
             }
 
@@ -158,12 +178,6 @@ namespace Augurk.CommandLine.Commands
                 var expandedList = Expand(_options.FeatureFiles);
                 foreach (var featureFile in expandedList)
                 {
-                    if (!File.Exists(featureFile))
-                    {
-                        Console.WriteLine($"Skipping file {featureFile} because it doesn't exist.");
-                        continue;
-                    }
-
                     try
                     {
                         using (TextReader reader = File.OpenText(featureFile))
