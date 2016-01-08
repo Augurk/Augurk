@@ -1,11 +1,7 @@
 ﻿using Augurk.CommandLine.Options;
+using Augurk.CommandLine.Plumbing;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Augurk.CommandLine.Commands
 {
@@ -17,6 +13,7 @@ namespace Augurk.CommandLine.Commands
     internal class DeleteCommand : ICommand
     {
         private readonly DeleteOptions _options;
+        private readonly AugurkHttpClientFactory _httpClientFactory;
 
         /// <summary>
         /// Default constructor for this class.
@@ -26,6 +23,7 @@ namespace Augurk.CommandLine.Commands
         public DeleteCommand(DeleteOptions options)
         {
             _options = options;
+            _httpClientFactory = new AugurkHttpClientFactory();
         }
 
         /// <summary>
@@ -65,8 +63,14 @@ namespace Augurk.CommandLine.Commands
                 deleteUri = new Uri(deleteUri, $"versions/{_options.Version}/");
             }
 
+            System.Security.Principal.WindowsIdentity ident = System.Security.Principal.WindowsIdentity.GetCurrent();
+            if (null != ident)
+            {
+                Console.WriteLine("Will the Identity '{0}' Show up in IdentityWhiteListAuthorizationAttribute ???", ident.Name);
+            }
+
             // Perform the delete operation
-            using (var client = new HttpClient())
+            using (var client = _httpClientFactory.CreateHttpClient(_options))
             {
                 // Call the URL
                 var response = client.DeleteAsync(deleteUri).Result;

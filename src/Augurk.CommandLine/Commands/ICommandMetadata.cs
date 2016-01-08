@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Augurk.CommandLine.Commands
+﻿namespace Augurk.CommandLine.Commands
 {
     /// <summary>
     /// Describes the required metadata for a command.
