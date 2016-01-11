@@ -63,12 +63,6 @@ namespace Augurk.CommandLine.Commands
                 deleteUri = new Uri(deleteUri, $"versions/{_options.Version}/");
             }
 
-            System.Security.Principal.WindowsIdentity ident = System.Security.Principal.WindowsIdentity.GetCurrent();
-            if (null != ident)
-            {
-                Console.WriteLine("Will the Identity '{0}' Show up in IdentityWhiteListAuthorizationAttribute ???", ident.Name);
-            }
-
             // Perform the delete operation
             using (var client = _httpClientFactory.CreateHttpClient(_options))
             {
