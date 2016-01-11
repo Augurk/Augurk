@@ -28,13 +28,13 @@ namespace Augurk.CommandLine.Plumbing
 
             if (options.UseBasicAuthentication)
             {
-                if (string.IsNullOrEmpty(options.BasicAuthnUsername))
+                if (string.IsNullOrEmpty(options.BasicAuthenticationUsername) || string.IsNullOrEmpty(options.BasicAuthenticationPassword))
                 {
-                    Console.Error.WriteLine("When using basic HTTP authentication, you must specify a username and (optionally) password)");
+                    Console.Error.WriteLine("When using basic HTTP authentication, you must specify a username and password)");
                     System.Environment.Exit(-1);
                 }
 
-                var byteArray = Encoding.ASCII.GetBytes($"{options.BasicAuthnUsername}:{options.BasicAuthnPassword}");
+                var byteArray = Encoding.ASCII.GetBytes($"{options.BasicAuthenticationUsername}:{options.BasicAuthenticationPassword}");
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
             }
 

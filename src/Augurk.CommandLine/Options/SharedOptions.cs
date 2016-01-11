@@ -29,12 +29,12 @@ namespace Augurk.CommandLine.Options
         /// Username for basic HTTP authentication against the Augurk API's.
         /// </summary>
         [Option("username", HelpText = "Username for basic authentication against the Augurk API's.", Required = false)]
-        public string BasicAuthnUsername { get; set; }
+        public string BasicAuthenticationUsername { get; set; }
 
         /// <summary>
         /// Password for basic HTTP authentication against the Augurk API's.
         /// </summary>
         [Option("password", HelpText = "Password for basic authentication against the Augurk API's.", Required = false)]
-        public string BasicAuthnPassword { get; set; }
+        public string BasicAuthenticationPassword { get; set; }
     }
 }

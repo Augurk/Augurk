@@ -280,12 +280,10 @@ namespace Augurk.MSBuild
 
             if (UseBasicAuthentication)
             {
-                if (string.IsNullOrEmpty(BasicAuthenticationUsername))
+                if (string.IsNullOrEmpty(BasicAuthenticationUsername) || string.IsNullOrEmpty(BasicAuthenticationPassword))
                 {
-                    Log.LogError("When using basic HTTP authentication, username cannot be empty.");
+                    Log.LogError("When using basic HTTP authentication, username and password cannot be empty.");
                     return null;
-
-                    // password could be empty
                 }
 
                 var byteArray = Encoding.ASCII.GetBytes($"{BasicAuthenticationUsername}:{BasicAuthenticationPassword}");
