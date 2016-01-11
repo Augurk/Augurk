@@ -20,13 +20,11 @@ namespace Augurk.CommandLine.Commands
     internal class PublishCommand : ICommand
     {
         private readonly PublishOptions _options;
-        private readonly AugurkHttpClientFactory _httpClientFactory;
 
         [ImportingConstructor]
         public PublishCommand(PublishOptions options)
         {
             _options = options;
-            _httpClientFactory = new AugurkHttpClientFactory();
         }
 
         /// <summary>
@@ -52,7 +50,7 @@ namespace Augurk.CommandLine.Commands
             // Instantiate a new parser, using the provided language
             SpecFlowLangParser parser = new SpecFlowLangParser(new CultureInfo(_options.Language ?? "en-US"));
 
-            using (var client = _httpClientFactory.CreateHttpClient(_options))
+            using (var client = AugurkHttpClientFactory.CreateHttpClient(_options))
             {
                 // Get the base uri for all further operations
                 string groupUri = $"{_options.AugurkUrl.TrimEnd('/')}/api/features/{_options.BranchName}/{_options.GroupName ?? "Default"}";
@@ -171,7 +169,7 @@ namespace Augurk.CommandLine.Commands
             // Instantiate a new parser, using the provided language
             SpecFlowLangParser parser = new SpecFlowLangParser(new CultureInfo(_options.Language ?? "en-US"));
 
-            using (var client = _httpClientFactory.CreateHttpClient(_options))
+            using (var client = AugurkHttpClientFactory.CreateHttpClient(_options))
             {
                 // Get the base uri for all further operations
                 string groupUri = $"{_options.AugurkUrl.TrimEnd('/')}/api/v2/products/{_options.ProductName}/groups/{_options.GroupName}/features";

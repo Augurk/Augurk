@@ -6,10 +6,9 @@ using System.Text;
 
 namespace Augurk.CommandLine.Plumbing
 {
-    [Export(typeof(HttpClientFactory))]
-    internal class AugurkHttpClientFactory
+    internal static class AugurkHttpClientFactory
     {
-        public HttpClient CreateHttpClient(SharedOptions options)
+        public static HttpClient CreateHttpClient(SharedOptions options)
         {
             if (options.UseIntegratedSecurity)
             {

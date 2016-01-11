@@ -13,7 +13,6 @@ namespace Augurk.CommandLine.Commands
     internal class DeleteCommand : ICommand
     {
         private readonly DeleteOptions _options;
-        private readonly AugurkHttpClientFactory _httpClientFactory;
 
         /// <summary>
         /// Default constructor for this class.
@@ -23,7 +22,6 @@ namespace Augurk.CommandLine.Commands
         public DeleteCommand(DeleteOptions options)
         {
             _options = options;
-            _httpClientFactory = new AugurkHttpClientFactory();
         }
 
         /// <summary>
@@ -64,7 +62,7 @@ namespace Augurk.CommandLine.Commands
             }
 
             // Perform the delete operation
-            using (var client = _httpClientFactory.CreateHttpClient(_options))
+            using (var client = AugurkHttpClientFactory.CreateHttpClient(_options))
             {
                 // Call the URL
                 var response = client.DeleteAsync(deleteUri).Result;
