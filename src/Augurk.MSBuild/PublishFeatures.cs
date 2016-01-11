@@ -26,6 +26,7 @@ using Microsoft.Build.Utilities;
 using Augurk.Entities.Test;
 using Augurk.MSBuild.TestResultParsers;
 using TechTalk.SpecFlow.Parser;
+using System.Text;
 
 namespace Augurk.MSBuild
 {
@@ -63,6 +64,26 @@ namespace Augurk.MSBuild
         public bool ClearGroupBeforePublish { get; set; }
 
         /// <summary>
+        /// Gets or sets a <see cref="Boolean"/> value indicating whether to use basic http authentication to access the Augurk API's.
+        /// </summary>
+        public bool UseBasicAuthentication { get; set; }
+
+        /// <summary>
+        /// Username to use for basic authentication. Must be set if <see cref="UseBasicAuthentication"/> is set to true.
+        /// </summary>
+        public string BasicAuthenticationUsername { get; set; }
+
+        /// <summary>
+        /// Password to use for basic authentication.
+        /// </summary>
+        public string BasicAuthenticationPassword { get; set; }
+
+        /// <summary>
+        /// Gets or sets a <see cref="Boolean"/> value indicating whether to use integrated security authentication to access the Augurk API's.
+        /// </summary>
+        public bool UseIntegratedSecurity { get; set; }
+
+        /// <summary>
         /// Gets or sets the language that should be used when parsing the feature files.
         /// </summary>
         public string Language { get; set; }
@@ -91,96 +112,98 @@ namespace Augurk.MSBuild
 
             // Instantiate a new parser, using the provided language
             SpecFlowLangParser parser = new SpecFlowLangParser(new CultureInfo(Language ?? "en-US"));
-            var client = new HttpClient();
 
-            // Get the base uri for all further operations
-            string groupUri = GetGroupUri();
-
-            // Clear any existing features in this group, if required
-            if (ClearGroupBeforePublish)
+            using (var client = CreateHttpClient())
             {
-                Log.LogMessage("Clearing existing features in group {0} for branch {1}.", GroupName ?? "Default", BranchName);
-                client.DeleteAsync(groupUri).Wait();
-            }
+                // Get the base uri for all further operations
+                string groupUri = GetGroupUri();
 
-            // Parse and publish each of the provided feature files
-            foreach (var featureFile in FeatureFiles)
-            {
-                try
+                // Clear any existing features in this group, if required
+                if (ClearGroupBeforePublish)
                 {
-                    using (TextReader reader = File.OpenText(featureFile.ItemSpec))
+                    Log.LogMessage("Clearing existing features in group {0} for branch {1}.", GroupName ?? "Default", BranchName);
+                    client.DeleteAsync(groupUri).Wait();
+                }
+
+                // Parse and publish each of the provided feature files
+                foreach (var featureFile in FeatureFiles)
+                {
+                    try
                     {
-                        // Parse the feature and convert it to the correct format
-                        Feature feature = parser.Parse(reader, featureFile.ItemSpec).ConvertToFeature();
+                        using (TextReader reader = File.OpenText(featureFile.ItemSpec))
+                        {
+                            // Parse the feature and convert it to the correct format
+                            Feature feature = parser.Parse(reader, featureFile.ItemSpec).ConvertToFeature();
 
-                        // Get the uri to which the feature should be published
-                        string targetUri = GetFeatureUri(groupUri, feature.Title);
+                            // Get the uri to which the feature should be published
+                            string targetUri = GetFeatureUri(groupUri, feature.Title);
 
-                        // Publish the feature
-                        var postTask = client.PostAsJsonAsync<Feature>(targetUri, feature);
+                            // Publish the feature
+                            var postTask = client.PostAsJsonAsync<Feature>(targetUri, feature);
+                            postTask.Wait();
+
+                            // Process the result
+                            if (postTask.Result.IsSuccessStatusCode)
+                            {
+                                Log.LogMessage("Succesfully published feature '{0}' to group {1} for branch {2}.",
+                                               feature.Title,
+                                               GroupName ?? "Default",
+                                               BranchName);
+
+                            }
+                            else
+                            {
+                                result = false;
+                                Log.LogError("Publishing feature '{0}' to uri '{1}' resulted in statuscode '{2}'",
+                                             feature.Title,
+                                             targetUri,
+                                             postTask.Result.StatusCode);
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Log.LogErrorFromException(e);
+                    }
+                }
+
+                // Parse the restresults
+                IEnumerable<FeatureTestResult> testResults = ParseTestResults();
+
+                // Publish the testresults, if present
+                foreach (var featureTestResult in testResults)
+                {
+                    try
+                    {
+                        // Get the uri to which the test result should be published
+                        string targetUri = GetTestResultUri(groupUri, featureTestResult.FeatureTitle);
+
+                        // Publish the test result
+                        var postTask = client.PostAsJsonAsync<FeatureTestResult>(targetUri, featureTestResult);
                         postTask.Wait();
 
                         // Process the result
                         if (postTask.Result.IsSuccessStatusCode)
                         {
-                            Log.LogMessage("Succesfully published feature '{0}' to group {1} for branch {2}.",
-                                           feature.Title, 
-                                           GroupName ?? "Default", 
+                            Log.LogMessage("Succesfully published test result of feature '{0}' to group {1} for branch {2}.",
+                                           featureTestResult.FeatureTitle,
+                                           GroupName ?? "Default",
                                            BranchName);
 
                         }
                         else
                         {
                             result = false;
-                            Log.LogError("Publishing feature '{0}' to uri '{1}' resulted in statuscode '{2}'",
-                                         feature.Title,
+                            Log.LogError("Publishing test result of feature '{0}' to uri '{1}' resulted in statuscode '{2}'",
+                                         featureTestResult.FeatureTitle,
                                          targetUri,
                                          postTask.Result.StatusCode);
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    Log.LogErrorFromException(e);
-                }
-            }
-
-            // Parse the restresults
-            IEnumerable<FeatureTestResult> testResults = ParseTestResults();
-
-            // Publish the testresults, if present
-            foreach (var featureTestResult in testResults)
-            {
-                try
-                {
-                    // Get the uri to which the test result should be published
-                    string targetUri = GetTestResultUri(groupUri, featureTestResult.FeatureTitle);
-
-                    // Publish the test result
-                    var postTask = client.PostAsJsonAsync<FeatureTestResult>(targetUri, featureTestResult);
-                    postTask.Wait();
-
-                    // Process the result
-                    if (postTask.Result.IsSuccessStatusCode)
+                    catch (Exception e)
                     {
-                        Log.LogMessage("Succesfully published test result of feature '{0}' to group {1} for branch {2}.",
-                                       featureTestResult.FeatureTitle,
-                                       GroupName ?? "Default",
-                                       BranchName);
-
+                        Log.LogErrorFromException(e);
                     }
-                    else
-                    {
-                        result = false;
-                        Log.LogError("Publishing test result of feature '{0}' to uri '{1}' resulted in statuscode '{2}'",
-                                     featureTestResult.FeatureTitle,
-                                     targetUri,
-                                     postTask.Result.StatusCode);
-                    }
-                }
-                catch (Exception e)
-                {
-                    Log.LogErrorFromException(e);
                 }
             }
 
@@ -235,6 +258,41 @@ namespace Augurk.MSBuild
                                  "{0}/{1}/",
                                  groupUri,
                                  featureTitle);
+        }
+
+        private HttpClient CreateHttpClient()
+        {
+            if (UseIntegratedSecurity)
+            {
+                var username = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                Log.LogMessage($"Using integrated security with user {username} to access the Augurk API's.");
+
+                var handler = new HttpClientHandler
+                {
+                    UseDefaultCredentials = true,
+                    PreAuthenticate = true,
+                };
+                var secureClient = new HttpClient(handler);
+                return secureClient;
+            }
+
+            var client = new HttpClient();
+
+            if (UseBasicAuthentication)
+            {
+                if (string.IsNullOrEmpty(BasicAuthenticationUsername))
+                {
+                    Log.LogError("When using basic HTTP authentication, username cannot be empty.");
+                    return null;
+
+                    // password could be empty
+                }
+
+                var byteArray = Encoding.ASCII.GetBytes($"{BasicAuthenticationUsername}:{BasicAuthenticationPassword}");
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+            }
+
+            return client;
         }
     }
 }
