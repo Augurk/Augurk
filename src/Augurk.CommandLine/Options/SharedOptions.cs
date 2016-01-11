@@ -22,7 +22,7 @@ namespace Augurk.CommandLine.Options
         /// <summary>
         /// Flag to indicate that the tool must use basic HTTP authentication to access the Augurk API's.
         /// </summary>
-        [Option("useBasicAuthentication", HelpText = "Use basic HTTP authentication to access the Augurk API's. You must also specify a username and (optionally) a password.", MutuallyExclusiveSet = "useIntegratedSecurity", Required = false)]
+        [Option("useBasicAuthentication", HelpText = "Use basic HTTP authentication to access the Augurk API's. You must also specify a username and a password.", MutuallyExclusiveSet = "useIntegratedSecurity", Required = false)]
         public bool UseBasicAuthentication { get; set; }
 
         /// <summary>

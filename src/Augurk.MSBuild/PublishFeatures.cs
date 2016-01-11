@@ -74,7 +74,7 @@ namespace Augurk.MSBuild
         public string BasicAuthenticationUsername { get; set; }
 
         /// <summary>
-        /// Password to use for basic authentication.
+        /// Password to use for basic authentication. Must be set if <see cref="UseBasicAuthentication"/> is set to true.
         /// </summary>
         public string BasicAuthenticationPassword { get; set; }
 
