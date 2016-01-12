@@ -4,13 +4,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Text;
-using System.Threading.Tasks;
 using Augurk.CommandLine.Options;
 using Augurk.Entities;
 using TechTalk.SpecFlow.Parser;
 using System.ComponentModel.Composition;
+using Augurk.CommandLine.Plumbing;
 
 namespace Augurk.CommandLine.Commands
 {
@@ -51,7 +49,8 @@ namespace Augurk.CommandLine.Commands
         {
             // Instantiate a new parser, using the provided language
             SpecFlowLangParser parser = new SpecFlowLangParser(new CultureInfo(_options.Language ?? "en-US"));
-            using (var client = new HttpClient())
+
+            using (var client = AugurkHttpClientFactory.CreateHttpClient(_options))
             {
                 // Get the base uri for all further operations
                 string groupUri = $"{_options.AugurkUrl.TrimEnd('/')}/api/features/{_options.BranchName}/{_options.GroupName ?? "Default"}";
@@ -169,7 +168,8 @@ namespace Augurk.CommandLine.Commands
         {
             // Instantiate a new parser, using the provided language
             SpecFlowLangParser parser = new SpecFlowLangParser(new CultureInfo(_options.Language ?? "en-US"));
-            using (var client = new HttpClient())
+
+            using (var client = AugurkHttpClientFactory.CreateHttpClient(_options))
             {
                 // Get the base uri for all further operations
                 string groupUri = $"{_options.AugurkUrl.TrimEnd('/')}/api/v2/products/{_options.ProductName}/groups/{_options.GroupName}/features";
