@@ -23,26 +23,18 @@ AugurkServices.factory('featureService', ['$resource', function ($resource) {
                      { productName: '@productName', groupName: '@groupName', featureName: '@featureName', version: '@version' });
 }]);
 
-AugurkServices.factory('featureDescriptionService', ['$resource', function ($resource) {
+AugurkServices.factory('featureDescriptionService', ['$resource', '$http', '$q', function ($resource, $http, $q) {
 
-    // The branchname might contain a period, which webapi only allows if you finish with a slash
-    // Since AngularJS doesn't allow for trailing slashes, use a backslash instead
-    var service = {
-        getFeaturesByBranch: function (branch, callback) {
-            $resource('api/features/:branchName\\', { branchName: '@branchName' })
-                .query({ branchName: branch }, callback);
-        },
+    var service = {};
 
-        getFeaturesByBranchAndTag: function (branch, tag, callback) {
-            $resource('api/tags/:branchName/:tag/features', { branchName: '@branchName', tag: '@tag' })
-                .query({ branchName: branch, tag: tag }, callback);
-        },
+    service.getFeaturesByProductVersionAndTag = function (productName, version, tag) {
+        var tagPromiseDeferrer = $q.defer();
+        $http({ method: 'GET', url: 'api/v2/products/' + productName + '/versions/' + version + '/tags/' + tag + '/features' }).then(function (response) {
+            tagPromiseDeferrer.resolve(response.data);
+        });
 
-        getGroupsByProduct: function (product, callback) {
-            $resource('api/v2/products/:productName/groups', { productName: '@productName' })
-                .query({ productName: product }, callback);
-        }
-    };
+        return tagPromiseDeferrer.promise;
+    }
     
     return service;
 }]);
@@ -67,7 +59,7 @@ AugurkServices.factory('featureVersionService', ['$http', '$q', '$routeParams', 
     } else {
         versionsPromiseDeferrer.promise.then(function (versions) {
             service.currentVersion = versions[0];
-            $rootScope.$broadcast('currentVersionChanged', { version: service.currentVersion });
+            $rootScope.$broadcast('currentVersionChanged', { product: $routeParams.productName, version: service.currentVersion });
         });
     }
 
@@ -83,7 +75,7 @@ AugurkServices.factory('featureVersionService', ['$http', '$q', '$routeParams', 
 
             service.versions = versionsPromiseDeferrer.promise;
 
-            $rootScope.$broadcast('currentVersionChanged', { product: service.currentVersion });
+            $rootScope.$broadcast('currentVersionChanged', { product: $routeParams.productName, version: service.currentVersion });
         }
     });
 
@@ -94,7 +86,6 @@ AugurkServices.factory('productService', ['$http', '$q', '$routeParams', '$rootS
 
     // create the service
     var service = {
-        products: null,
         currentProduct: null
     };
 
@@ -106,13 +97,13 @@ AugurkServices.factory('productService', ['$http', '$q', '$routeParams', '$rootS
 
     service.products = productsPromiseDeferrer.promise;
 
-    service.getTags = function (productName) {
-        var tagsPromiseDeferrer = $q.defer();
-        $http({ method: 'GET', url: 'api/v2/products/' + productName + '/tags' }).then(function (response) {
-            tagsPromiseDeferrer.resolve(response.data);
+    service.getVersions = function (productName) {
+        var versionsPromiseDeferrer = $q.defer();
+        $http({ method: 'GET', url: 'api/v2/products/' + productName + '/versions' }).then(function (response) {
+            versionsPromiseDeferrer.resolve(response.data);
         });
 
-        return tagsPromiseDeferrer.promise;
+        return versionsPromiseDeferrer.promise;
     }
 
     // set the current product
@@ -134,6 +125,32 @@ AugurkServices.factory('productService', ['$http', '$q', '$routeParams', '$rootS
             $rootScope.$broadcast('currentProductChanged', { product: service.currentProduct });
         }
     });
+
+    return service;
+}]);
+
+AugurkServices.factory('versionService', ['$http', '$q', '$routeParams', '$rootScope', function ($http, $q, $routeParams, $rootScope) {
+
+    // create the service
+    var service = {};
+
+    service.getTagsForVersion = function (productName, version) {
+        var tagsPromiseDeferrer = $q.defer();
+        $http({ method: 'GET', url: 'api/v2/products/' + productName + '/versions/' + version + '/tags' }).then(function (response) {
+            tagsPromiseDeferrer.resolve(response.data);
+        });
+
+        return tagsPromiseDeferrer.promise;
+    }
+
+    service.getGroupsByProductAndVersion = function (productName, version) {
+        var groupsPromiseDeferrer = $q.defer();
+        $http({ method: 'GET', url: 'api/v2/products/' + productName + '/versions/' + version + '/groups' }).then(function (response) {
+            groupsPromiseDeferrer.resolve(response.data);
+        });
+
+        return groupsPromiseDeferrer.promise;
+    }
 
     return service;
 }]);
