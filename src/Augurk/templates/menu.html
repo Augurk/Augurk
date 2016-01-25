@@ -16,9 +16,21 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <h4>
-            {{currentBranch}}
+            {{currentProduct}}
             <span class="glyphicon glyphicon-filter pull-right glyphbutton"></span>
         </h4>
+    </div>
+
+    <div class="panel-body" id="versionPanel">
+        <div class="dropdown">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownVersion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                {{currentVersion}}
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownVersion">
+                <li ng-repeat="version in availableVersions"><a href="#/home/{{currentProduct}}/versions/{{version}}">{{version}}</a></li>
+            </ul>
+        </div>
     </div>
 
     <div class="panel-body" id="filterPanel">

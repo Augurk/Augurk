@@ -26,6 +26,9 @@ function ($routeProvider, $locationProvider) {
         .when('/home/:productName', {
             templateUrl: 'templates/home.html'
         })
+        .when('/home/:productName/versions/:version', {
+            templateUrl: 'templates/home.html'
+        })
         .when('/feature/:productName/:groupName/:featureName/:version', {
             templateUrl: 'templates/feature.html',
             controller: 'featureController'
