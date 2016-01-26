@@ -4,13 +4,11 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Text;
-using System.Threading.Tasks;
 using Augurk.CommandLine.Options;
 using Augurk.Entities;
 using TechTalk.SpecFlow.Parser;
 using System.ComponentModel.Composition;
+using Augurk.CommandLine.Plumbing;
 
 namespace Augurk.CommandLine.Commands
 {
@@ -51,7 +49,8 @@ namespace Augurk.CommandLine.Commands
         {
             // Instantiate a new parser, using the provided language
             SpecFlowLangParser parser = new SpecFlowLangParser(new CultureInfo(_options.Language ?? "en-US"));
-            using (var client = new HttpClient())
+
+            using (var client = AugurkHttpClientFactory.CreateHttpClient(_options))
             {
                 // Get the base uri for all further operations
                 string groupUri = $"{_options.AugurkUrl.TrimEnd('/')}/api/features/{_options.BranchName}/{_options.GroupName ?? "Default"}";
@@ -64,7 +63,8 @@ namespace Augurk.CommandLine.Commands
                 }
 
                 // Parse and publish each of the provided feature files
-                foreach (var featureFile in _options.FeatureFiles)
+                var expandedList = Expand(_options.FeatureFiles);
+                foreach (var featureFile in expandedList)
                 {
                     try
                     {
@@ -106,17 +106,77 @@ namespace Augurk.CommandLine.Commands
             }
         }
 
+        /// <summary>
+        /// Expands a list of feature file specifications by resolving wildcards or getting all
+        /// .feature files when it's a directory.
+        /// </summary>
+        /// <remarks>
+        /// Wildcard characters only work for file specifications, not for directories.
+        /// Specifications with * or ? in the directory specification will be ignored.
+        /// </remarks>
+        /// <param name="featureFiles">List of feature files specified by the user.</param>
+        /// <returns>Expanded set of file names.</returns>
+        private static IEnumerable<string> Expand(IEnumerable<string> featureFiles)
+        {
+            var expandedList = new List<string>();
+
+            foreach (var fileSpec in featureFiles)
+            {
+                if (Directory.Exists(fileSpec))
+                {
+                    // spec is a directory, automatically expand to *.feature
+                    var files = Directory.GetFiles(fileSpec, "*.feature");
+                    expandedList.AddRange(files);
+                    continue;
+                }
+
+                if (fileSpec.Contains('?') || fileSpec.Contains('*'))
+                {
+                    // resolve wildcard in file spec
+                    var directory = Path.GetDirectoryName(fileSpec);
+                    var spec = Path.GetFileName(fileSpec);
+
+                    if (!string.IsNullOrEmpty(directory) && Directory.Exists(directory))
+                    {
+                        if (!string.IsNullOrEmpty(spec))
+                        {
+                            var files = Directory.GetFiles(directory, spec);
+                            expandedList.AddRange(files);
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Skipping invalid directory specification '{directory}'.");
+                    }
+                    continue;
+                }
+
+                if (File.Exists(fileSpec))
+                {
+                    expandedList.Add(fileSpec);
+                }
+                else
+                {
+                    Console.WriteLine($"Skipping file '{fileSpec}' because it does not exist.");
+                }
+            }
+
+            return expandedList;
+        }
+
         private void ExecuteUsingV2Api()
         {
             // Instantiate a new parser, using the provided language
             SpecFlowLangParser parser = new SpecFlowLangParser(new CultureInfo(_options.Language ?? "en-US"));
-            using (var client = new HttpClient())
+
+            using (var client = AugurkHttpClientFactory.CreateHttpClient(_options))
             {
                 // Get the base uri for all further operations
                 string groupUri = $"{_options.AugurkUrl.TrimEnd('/')}/api/v2/products/{_options.ProductName}/groups/{_options.GroupName}/features";
 
                 // Parse and publish each of the provided feature files
-                foreach (var featureFile in _options.FeatureFiles)
+                var expandedList = Expand(_options.FeatureFiles);
+                foreach (var featureFile in expandedList)
                 {
                     try
                     {

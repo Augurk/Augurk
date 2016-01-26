@@ -1,11 +1,7 @@
 ﻿using Augurk.CommandLine.Options;
+using Augurk.CommandLine.Plumbing;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.Composition;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Augurk.CommandLine.Commands
 {
@@ -66,7 +62,7 @@ namespace Augurk.CommandLine.Commands
             }
 
             // Perform the delete operation
-            using (var client = new HttpClient())
+            using (var client = AugurkHttpClientFactory.CreateHttpClient(_options))
             {
                 // Call the URL
                 var response = client.DeleteAsync(deleteUri).Result;
