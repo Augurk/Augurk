@@ -230,3 +230,9 @@ _Pvt_Extensions
 
 # Ini files
 *.ini
+
+# Generated Files
+controllers.js
+controllers.min.js
+services.js
+services.min.js

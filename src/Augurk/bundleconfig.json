@@ -1,0 +1,19 @@
+[
+  {
+    "outputFileName": "Scripts/Application/controllers.js",
+    "inputFiles": [
+      "Scripts/Application/Controllers/navbarController.js",
+      "Scripts/Application/Controllers/featureController.js",
+      "Scripts/Application/Controllers/menuController.js"
+    ]
+  },
+  {
+    "outputFileName": "Scripts/Application/services.js",
+    "inputFiles": [
+      "Scripts/Application/Services/productService.js",
+      "Scripts/Application/Services/featureDescriptionService.js",
+      "Scripts/Application/Services/featureService.js",
+      "Scripts/Application/Services/featureVersionService.js"
+    ]
+  }
+]

@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014-2015, Mark Taling
+ Copyright 2014-2016, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,54 +14,7 @@
  limitations under the License.
 */
 
-var AugurkControllers = angular.module('AugurkControllers', ['AugurkServices']);
-
-AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$routeParams', 'featureService', 'featureVersionService',
-    function ($rootScope, $scope, $routeParams, featureService, featureVersionService) {
-        $scope.feature = featureService.get({
-            productName: $routeParams.productName,
-            groupName: $routeParams.groupName,
-            featureName: $routeParams.featureName,
-            version: $routeParams.version
-        });
-
-	    featureVersionService.versions.then(function(data) {
-		    $scope.availableVersions = data;
-	    });
-
-        $rootScope.$on('currentVersionChanged', function (event, data) {
-	        featureVersionService.versions.then(function(data) {
-		        $scope.availableVersions = data;
-	        });
-        });
-
-	    $scope.product = $routeParams.productName;
-	    $scope.group = $routeParams.groupName;
-
-        // Set the current group on the rootscope
-        $rootScope.currentGroupName = $routeParams.groupName;
-
-        // Define a function to merge the test results into the feature
-        $scope.mergeTestResults = function () {
-            if (!$scope.feature.testResult) {
-                return;
-            }
-
-            $.each($scope.feature.testResult.scenarioTestResults, function (index, testResult) {
-                $.each($scope.feature.scenarios, function (index1, scenario) {
-                    //var scenario = $scope.feature.scenarios.filter(function (s) { return s.title = testResult.scenarioTitle; })[0];
-                    scenario.testResult = testResult;
-                });
-                //var scenario = $scope.feature.scenarios.filter(function (s) { return s.title = testResult.scenarioTitle; })[0];
-                //scenario.testResult = testResult;
-            });
-
-            $scope.feature.testResult.merged = true;
-        };
-    }
-]);
-
-AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeParams', 'featureDescriptionService', 'productService',
+angular.module('Augurk').controller('menuController', ['$rootScope', '$scope', '$routeParams', 'featureDescriptionService', 'productService',
     function ($rootScope, $scope, $routeParams, featureDescriptionService, productService) {
 
         function createMenu(currentProduct) {
@@ -126,20 +79,6 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
 
         $rootScope.$on('currentProductChanged', function (event, data) {
             createMenu(data.product);
-        });
-    }
-]);
-
-AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'productService',
-    function ($rootScope, $scope, productService) {
-
-        $scope.currentProduct = productService.currentProduct;
-        $scope.$on('currentProductChanged', function (event, data) {
-            $rootScope.currentProduct = data.product;
-        });
-
-        productService.products.then(function (products) {
-            $scope.products = products.sort();
         });
     }
 ]);
