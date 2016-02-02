@@ -65,7 +65,7 @@ AugurkServices.factory('featureVersionService', ['$http', '$q', '$routeParams', 
 
     // update the version on navigation
     $rootScope.$on('$routeChangeSuccess', function () {
-        if ($routeParams.version && $routeParams.version != service.currentVersion) {
+        if ($routeParams.version && $routeParams.version != service.currentVersion && $routeParams.groupName && $routeParams.featureName) {
             service.currentVersion = $routeParams.version;
 
             var versionsPromiseDeferrer = $q.defer();

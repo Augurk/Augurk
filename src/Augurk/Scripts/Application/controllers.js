@@ -124,8 +124,13 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
         $rootScope.$on('currentProductChanged', function (event, data) {
             productService.getVersions(data.product).then(function (versions) {
                 $scope.availableVersions = versions;
+
                 // Load the first version
                 $scope.currentVersion = versions[0];
+                // Make sure to use the version from the routing when it is available. This to make sure the correct version is loaded after a refresh.
+                if ($routeParams.version && $routeParams.version !== $scope.currentVersion) {
+                    $scope.currentVersion = $routeParams.version;
+                }
                 $rootScope.$broadcast('currentVersionChanged', { product: data.product, version: $scope.currentVersion });
             });
         });
@@ -177,7 +182,7 @@ function getFlatList(productName, groupName, featureTree, level, parentTitle) {
             level: level,
             parentTitle: parentTitle,
             hasChildren: (feature.childFeatures && feature.childFeatures.length > 0),
-            uri: '#feature/' + productName + '/' + groupName + '/' + feature.title + '/' + feature.latestVersion
+            uri: '#/feature/' + productName + '/' + groupName + '/' + feature.title + '/' + feature.latestVersion
         });
 
         if (feature.childFeatures) {

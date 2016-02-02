@@ -20,7 +20,11 @@ var AugurkFilters = angular.module('AugurkFilters', ['AugurkServices']);
 // ---------------
 // Runs all input through the Showdown script, effectively applying markdown.
 AugurkFilters.filter('markdown', function() {
-    return function(input) {
+    return function (input) {
+        if (!input) {
+            return;
+        }
+
         var converter = new Showdown.converter();
         return converter.makeHtml(input);
     };
@@ -32,6 +36,10 @@ AugurkFilters.filter('markdown', function() {
 // e.g. [Feature1] will be replaced with <a href="correctLink">Feature1</a>
 AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
     return function (input) {
+        if (!input) {
+            return;
+        }
+
         return input.replace(/\[([\w\s]*)\]/gm,
 		    function (originalContent, featureTitle) {
 		        var group = $.grep($rootScope.featureGroups, function (group) { return group.name == $rootScope.currentGroupName; })[0];
@@ -54,6 +62,10 @@ AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
 // e.g. <some text> will be replaced with <span class="argument">&lt;<span class="example-parameter">some text</span>&gt;</span>
 AugurkFilters.filter('exampleparameters', function () {
     return function (input) {
+        if (!input) {
+            return;
+        }
+
         return input.replace(/\<(.*)\>/gm,
 		    function (entireString, match) {
 		            return $('<span/>', {
