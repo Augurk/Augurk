@@ -18,6 +18,7 @@ angular.module('Augurk').controller('menuController', ['$rootScope', '$scope', '
     function ($rootScope, $scope, $routeParams, featureDescriptionService, productService) {
 
         function createMenu(currentProduct) {
+            $scope.currentProduct = currentProduct;
             featureDescriptionService.getGroupsByProduct(currentProduct,
                 function (groups) {
                     $rootScope.featureGroups = processFeatureGroups(currentProduct, groups);
