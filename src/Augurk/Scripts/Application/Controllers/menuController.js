@@ -14,27 +14,27 @@
  limitations under the License.
 */
 
-angular.module('Augurk').controller('menuController', ['$rootScope', '$scope', '$routeParams', 'featureDescriptionService', 'productService',
-    function ($rootScope, $scope, $routeParams, featureDescriptionService, productService) {
-
-        function createMenu(currentProduct) {
+angular.module('Augurk').controller('menuController', ['$rootScope', '$scope', '$routeParams', 'featureDescriptionService', 'productService', 'versionService',
+    function ($rootScope, $scope, $routeParams, featureDescriptionService, productService, versionService) {
+        function createMenu(currentProduct, currentVersion) {
             $scope.currentProduct = currentProduct;
-            featureDescriptionService.getGroupsByProduct(currentProduct,
+            versionService.getTagsForVersion(currentProduct, currentVersion).then(function (tags) {
+                $scope.tags = $.makeArray();
+                $.each(tags, function (index, tag) {
+                    $scope.tags.push({ name: tag, features: $.makeArray() });
+                });
+                $scope.filter.tags = $.makeArray();
+            });
+
+            versionService.getGroupsByProductAndVersion(currentProduct, currentVersion).then(
                 function (groups) {
                     $rootScope.featureGroups = processFeatureGroups(currentProduct, groups);
                 }
             );
-
-            productService.getTags(currentProduct).then(function (tags) {
-                $scope.tags = $.makeArray();
-	            $.each(tags, function(index, tag) {
-		            $scope.tags.push({ name: tag, features: $.makeArray() });
-	            });
-                $scope.filter.tags = $.makeArray();
-            });
         }
 
         $scope.tags = $.makeArray();
+        $scope.versions = $.makeArray();
 
         $scope.filter = {
             tags: $.makeArray(),
@@ -44,13 +44,13 @@ angular.module('Augurk').controller('menuController', ['$rootScope', '$scope', '
                 }
 
                 var tag = $scope.filter.tags[$scope.filter.tags.length - 1];
-                featureDescriptionService.getFeaturesByBranchAndTag(
+                featureDescriptionService.getFeaturesByProductVersionAndTag(
                     productService.currentProduct,
-                    tag.name,
-                    function (features) {
+                    $scope.currentVersion,
+                    tag.name)
+                    .then(function (features) {
                         tag.features = features;
-                    }
-                );
+                    });
             },
             matchFeature: function (featureName) {
                 if ($scope.filter.tags.length == 0) {
@@ -67,19 +67,41 @@ angular.module('Augurk').controller('menuController', ['$rootScope', '$scope', '
                         return false;
                     }
 
-	                return true;
+                    return true;
                 });
 
                 return result;
             }
         };
 
-        if (productService.currentProduct) {
-            createMenu(productService.currentProduct);
-        }
-
+        // Load the versions for the selected product
         $rootScope.$on('currentProductChanged', function (event, data) {
-            createMenu(data.product);
+            productService.getVersions(data.product).then(function (versions) {
+                $scope.availableVersions = versions;
+
+                // Load the first version
+                $scope.currentVersion = versions[0];
+                // Make sure to use the version from the routing when it is available. This to make sure the correct version is loaded after a refresh.
+                if ($routeParams.version && $routeParams.version !== $scope.currentVersion) {
+                    $scope.currentVersion = $routeParams.version;
+                }
+                $rootScope.$broadcast('currentVersionChanged', { product: data.product, version: $scope.currentVersion });
+            });
+        });
+
+        // Update the version in the menu
+        $rootScope.$on('$routeChangeSuccess', function () {
+            if ($routeParams.version && $routeParams.version != $scope.currentVersion) {
+                $scope.currentVersion = $routeParams.version;
+                $rootScope.$broadcast('currentVersionChanged', { product: $routeParams.productName, version: $routeParams.version });
+            }
+        });
+
+        // Create the menu for the selected product and version
+        $rootScope.$on('currentVersionChanged', function (event, data) {
+            // Clear the selected tags before reloading the menu
+            $scope.filter.tags = $.makeArray();
+            createMenu(data.product, data.version);
         });
     }
 ]);
@@ -100,7 +122,7 @@ function getFlatList(productName, groupName, featureTree, level, parentTitle) {
             level: level,
             parentTitle: parentTitle,
             hasChildren: (feature.childFeatures && feature.childFeatures.length > 0),
-            uri: '#feature/' + productName + '/' + groupName + '/' + feature.title + '/' + feature.latestVersion
+            uri: '#/feature/' + productName + '/' + groupName + '/' + feature.title + '/' + feature.latestVersion
         });
 
         if (feature.childFeatures) {
@@ -110,4 +132,3 @@ function getFlatList(productName, groupName, featureTree, level, parentTitle) {
 
     return featureList;
 }
-

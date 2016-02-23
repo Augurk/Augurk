@@ -14,26 +14,18 @@
  limitations under the License.
 */
 
-angular.module('Augurk').factory('featureDescriptionService', ['$resource', function ($resource) {
+angular.module('Augurk').factory('featureDescriptionService', ['$resource', '$http', '$q', function ($resource, $http, $q) {
 
-    // The branchname might contain a period, which webapi only allows if you finish with a slash
-    // Since AngularJS doesn't allow for trailing slashes, use a backslash instead
-    var service = {
-        getFeaturesByBranch: function (branch, callback) {
-            $resource('api/features/:branchName\\', { branchName: '@branchName' })
-                .query({ branchName: branch }, callback);
-        },
+    var service = {};
 
-        getFeaturesByBranchAndTag: function (branch, tag, callback) {
-            $resource('api/tags/:branchName/:tag/features', { branchName: '@branchName', tag: '@tag' })
-                .query({ branchName: branch, tag: tag }, callback);
-        },
+    service.getFeaturesByProductVersionAndTag = function (productName, version, tag) {
+        var tagPromiseDeferrer = $q.defer();
+        $http({ method: 'GET', url: 'api/v2/products/' + productName + '/versions/' + version + '/tags/' + tag + '/features' }).then(function (response) {
+            tagPromiseDeferrer.resolve(response.data);
+        });
 
-        getGroupsByProduct: function (product, callback) {
-            $resource('api/v2/products/:productName/groups', { productName: '@productName' })
-                .query({ productName: product }, callback);
-        }
-    };
+        return tagPromiseDeferrer.promise;
+    }
     
     return service;
 }]);

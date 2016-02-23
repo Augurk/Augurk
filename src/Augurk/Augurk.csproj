@@ -143,6 +143,7 @@
     <Content Include="Scripts\Application\Services\featureService.js" />
     <Content Include="Scripts\Application\Services\featureDescriptionService.js" />
     <Content Include="Scripts\Application\Services\featureVersionService.js" />
+    <Content Include="Scripts\Application\Services\versionService.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />

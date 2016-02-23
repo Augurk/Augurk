@@ -18,7 +18,6 @@ angular.module('Augurk').factory('productService', ['$http', '$q', '$routeParams
 
     // create the service
     var service = {
-        products: null,
         currentProduct: null
     };
 
@@ -30,13 +29,13 @@ angular.module('Augurk').factory('productService', ['$http', '$q', '$routeParams
 
     service.products = productsPromiseDeferrer.promise;
 
-    service.getTags = function (productName) {
-        var tagsPromiseDeferrer = $q.defer();
-        $http({ method: 'GET', url: 'api/v2/products/' + productName + '/tags' }).then(function (response) {
-            tagsPromiseDeferrer.resolve(response.data);
+    service.getVersions = function (productName) {
+        var versionsPromiseDeferrer = $q.defer();
+        $http({ method: 'GET', url: 'api/v2/products/' + productName + '/versions' }).then(function (response) {
+            versionsPromiseDeferrer.resolve(response.data);
         });
 
-        return tagsPromiseDeferrer.promise;
+        return versionsPromiseDeferrer.promise;
     }
 
     // set the current product
@@ -57,10 +56,6 @@ angular.module('Augurk').factory('productService', ['$http', '$q', '$routeParams
             service.currentProduct = $routeParams.productName;
             $rootScope.$broadcast('currentProductChanged', { product: service.currentProduct });
         }
-        else if (!$routeParams.productName) {
-            $rootScope.$broadcast('noProductInScope');
-        }
-
     });
 
     return service;

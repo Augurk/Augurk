@@ -34,13 +34,13 @@ angular.module('Augurk').factory('featureVersionService', ['$http', '$q', '$rout
     } else {
         versionsPromiseDeferrer.promise.then(function (versions) {
             service.currentVersion = versions[0];
-            $rootScope.$broadcast('currentVersionChanged', { version: service.currentVersion });
+            $rootScope.$broadcast('currentVersionChanged', { product: $routeParams.productName, version: service.currentVersion });
         });
     }
 
     // update the version on navigation
     $rootScope.$on('$routeChangeSuccess', function () {
-        if ($routeParams.version && $routeParams.version != service.currentVersion) {
+        if ($routeParams.version && $routeParams.version != service.currentVersion && $routeParams.groupName && $routeParams.featureName) {
             service.currentVersion = $routeParams.version;
 
             var versionsPromiseDeferrer = $q.defer();
@@ -50,7 +50,7 @@ angular.module('Augurk').factory('featureVersionService', ['$http', '$q', '$rout
 
             service.versions = versionsPromiseDeferrer.promise;
 
-            $rootScope.$broadcast('currentVersionChanged', { product: service.currentVersion });
+            $rootScope.$broadcast('currentVersionChanged', { product: $routeParams.productName, version: service.currentVersion });
         }
     });
 

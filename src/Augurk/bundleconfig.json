@@ -13,7 +13,8 @@
       "Scripts/Application/Services/productService.js",
       "Scripts/Application/Services/featureDescriptionService.js",
       "Scripts/Application/Services/featureService.js",
-      "Scripts/Application/Services/featureVersionService.js"
+      "Scripts/Application/Services/featureVersionService.js",
+      "Scripts/Application/Services/versionService.js"
     ]
   }
 ]
