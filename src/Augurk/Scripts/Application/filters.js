@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2014, 2016, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,12 +14,10 @@
  limitations under the License.
 */
 
-var AugurkFilters = angular.module('AugurkFilters', ['AugurkServices']);
-
 // markdown filter
 // ---------------
 // Runs all input through the Showdown script, effectively applying markdown.
-AugurkFilters.filter('markdown', function() {
+angular.module('Augurk').filter('markdown', function() {
     return function(input) {
         var converter = new Showdown.converter();
         return converter.makeHtml(input);
@@ -30,7 +28,7 @@ AugurkFilters.filter('markdown', function() {
 // ------------------------
 // Replaces all featurenames between brackets with links to their feature page.
 // e.g. [Feature1] will be replaced with <a href="correctLink">Feature1</a>
-AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
+angular.module('Augurk').filter('featurereferences', ['$rootScope', function ($rootScope) {
     return function (input) {
         return input.replace(/\[([\w\s]*)\]/gm,
 		    function (originalContent, featureTitle) {
@@ -52,7 +50,7 @@ AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
 // ------------------------
 // Marks all text found between angle brackets as an example-parameter and marks the whole as an argument.
 // e.g. <some text> will be replaced with <span class="argument">&lt;<span class="example-parameter">some text</span>&gt;</span>
-AugurkFilters.filter('exampleparameters', function () {
+angular.module('Augurk').filter('exampleparameters', function () {
     return function (input) {
         return input.replace(/\<(.*)\>/gm,
 		    function (entireString, match) {

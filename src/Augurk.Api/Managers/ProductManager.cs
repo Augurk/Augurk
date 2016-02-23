@@ -94,5 +94,44 @@ namespace Augurk.Api.Managers
                                     .ToListAsync();
             }
         }
+
+        /// <summary>
+        /// Gets all available tags for the provided <paramref name="version"/> of <paramref name="productName">product</paramref>.
+        /// </summary>
+        /// <param name="productName">Name of the product to get the available tags for.</param>
+        /// <param name="version">The version to get the available tags for.</param>
+        /// <returns>Returns a range of tags for the provided <paramref name="version"/> of <paramref name="productName">product</paramref>.</returns>
+        public async Task<IEnumerable<string>> GetTagsForVersionAsync(string productName, string version)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                return await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
+                                    .Where(feature => feature.Product.Equals(productName, StringComparison.CurrentCultureIgnoreCase) &&
+                                                      feature.Version.Equals(version, StringComparison.CurrentCultureIgnoreCase))
+                                    .OrderBy(feature => feature.Tag)
+                                    .Select(feature => feature.Tag)
+                                    .Distinct()
+                                    .ToListAsync();
+            }
+        }
+
+        /// <summary>
+        /// Gets the versions for the specified <paramref name="productName">product</paramref>.
+        /// </summary>
+        /// <param name="productName">Name of the product to get the available versions for.</param>
+        /// <returns>A range of versions.</returns>
+        public async Task<IEnumerable<string>> GetVersionsAsync(string productName)
+        {
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var versions = await session.Query<DbFeature, Features_ByProductAndBranch>()
+                                    .Where(feature => feature.Product.Equals(productName, StringComparison.CurrentCultureIgnoreCase))
+                                    .Select(feature => feature.Version)
+                                    .Distinct()
+                                    .ToListAsync();
+
+                return versions.OrderByDescending(version => version, new SemanticVersionComparer());
+            }
+        }
     }
 }
