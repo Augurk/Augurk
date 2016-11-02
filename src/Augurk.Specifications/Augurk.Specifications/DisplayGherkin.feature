@@ -1,6 +1,13 @@
-﻿Feature: Display Gherkin Scenarios
-Augurk supports the full extend of Gherkin. However, ocasionally Gherkin scenarios can be somewhat overwelming.
+﻿@augurk @documentation
+Feature: Display Gherkin Scenarios
+Augurk supports the full extend of Gherkin. However, ocasionally Gherkin scenarios can be somewhat overwelming.  
 In order to improve the readablity of those scenarios, some additional UI options are provided.
+
+For one, **Augurk** fully supports _Markdown_ in  feature summaries. Allowing you to use
+
++	Lists
++	**Bold**, and or _Italic_
++	[Links](https://en.wikipedia.org/wiki/Markdown)
 
 Scenario: Scenario with a large data table
 In order to improve readability, data tables can be collapsed by clicking their header
@@ -38,6 +45,13 @@ In order to improve readability, data tables can be collapsed by clicking their 
 	When I click the header of the table in the given step
 	Then the table in the given step is collapsed
 
+Scenario: Collapsing scenario
+In order to improve readability, scenarios can be collapsed by clicking their title
+	Given I am viewing this scenario in Augurk
+	When I click the title of this scenario
+	Then the scenario is collapsed
+
+@notImplemented
 Scenario Outline: Readable Scenario Outlines
 Scenario outlines provide can provide a lot of examples. To make verification easier, 
 clicking on a scenario will result in the placeholders being replaced by the actual values.
@@ -51,3 +65,16 @@ clicking on a scenario will result in the placeholders being replaced by the act
 	| description | expectation                           |
 	| Click me!   | 'Click me!' is shown in the When step |
 	| Or me!      | 'Or me!' is shown in the When step    |
+
+Scenario: Markdown enhanced scenario summary
+*Occasionally*, it is useful to **emphasize** certain words or phrases.
+
+	Given the summary of this scenario is written in Markdown
+	When I view this scenario in Augurk
+	Then the summary of this scenario is rendered as rich-text
+
+Scenario: Attempted **Markdown** in a scenario title
+Markdown is not support in scenario and feature titles
+	Given the title of this scenario is written in Markdown
+	When I view this scenario in Augurk
+	Then the title of this scenario is rendered as plain-text

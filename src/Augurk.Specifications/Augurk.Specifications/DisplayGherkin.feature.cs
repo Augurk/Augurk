@@ -31,9 +31,16 @@ namespace Augurk.Specifications
         public static void FeatureSetup(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext)
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Display Gherkin Scenarios", "Augurk supports the full extend of Gherkin. However, ocasionally Gherkin scenario" +
-                    "s can be somewhat overwelming.\r\nIn order to improve the readablity of those scen" +
-                    "arios, some additional UI options are provided.", ProgrammingLanguage.CSharp, ((string[])(null)));
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Display Gherkin Scenarios", @"Augurk supports the full extend of Gherkin. However, ocasionally Gherkin scenarios can be somewhat overwelming.  
+In order to improve the readablity of those scenarios, some additional UI options are provided.
+
+For one, **Augurk** fully supports _Markdown_ in  feature summaries. Allowing you to use
+
++	Lists
++	**Bold**, and or _Italic_
++	[Links](https://en.wikipedia.org/wiki/Markdown)", ProgrammingLanguage.CSharp, new string[] {
+                        "augurk",
+                        "documentation"});
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -73,10 +80,12 @@ namespace Augurk.Specifications
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Scenario with a large data table")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Display Gherkin Scenarios")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
         public virtual void ScenarioWithALargeDataTable()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Scenario with a large data table", ((string[])(null)));
-#line 5
+#line 12
 this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
@@ -195,28 +204,54 @@ this.ScenarioSetup(scenarioInfo);
                         "de-CH",
                         "German - Switzerland",
                         "0x0807"});
-#line 8
+#line 15
  testRunner.Given("this scenario has a large data table", ((string)(null)), table1, "Given ");
-#line 38
+#line 45
  testRunner.When("I click the header of the table in the given step", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 39
+#line 46
  testRunner.Then("the table in the given step is collapsed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Collapsing scenario")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Display Gherkin Scenarios")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
+        public virtual void CollapsingScenario()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Collapsing scenario", ((string[])(null)));
+#line 48
+this.ScenarioSetup(scenarioInfo);
+#line 50
+ testRunner.Given("I am viewing this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 51
+ testRunner.When("I click the title of this scenario", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 52
+ testRunner.Then("the scenario is collapsed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
         
         public virtual void ReadableScenarioOutlines(string description, string expectation, string[] exampleTags)
         {
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Readable Scenario Outlines", exampleTags);
-#line 41
+            string[] @__tags = new string[] {
+                    "notImplemented"};
+            if ((exampleTags != null))
+            {
+                @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
+            }
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Readable Scenario Outlines", @__tags);
+#line 55
 this.ScenarioSetup(scenarioInfo);
-#line 45
+#line 59
  testRunner.Given("this scenario outline contains multiple examples", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 46
+#line 60
  testRunner.When(string.Format("I click in the example described as \'{0}\'", description), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 47
+#line 61
  testRunner.Then("the placeholder above is updated with the value of the description column", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line 48
+#line 62
  testRunner.And(string.Format("{0}", expectation), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -225,6 +260,9 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Readable Scenario Outlines")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Display Gherkin Scenarios")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("notImplemented")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Click me!")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:description", "Click me!")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:expectation", "\'Click me!\' is shown in the When step")]
@@ -236,12 +274,55 @@ this.ScenarioSetup(scenarioInfo);
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Readable Scenario Outlines")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Display Gherkin Scenarios")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("notImplemented")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("VariantName", "Or me!")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:description", "Or me!")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("Parameter:expectation", "\'Or me!\' is shown in the When step")]
         public virtual void ReadableScenarioOutlines_OrMe()
         {
             this.ReadableScenarioOutlines("Or me!", "\'Or me!\' is shown in the When step", ((string[])(null)));
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Markdown enhanced scenario summary")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Display Gherkin Scenarios")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
+        public virtual void MarkdownEnhancedScenarioSummary()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Markdown enhanced scenario summary", ((string[])(null)));
+#line 69
+this.ScenarioSetup(scenarioInfo);
+#line 72
+ testRunner.Given("the summary of this scenario is written in Markdown", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 73
+ testRunner.When("I view this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 74
+ testRunner.Then("the summary of this scenario is rendered as rich-text", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Attempted **Markdown** in a scenario title")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Display Gherkin Scenarios")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
+        public virtual void AttemptedMarkdownInAScenarioTitle()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Attempted **Markdown** in a scenario title", ((string[])(null)));
+#line 76
+this.ScenarioSetup(scenarioInfo);
+#line 78
+ testRunner.Given("the title of this scenario is written in Markdown", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 79
+ testRunner.When("I view this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 80
+ testRunner.Then("the title of this scenario is rendered as plain-text", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
         }
     }
 }

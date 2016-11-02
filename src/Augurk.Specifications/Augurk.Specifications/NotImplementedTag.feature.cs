@@ -20,7 +20,7 @@ namespace Augurk.Specifications
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute()]
     [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
-    public partial class NotImplementedTagFeature
+    public partial class NotYetImplementedFeaturesFeature
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
@@ -32,12 +32,14 @@ namespace Augurk.Specifications
         public static void FeatureSetup(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext)
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "notImplemented Tag", @"In order to indicate that a feature has not been implemented yet, it can be decorated with a notImplemented tag.
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Not (yet) implemented features", @"In order to indicate that a feature has not been implemented yet, it can be decorated with a notImplemented tag.
 
 **The not implemented warning is only displayed for demo purposes, the fact that it is shown indicates, in fact, that this feature has been implemented.**", ProgrammingLanguage.CSharp, new string[] {
-                        "childOf:Server-sideTags",
+                        "childOf:CustomizationthroughTags",
                         "notImplemented",
-                        "ignore"});
+                        "ignore",
+                        "augurk",
+                        "documentation"});
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -52,9 +54,9 @@ namespace Augurk.Specifications
         public virtual void TestInitialize()
         {
             if (((TechTalk.SpecFlow.FeatureContext.Current != null) 
-                        && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "notImplemented Tag")))
+                        && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "Not (yet) implemented features")))
             {
-                Augurk.Specifications.NotImplementedTagFeature.FeatureSetup(null);
+                Augurk.Specifications.NotYetImplementedFeaturesFeature.FeatureSetup(null);
             }
         }
         
@@ -76,9 +78,11 @@ namespace Augurk.Specifications
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Decorating this feature with a notImplemented tag")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "notImplemented Tag")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("childOf:Server-sideTags")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Not (yet) implemented features")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("childOf:CustomizationthroughTags")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("notImplemented")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
         public virtual void DecoratingThisFeatureWithANotImplementedTag()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Decorating this feature with a notImplemented tag", ((string[])(null)));
@@ -98,9 +102,11 @@ this.ScenarioSetup(scenarioInfo);
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Decorating this feature with a notImplemented and an ignore tag")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "notImplemented Tag")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("childOf:Server-sideTags")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Not (yet) implemented features")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("childOf:CustomizationthroughTags")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("notImplemented")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
         public virtual void DecoratingThisFeatureWithANotImplementedAndAnIgnoreTag()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Decorating this feature with a notImplemented and an ignore tag", ((string[])(null)));
@@ -109,17 +115,41 @@ this.ScenarioSetup(scenarioInfo);
 #line 17
  testRunner.Given("the tag \"notImplemented\" is placed on this feature", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 18
- testRunner.Given("the tag \"ignore\" is placed on this feature", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.And("the tag \"ignore\" is placed on this feature", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 19
  testRunner.When("I open this feature in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 20
  testRunner.Then("\"notImplemented\" is not displayed as part of the tags on the feature", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 21
- testRunner.Then("\"ignore\" is not displayed as part of the tags on the feature", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.And("\"ignore\" is not displayed as part of the tags on the feature", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 22
  testRunner.And("a yellow box containing a warning is dispayed below the title of this feature", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line 23
  testRunner.And("no red box is dispayed below the title of this feature", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Decorating this scenario with a notImplemented tag")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Not (yet) implemented features")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("childOf:CustomizationthroughTags")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("notImplemented")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("notImplemented")]
+        public virtual void DecoratingThisScenarioWithANotImplementedTag()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Decorating this scenario with a notImplemented tag", new string[] {
+                        "notImplemented"});
+#line 26
+this.ScenarioSetup(scenarioInfo);
+#line 28
+ testRunner.Given("the tag \"notImplemented\" is placed on this scenario", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 29
+ testRunner.When("I find this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 30
+ testRunner.Then("\"notImplemented\" is displayed as part of the tags on the scenario", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

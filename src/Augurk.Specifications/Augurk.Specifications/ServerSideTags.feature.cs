@@ -20,7 +20,7 @@ namespace Augurk.Specifications
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     [Microsoft.VisualStudio.TestTools.UnitTesting.TestClassAttribute()]
     [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
-    public partial class Server_SideTagsFeature
+    public partial class CustomizationThroughTagsFeature
     {
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
@@ -32,10 +32,12 @@ namespace Augurk.Specifications
         public static void FeatureSetup(Microsoft.VisualStudio.TestTools.UnitTesting.TestContext testContext)
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
-            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Server-side Tags", "Gherkin allows for tags to be placed upon features, scenarios and example-groups " +
-                    "to improve automatization and/or implement categorization.\nAugurk uses this mech" +
-                    "anism to allow its users some control over how their features are displayed.", ProgrammingLanguage.CSharp, new string[] {
-                        "ignore"});
+            TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Customization through Tags", "Gherkin allows for tags to be placed upon features, scenarios and example-groups " +
+                    "to improve automatization and/or implement categorization.\r\nAugurk uses this mec" +
+                    "hanism to allow its users some control over how their features are displayed.", ProgrammingLanguage.CSharp, new string[] {
+                        "ignore",
+                        "augurk",
+                        "documentation"});
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -50,9 +52,9 @@ namespace Augurk.Specifications
         public virtual void TestInitialize()
         {
             if (((TechTalk.SpecFlow.FeatureContext.Current != null) 
-                        && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "Server-side Tags")))
+                        && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "Customization through Tags")))
             {
-                Augurk.Specifications.Server_SideTagsFeature.FeatureSetup(null);
+                Augurk.Specifications.CustomizationThroughTagsFeature.FeatureSetup(null);
             }
         }
         
@@ -74,7 +76,9 @@ namespace Augurk.Specifications
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("An ignore tag on this feature")]
-        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Server-side Tags")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Customization through Tags")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
         public virtual void AnIgnoreTagOnThisFeature()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("An ignore tag on this feature", ((string[])(null)));
@@ -88,6 +92,28 @@ this.ScenarioSetup(scenarioInfo);
  testRunner.Then("\"ignore\" is not displayed as part of the tags on the feature", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line 12
  testRunner.And("a red box containing a warning is dispayed below the title of this feature", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Decorating this scenario with an ignore tag")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Customization through Tags")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.IgnoreAttribute()]
+        public virtual void DecoratingThisScenarioWithAnIgnoreTag()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Decorating this scenario with an ignore tag", new string[] {
+                        "ignore"});
+#line 15
+this.ScenarioSetup(scenarioInfo);
+#line 17
+ testRunner.Given("the tag \"ignore\" is placed on this scenario", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 18
+ testRunner.When("I find this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 19
+ testRunner.Then("\"ignore\" is displayed as part of the tags on the scenario", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }
