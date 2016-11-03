@@ -186,7 +186,7 @@ namespace Augurk.CommandLine.Commands
                             Feature feature = parser.Parse(reader, featureFile).ConvertToFeature();
 
                             // Get the uri to which the feature should be published
-                            string targetUri = $"{groupUri}/{feature.Title}/versions/{_options.Version}/";
+                            string targetUri = $"{groupUri}/{feature.Title}/versions/{_options.Version ?? "unspecified"}/";
 
                             // Publish the feature
                             var postTask = client.PostAsJsonAsync<Feature>(targetUri, feature);

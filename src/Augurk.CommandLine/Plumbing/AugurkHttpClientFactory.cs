@@ -1,6 +1,5 @@
 ﻿using Augurk.CommandLine.Options;
 using System;
-using System.ComponentModel.Composition;
 using System.Net.Http;
 using System.Text;
 
