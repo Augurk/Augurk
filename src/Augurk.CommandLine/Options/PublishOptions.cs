@@ -44,7 +44,7 @@ namespace Augurk.CommandLine.Options
         /// <summary>
         /// Gets or sets the version of the feature files that are being published.
         /// </summary>
-        [Option("version", HelpText = "Version of the feature files that should be published. Cannot be used in combination with the --clearGroup option.", MutuallyExclusiveSet = "version", Required = false)]
+        [Option("version", HelpText = "Version of the feature files that should be published. Cannot be used in combination with the --clearGroup option.", MutuallyExclusiveSet = "version", Required = false, DefaultValue = "0.0.0")]
         public string Version { get; set; }
 
         /// <summary>
