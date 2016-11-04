@@ -21,8 +21,6 @@
     <IISExpressUseClassicPipelineMode />
     <Prefer32Bit>false</Prefer32Bit>
     <UseGlobalApplicationHostFile />
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -126,24 +124,8 @@
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <None Include="bundleconfig.json" />
     <None Include="Properties\PublishProfiles\DeploymentPackage.pubxml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
-    <Content Include="Scripts\Application\controllers.js" />
-    <Content Include="Scripts\Application\controllers.min.js">
-      <DependentUpon>controllers.js</DependentUpon>
-    </Content>
-    <Content Include="Scripts\Application\Controllers\navbarController.js" />
-    <Content Include="Scripts\Application\Controllers\menuController.js" />
-    <Content Include="Scripts\Application\Controllers\featureController.js" />
-    <Content Include="Scripts\Application\services.js" />
-    <Content Include="Scripts\Application\services.min.js">
-      <DependentUpon>services.js</DependentUpon>
-    </Content>
-    <Content Include="Scripts\Application\Services\featureService.js" />
-    <Content Include="Scripts\Application\Services\featureDescriptionService.js" />
-    <Content Include="Scripts\Application\Services\featureVersionService.js" />
-    <Content Include="Scripts\Application\Services\versionService.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-2.1.4.js" />
@@ -155,14 +137,14 @@
     <Content Include="templates\home.html" />
     <Content Include="index.html" />
     <Content Include="Scripts\Application\app.js" />
+    <Content Include="Scripts\Application\controllers.js" />
     <Content Include="Scripts\Application\filters.js" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="Scripts\Application\Services\productService.js" />
+    <Content Include="Scripts\Application\services.js" />
     <Content Include="Scripts\showdown.js" />
     <Content Include="Scripts\showdown.min.js" />
-    <Content Include="templates\configuration.html" />
     <Content Include="templates\menu.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -218,13 +200,6 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="..\packages\BuildBundlerMinifier.1.7.141\build\BuildBundlerMinifier.targets" Condition="Exists('..\packages\BuildBundlerMinifier.1.7.141\build\BuildBundlerMinifier.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\BuildBundlerMinifier.1.7.141\build\BuildBundlerMinifier.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\BuildBundlerMinifier.1.7.141\build\BuildBundlerMinifier.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
