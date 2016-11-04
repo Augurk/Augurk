@@ -1,5 +1,5 @@
 ﻿<!--
-    Copyright 2014-2016, Mark Taling
+    Copyright 2014-2015, Mark Taling
  
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -16,21 +16,9 @@
 <div class="panel panel-default">
     <div class="panel-heading">
         <h4>
-            {{currentProduct}}
+            {{currentBranch}}
             <span class="glyphicon glyphicon-filter pull-right glyphbutton"></span>
         </h4>
-    </div>
-
-    <div class="panel-body" id="versionPanel">
-        <div class="dropdown">
-            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownVersion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                {{currentVersion}}
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownVersion">
-                <li ng-repeat="version in availableVersions"><a href="#/home/{{currentProduct}}/versions/{{version}}">{{version}}</a></li>
-            </ul>
-        </div>
     </div>
 
     <div class="panel-body" id="filterPanel">

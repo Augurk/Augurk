@@ -99,100 +99,67 @@ namespace Augurk.Api.Managers
         /// <returns>An enumerable collection of <see cref="Group"/> instances.</returns>
         public async Task<IEnumerable<Group>> GetGroupedFeatureDescriptionsAsync(string productName)
         {
+            Dictionary<string, List<FeatureDescription>> featureDescriptions = new Dictionary<string, List<FeatureDescription>>();
+            Dictionary<string, Group> groups = new Dictionary<string, Group>();
+
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
                 var data = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
                                         .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase))
                                         .Select(feature =>
-                                                new FeatureData
+                                                new
                                                 {
-                                                    Group = feature.Group,
-                                                    ParentTitle = feature.ParentTitle,
-                                                    Title = feature.Title,
-                                                    Version = feature.Version
+                                                    feature.Group,
+                                                    feature.ParentTitle,
+                                                    feature.Title,
+                                                    feature.Version
                                                 })
                                         .Take(1000)
                                         .ToListAsync();
 
-                return GroupFeatureDescriptions(data).Values.OrderBy(group => group.Name).ToList();
-            }
-        }
-
-        /// <summary>
-        /// Gets groups containing the descriptions for all features for the specified branch.
-        /// </summary>
-        /// <param name="productName">The name of the product for which the feature descriptions should be retrieved.</param>
-        /// <param name="version">The version of the product for which the feature descriptions should be retrieved.</param>
-        /// <returns>An enumerable collection of <see cref="Group"/> instances.</returns>
-        public async Task<IEnumerable<Group>> GetGroupedFeatureDescriptionsAsync(string productName, string version)
-        {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
-            {
-                var data = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
-                                        .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase) &&
-                                                          feature.Version.Equals(version, StringComparison.OrdinalIgnoreCase))
-                                        .Select(feature =>
-                                                new FeatureData
-                                                {
-                                                    Group = feature.Group,
-                                                    ParentTitle = feature.ParentTitle,
-                                                    Title = feature.Title,
-                                                    Version = feature.Version
-                                                })
-                                        .Take(1000)
-                                        .ToListAsync();
-
-                return GroupFeatureDescriptions(data).Values.OrderBy(group => group.Name).ToList();
-            }
-        }
-
-        private IDictionary<string, Group> GroupFeatureDescriptions(IEnumerable<FeatureData> features)
-        {
-            Dictionary<string, List<FeatureDescription>> featureDescriptions = new Dictionary<string, List<FeatureDescription>>();
-            Dictionary<string, Group> groups = new Dictionary<string, Group>();
-
-            foreach (var uniqueFeature in features.GroupBy(record => record.Title))
-            {
-                var latestFeature = uniqueFeature.OrderByDescending(record => record.Version, new SemanticVersionComparer()).First();
-                var featureDescription = new FeatureDescription()
+                foreach (var uniqueFeature in data.GroupBy(record => record.Title))
                 {
-                    Title = uniqueFeature.Key,
-                    LatestVersion = latestFeature.Version,
-                };
-
-                if (String.IsNullOrWhiteSpace(latestFeature.ParentTitle))
-                {
-                    if (!groups.ContainsKey(latestFeature.Group))
+                    var latestFeature = uniqueFeature.OrderByDescending(record => record.Version, new SemanticVersionComparer()).First();
+                    var featureDescription = new FeatureDescription()
                     {
-                        // Create a new group
-                        groups.Add(latestFeature.Group, new Group()
+                        Title = uniqueFeature.Key,
+                        LatestVersion = latestFeature.Version,
+                    };
+
+                    if (String.IsNullOrWhiteSpace(latestFeature.ParentTitle))
+                    {
+                        if (!groups.ContainsKey(latestFeature.Group))
                         {
-                            Name = latestFeature.Group,
-                            Features = new List<FeatureDescription>()
-                        });
-                    }
+                            // Create a new group
+                            groups.Add(latestFeature.Group, new Group()
+                            {
+                                Name = latestFeature.Group,
+                                Features = new List<FeatureDescription>()
+                            });
+                        }
 
-                    // Add the feature to the group
-                    ((List<FeatureDescription>)groups[latestFeature.Group].Features).Add(featureDescription);
-                }
-                else
-                {
-                    if (!featureDescriptions.ContainsKey(latestFeature.ParentTitle))
+                        // Add the feature to the group
+                        ((List<FeatureDescription>)groups[latestFeature.Group].Features).Add(featureDescription);
+                    }
+                    else
                     {
-                        featureDescriptions.Add(latestFeature.ParentTitle, new List<FeatureDescription>());
-                    }
+                        if (!featureDescriptions.ContainsKey(latestFeature.ParentTitle))
+                        {
+                            featureDescriptions.Add(latestFeature.ParentTitle, new List<FeatureDescription>());
+                        }
 
-                    featureDescriptions[latestFeature.ParentTitle].Add(featureDescription);
+                        featureDescriptions[latestFeature.ParentTitle].Add(featureDescription);
+                    }
+                }
+
+                // Map the lower levels
+                foreach (var feature in groups.Values.SelectMany(group => group.Features))
+                {
+                    AddChildren(feature, featureDescriptions);
                 }
             }
 
-            // Map the lower levels
-            foreach (var feature in groups.Values.SelectMany(group => group.Features))
-            {
-                AddChildren(feature, featureDescriptions);
-            }
-
-            return groups;
+            return groups.Values.OrderBy(group => group.Name).ToList();
         }
 
         /// <summary>
@@ -207,31 +174,6 @@ namespace Augurk.Api.Managers
             {
                 var titles = await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
                                         .Where(feature => feature.Product.Equals(branchName, StringComparison.OrdinalIgnoreCase)
-                                                       && feature.Tag.Equals(tag, StringComparison.OrdinalIgnoreCase))
-                                        .Select(feature =>
-                                                new
-                                                {
-                                                    feature.Title
-                                                })
-                                        .ToListAsync();
-
-                return titles.Select(feature => new FeatureDescription() { Title = feature.Title });
-            }
-        }
-
-        /// <summary>
-        /// Gets a collection of features for the specified <paramref name="version"/> of the <paramref name="productName">product</paramref> and <paramref name="tag"/>.
-        /// </summary>
-        /// <param name="branchName">The name of the branch for which the feature descriptions should be retrieved.</param>
-        /// <param name="tag">A tag which should be used to filter the results.</param>
-        /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
-        public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByProductVersionAndTagAsync(string productName, string version, string tag)
-        {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
-            {
-                var titles = await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
-                                        .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
-                                                       && feature.Version.Equals(version, StringComparison.OrdinalIgnoreCase)
                                                        && feature.Tag.Equals(tag, StringComparison.OrdinalIgnoreCase))
                                         .Select(feature =>
                                                 new
@@ -381,21 +323,6 @@ namespace Augurk.Api.Managers
 
                 await session.SaveChangesAsync();
             }
-        }
-
-        /// <summary>
-        /// Private datastructure to use instead of an anonymous type.
-        /// </summary>
-        /// <remarks>
-        /// Anonymous types can only be added to an dictionary as either dynamic or object,
-        /// at which point extensionmethods cease to work.
-        /// </remarks>
-        private class FeatureData
-        {
-            public string Version { get; set; }
-            public string Title { get; set; }
-            public string Group { get; set; }
-            public string ParentTitle { get; set; }
         }
     }
 }

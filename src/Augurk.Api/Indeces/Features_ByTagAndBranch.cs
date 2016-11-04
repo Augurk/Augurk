@@ -37,7 +37,6 @@ namespace Augurk.Api.Indeces
                                       Tag = tag,
                                       feature.Title,
                                       feature.Product,
-                                      feature.Version,
                                       feature.Group
                               };
 
@@ -50,7 +49,6 @@ namespace Augurk.Api.Indeces
         {
             public string Tag { get; set;}
             public string Product { get; set; }
-            public string Version { get; set; }
             public string Title { get; set; }
             public string Group { get; set; }
             public string ParentTitle { get; set; }
