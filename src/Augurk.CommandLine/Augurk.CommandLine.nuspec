@@ -12,8 +12,8 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>Command line tools for publishing feature files to Augurk.</description>
 		<releaseNotes>
-      This version contains logic to both upload to and delete files from an Augurk instance.
-      While uploading, wildcards are supported for the filenames.
+      Fixes an issue that occurs when a version is not specified while publishing feature files to Augurk.
+      A version number of 0.0.0 is now implied if no version number is specified.
     </releaseNotes>
 		<copyright>Copyright 2015</copyright>
 		<tags>augurk gherkin specflow commandline</tags>
