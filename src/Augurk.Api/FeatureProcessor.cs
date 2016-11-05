@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014-2015, Mark Taling
+ Copyright 2014-2016, Mark Taling
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -105,16 +105,6 @@ namespace Augurk
             if (feature.Tags != null)
             {
                 feature.Tags = RemoveServerTags(feature.Tags);
-            }
-            if (feature.Scenarios != null)
-            {
-                foreach (var scenario in feature.Scenarios)
-                {
-                    if (scenario.Tags != null)
-                    {
-                        scenario.Tags = RemoveServerTags(scenario.Tags);
-                    }
-                }
             }
         }
 
