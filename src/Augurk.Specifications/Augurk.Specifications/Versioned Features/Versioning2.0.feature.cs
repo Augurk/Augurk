@@ -11,7 +11,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Augurk.Specifications
+namespace Augurk.Specifications.VersionedFeatures
 {
     using TechTalk.SpecFlow;
     
@@ -24,7 +24,7 @@ namespace Augurk.Specifications
         
         private static TechTalk.SpecFlow.ITestRunner testRunner;
         
-#line 1 "Versioning1.0.feature"
+#line 1 "Versioning2.0.feature"
 #line hidden
         
         [Microsoft.VisualStudio.TestTools.UnitTesting.ClassInitializeAttribute()]
@@ -32,9 +32,11 @@ namespace Augurk.Specifications
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Versioning", "As a product grows its features might change over time. Sometimes it might be use" +
-                    "ful to view an older version of a particular\nfeature. To help with this, Augurk " +
-                    "supports versioning features files allowing different versions of a feature to b" +
-                    "e displayed.", ProgrammingLanguage.CSharp, ((string[])(null)));
+                    "ful to view an older version of a particular\r\nfeature. To help with this, Augurk" +
+                    " supports versioning features files allowing different versions of a feature to " +
+                    "be displayed.", ProgrammingLanguage.CSharp, new string[] {
+                        "augurk",
+                        "documentation"});
             testRunner.OnFeatureStart(featureInfo);
         }
         
@@ -51,7 +53,7 @@ namespace Augurk.Specifications
             if (((TechTalk.SpecFlow.FeatureContext.Current != null) 
                         && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "Versioning")))
             {
-                Augurk.Specifications.VersioningFeature.FeatureSetup(null);
+                Augurk.Specifications.VersionedFeatures.VersioningFeature.FeatureSetup(null);
             }
         }
         
@@ -74,17 +76,39 @@ namespace Augurk.Specifications
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
         [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Displays the most current version of a feature initially")]
         [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Versioning")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
         public virtual void DisplaysTheMostCurrentVersionOfAFeatureInitially()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Displays the most current version of a feature initially", ((string[])(null)));
-#line 5
+#line 6
 this.ScenarioSetup(scenarioInfo);
-#line 8
- testRunner.Given("version 1.0 of this feature is available in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 9
- testRunner.When("I select this feature in Augurk\'s menu", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("2.0.0 is the most current version of this feature in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 10
- testRunner.Then("the 1.0 version is displayed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.When("I select this feature in Augurk\'s menu", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 11
+ testRunner.Then("the 2.0.0 version is displayed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Augurk allows choosing a version of a feature")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Versioning")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
+        public virtual void AugurkAllowsChoosingAVersionOfAFeature()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Augurk allows choosing a version of a feature", ((string[])(null)));
+#line 13
+this.ScenarioSetup(scenarioInfo);
+#line 16
+ testRunner.Given("version 1.0.0 of this feature is also available in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 17
+ testRunner.When("I view the current version of this feature in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 18
+ testRunner.Then("I can select the 1.0.0 version", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

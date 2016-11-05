@@ -80,12 +80,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ServerSideTags.feature</DependentUpon>
     </Compile>
-    <Compile Include="Versioning1.0.feature.cs">
+    <Compile Include="Versioned Features\Versioning1.0.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Versioning1.0.feature</DependentUpon>
     </Compile>
-    <Compile Include="Versioning2.0.feature.cs">
+    <Compile Include="Versioned Features\Versioning2.0.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Versioning2.0.feature</DependentUpon>
@@ -114,11 +114,11 @@
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ServerSideTags.feature.cs</LastGenOutput>
     </None>
-    <None Include="Versioning1.0.feature">
+    <None Include="Versioned Features\Versioning1.0.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Versioning1.0.feature.cs</LastGenOutput>
     </None>
-    <None Include="Versioning2.0.feature">
+    <None Include="Versioned Features\Versioning2.0.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Versioning2.0.feature.cs</LastGenOutput>
     </None>
