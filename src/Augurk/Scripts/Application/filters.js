@@ -54,7 +54,7 @@ AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
 // e.g. <some text> will be replaced with <span class="argument">&lt;<span class="example-parameter">some text</span>&gt;</span>
 AugurkFilters.filter('exampleparameters', function () {
     return function (input) {
-        return input.replace(/\<(.*)\>/gm,
+        return input.replace(/\<([\w\d\s]*)\>/gm,
 		    function (entireString, match) {
 		            return $('<span/>', {
 		                html: '&lt;' + $('<span/>', {
