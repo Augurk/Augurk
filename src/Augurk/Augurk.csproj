@@ -14,11 +14,11 @@
     <RootNamespace>Augurk</RootNamespace>
     <AssemblyName>Augurk</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>false</UseIISExpress>
-    <IISExpressSSLPort />
-    <IISExpressAnonymousAuthentication />
-    <IISExpressWindowsAuthentication />
-    <IISExpressUseClassicPipelineMode />
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort>443</IISExpressSSLPort>
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <Prefer32Bit>false</Prefer32Bit>
     <UseGlobalApplicationHostFile />
   </PropertyGroup>
@@ -133,6 +133,7 @@
     <Content Include="Scripts\npm.js" />
     <Content Include="Scripts\select.js" />
     <Content Include="Scripts\select.min.js" />
+    <Content Include="Scripts\showdown.min.js" />
     <Content Include="templates\feature.html" />
     <Content Include="templates\home.html" />
     <Content Include="index.html" />
@@ -143,8 +144,6 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Scripts\Application\services.js" />
-    <Content Include="Scripts\showdown.js" />
-    <Content Include="Scripts\showdown.min.js" />
     <Content Include="templates\menu.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

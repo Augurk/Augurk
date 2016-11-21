@@ -21,8 +21,11 @@ var AugurkFilters = angular.module('AugurkFilters', ['AugurkServices']);
 // Runs all input through the Showdown script, effectively applying markdown.
 AugurkFilters.filter('markdown', function() {
     return function(input) {
-        var converter = new Showdown.converter();
-        return converter.makeHtml(input);
+        var converter = new showdown.Converter({ 'tables': true });               
+        var html = converter.makeHtml(input);
+        html = html.replace("<table>", '<table class="table table-bordered table-condensed table-striped">');        
+
+        return html;
     };
 });
 
