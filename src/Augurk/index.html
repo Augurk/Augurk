@@ -21,7 +21,9 @@
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <link href="Content/Augurk-additions.css" rel="stylesheet" />
     <link href="Content/select.css" rel="stylesheet" />
-    <link href="Content/icon16.png"rel="shortcut icon" type="image/png" />
+    <link rel="stylesheet" href="Content/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+    <link href="Content/icon16.png" rel="shortcut icon" type="image/png"/>
+
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 </head>
 <body>
@@ -72,10 +74,16 @@
     <script src="Scripts/angular-route.min.js"></script>
     <script src="Scripts/showdown.min.js"></script>
     <script src="Scripts/select.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.fancybox.pack.js?v=2.1.5"></script>
 
     <script src="Scripts/Application/filters.js"></script>
     <script src="Scripts/Application/services.js"></script>
     <script src="Scripts/Application/controllers.js"></script>
     <script src="Scripts/Application/app.js"></script>
+    <script type="text/javascript">
+	    $(document).ready(function() {
+		    $(".fancybox").fancybox();
+	    });
+    </script>
 </body>
 </html>

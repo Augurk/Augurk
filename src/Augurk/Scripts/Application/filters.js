@@ -68,6 +68,24 @@ AugurkFilters.filter('exampleparameters', function () {
     };
 });
 
+// fancyimage filter
+//---------------------------
+AugurkFilters.filter('fancyimage', function () {
+    return function (input) {        
+        return input.replace(/\<img (.*)\/\>/gm,            
+            function(entireString, gr) {                
+            var images = $(entireString);            
+            images.attr('height', '100');
+            entireString = images[0].outerHTML;            
+             return gr.replace(/src=\"(.*)\"/gm,
+                function(src, m) {        
+                return '<a class="fancybox" rel="group" href="' + m + '">' + entireString + '</a>';
+                });         
+       });
+    };
+});
+
+
 function findFeature(featureDescriptions, title) {
     var result = null;
 
