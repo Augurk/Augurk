@@ -142,8 +142,7 @@
     <Content Include="Scripts\jquery.fancybox-thumbs.js" />
     <Content Include="Scripts\jquery.fancybox.js" />
     <Content Include="Scripts\jquery.fancybox.pack.js" />
-    <Content Include="Scripts\jquery.mousewheel-3.0.6.pack.js" />
-    <Content Include="Scripts\npm.js" />
+    <Content Include="Scripts\jquery.mousewheel-3.0.6.pack.js" />    
     <Content Include="Scripts\jquery-3.1.1.js" />
     <Content Include="Scripts\jquery-3.1.1.min.js" />
     <Content Include="Scripts\jquery-3.1.1.slim.js" />
