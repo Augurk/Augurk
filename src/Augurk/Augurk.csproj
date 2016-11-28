@@ -133,6 +133,7 @@
     <Content Include="Scripts\jquery-3.1.1.slim.min.js" />
     <Content Include="Scripts\select.js" />
     <Content Include="Scripts\select.min.js" />
+    <Content Include="Scripts\showdown.min.js" />
     <Content Include="templates\feature.html" />
     <Content Include="templates\home.html" />
     <Content Include="index.html" />
@@ -143,8 +144,6 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Scripts\Application\services.js" />
-    <Content Include="Scripts\showdown.js" />
-    <Content Include="Scripts\showdown.min.js" />
     <Content Include="templates\menu.html" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -191,17 +190,8 @@
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
-        <WebProjectProperties>
-          <UseIIS>True</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>51842</DevelopmentServerPort>
-          <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>https://localhost/Augurk</IISUrl>
-          <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
-          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        <WebProjectProperties>          
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
     </VisualStudio>
