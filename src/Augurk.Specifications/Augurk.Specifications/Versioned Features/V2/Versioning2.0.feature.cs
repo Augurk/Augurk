@@ -11,7 +11,7 @@
 // ------------------------------------------------------------------------------
 #region Designer generated code
 #pragma warning disable
-namespace Augurk.Specifications.VersionedFeatures
+namespace Augurk.Specifications.VersionedFeatures.V2
 {
     using TechTalk.SpecFlow;
     
@@ -53,7 +53,7 @@ namespace Augurk.Specifications.VersionedFeatures
             if (((TechTalk.SpecFlow.FeatureContext.Current != null) 
                         && (TechTalk.SpecFlow.FeatureContext.Current.FeatureInfo.Title != "Versioning")))
             {
-                Augurk.Specifications.VersionedFeatures.VersioningFeature.FeatureSetup(null);
+                Augurk.Specifications.VersionedFeatures.V2.VersioningFeature.FeatureSetup(null);
             }
         }
         
