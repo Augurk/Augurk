@@ -20,6 +20,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Augurk.Api.Controllers.V2;
 using Augurk.Api.Managers;
 using Augurk.Entities;
 using Augurk.Entities.Test;
@@ -109,7 +110,9 @@ namespace Augurk.Api.Controllers
         [HttpDelete]
         public async Task DeleteAsync(string branchName)
         {
-            await _featureManager.DeleteFeaturesAsync(branchName);
+            // In V2 this has become part of the ProductsController (formerly: Branchcontroller).
+            // In order to minimize the duplication of code, use the new controller.
+            await new ProductsController().DeleteProduct(branchName);
         }
 
         [Route("api/features/{branchName}/{groupName}")]

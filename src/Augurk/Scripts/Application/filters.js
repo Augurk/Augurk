@@ -21,8 +21,11 @@ var AugurkFilters = angular.module('AugurkFilters', ['AugurkServices']);
 // Runs all input through the Showdown script, effectively applying markdown.
 AugurkFilters.filter('markdown', function() {
     return function(input) {
-        var converter = new Showdown.converter();
-        return converter.makeHtml(input);
+        var converter = new showdown.Converter({ 'tables': true });               
+        var html = converter.makeHtml(input);
+        html = html.replace("<table>", '<table class="table table-bordered table-condensed table-striped">');        
+
+        return html;
     };
 });
 
@@ -54,7 +57,7 @@ AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
 // e.g. <some text> will be replaced with <span class="argument">&lt;<span class="example-parameter">some text</span>&gt;</span>
 AugurkFilters.filter('exampleparameters', function () {
     return function (input) {
-        return input.replace(/\<(.*)\>/gm,
+        return input.replace(/\<([\w\d\s]*)\>/gm,
 		    function (entireString, match) {
 		            return $('<span/>', {
 		                html: '&lt;' + $('<span/>', {

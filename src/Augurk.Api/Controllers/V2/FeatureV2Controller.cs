@@ -93,5 +93,34 @@ namespace Augurk.Api.Controllers.V2
 
             return response;
         }
+
+        /// <summary>
+        /// Deletes all versions of a feature from the database.
+        /// </summary>
+        /// <param name="productName">Name of the product that the feature belongs to.</param>
+        /// <param name="groupName">Name of the group that the feature belongs to.</param>
+        /// <param name="title">Title of the feature to delete.</param>
+        /// <returns>Returns whether deleting the feature was succesful or not.</returns>
+        [Route("{title}/")]
+        [HttpDelete]
+        public async Task DeleteAsync(string productName, string groupName, string title)
+        {
+            await _featureManager.DeleteFeatureAsync(productName, groupName, title);
+        }
+
+        /// <summary>
+        /// Deletes a version of a feature from the database.
+        /// </summary>
+        /// <param name="productName">Name of the product that the feature belongs to.</param>
+        /// <param name="groupName">Name of the group that the feature belongs to.</param>
+        /// <param name="title">Title of the feature to delete.</param>
+        /// <param name="version">Version of the feature to delete.</param>
+        /// <returns>Returns whether deleting the feature was succesful or not.</returns>
+        [Route("{title}/versions/{version}")]
+        [HttpDelete]
+        public async Task DeleteAsync(string productName, string groupName, string title, string version)
+        {
+            await _featureManager.DeleteFeatureAsync(productName, groupName, title, version);
+        }
     }
 }
