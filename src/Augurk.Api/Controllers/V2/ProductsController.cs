@@ -1,4 +1,5 @@
-﻿using Augurk.Api.Managers;
+﻿using System;
+using Augurk.Api.Managers;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -20,39 +21,59 @@ namespace Augurk.Api.Controllers.V2
         /// <returns>A range of product names.</returns>
         [Route("")]
         [HttpGet]
-        public async Task<IEnumerable<string>> GetProducts()
+        public async Task<IEnumerable<string>> GetProductsAsync()
         {
             return await _productsManager.GetProductsAsync();
         }
 
         /// <summary>
+        /// Gets the requested product description.
+        /// </summary>
+        /// <returns>The description of the requested product.</returns>
+        [Route("{productName}/description")]
+        [HttpGet]
+        public async Task<string> GetProductDescriptionAsync(string productName)
+        {
+            return await _productsManager.GetProductDescriptionAsync(productName);
+        }
+
+        /// <summary>
+        /// Puts the provided product description.
+        /// </summary>
+        [Route("{productName}/description")]
+        [HttpPut]
+        public async Task PutProductDescriptionAsync(string productName, [FromBody]string descriptionMarkdown)
+        {
+            await _productsManager.InsertOrUpdateProductDescriptionAsync(productName, descriptionMarkdown);
+        }
+
+        /// <summary>
         /// Deletes the provided product.
         /// </summary>
-        [Route("{product}")]
+        [Route("{productName}")]
         [HttpDelete]
-        public async Task DeleteProduct(string product)
+        public async Task DeleteProductAsync(string productName)
         {
-            await _productsManager.DeleteProductAsync(product);
+            await _productsManager.DeleteProductAsync(productName);
         }
 
         /// <summary>
         /// Deletes the provided version of the provided product.
         /// </summary>
-        [Route("{product}/versions/{version}")]
+        [Route("{productName}/versions/{version}")]
         [HttpDelete]
-        public async Task DeleteProduct(string product, string version)
+        public async Task DeleteProductAsync(string productName, string version)
         {
-            await _productsManager.DeleteProductAsync(product, version);
+            await _productsManager.DeleteProductAsync(productName, version);
         }
 
         /// <summary>
         /// Gets the tags placed on features contained within the specified <paramref name="productName">product</paramref>.
         /// </summary>
-        /// <param name="productName">Name of the product to get the tags for.</param>
         /// <returns>Returns a range of tags.</returns>
         [Route("{productName}/tags")]
         [HttpGet]
-        public async Task<IEnumerable<string>> GetTags(string productName)
+        public async Task<IEnumerable<string>> GetTagsAsync(string productName)
         {
             return await _productsManager.GetTagsAsync(productName);
         }

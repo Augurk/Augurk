@@ -112,7 +112,7 @@ namespace Augurk.Api.Controllers
         {
             // In V2 this has become part of the ProductsController (formerly: Branchcontroller).
             // In order to minimize the duplication of code, use the new controller.
-            await new ProductsController().DeleteProduct(branchName);
+            await new ProductsController().DeleteProductAsync(branchName);
         }
 
         [Route("api/features/{branchName}/{groupName}")]
