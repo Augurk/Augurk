@@ -134,6 +134,7 @@
     <Content Include="Scripts\select.js" />
     <Content Include="Scripts\select.min.js" />
     <Content Include="Scripts\showdown.min.js" />
+    <Content Include="templates\product.html" />
     <Content Include="templates\feature.html" />
     <Content Include="templates\home.html" />
     <Content Include="index.html" />

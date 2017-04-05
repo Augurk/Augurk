@@ -33,6 +33,11 @@ namespace Augurk.Api.Formatters
 
         public override Task WriteToStreamAsync(Type type, object value, Stream writeStream, HttpContent content, System.Net.TransportContext transportContext, System.Threading.CancellationToken cancellationToken)
         {
+            if (value == null)
+            {
+                return Task.FromResult(false);
+            }
+
             var buff = System.Text.Encoding.UTF8.GetBytes(value.ToString());
             return writeStream.WriteAsync(buff, 0, buff.Length, cancellationToken);
         }

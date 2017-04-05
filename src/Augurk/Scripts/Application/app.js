@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014-2015, Mark Taling
+ Copyright 2014-2017, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@ function ($routeProvider, $locationProvider) {
             templateUrl: 'templates/home.html'
         })
         .when('/home/:productName', {
-            templateUrl: 'templates/home.html'
+            templateUrl: 'templates/product.html',
+            controller: 'productController'
         })
         .when('/feature/:productName/:groupName/:featureName/:version', {
             templateUrl: 'templates/feature.html',

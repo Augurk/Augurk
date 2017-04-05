@@ -115,6 +115,15 @@ AugurkServices.factory('productService', ['$http', '$q', '$routeParams', '$rootS
         return tagsPromiseDeferrer.promise;
     }
 
+    service.getDescription = function (productName) {
+        var descriptionPromiseDeferrer = $q.defer();
+        $http({ method: 'GET', url: 'api/v2/products/' + productName + '/description' }).then(function (response) {
+            descriptionPromiseDeferrer.resolve(response.data);
+        });
+
+        return descriptionPromiseDeferrer.promise;
+    }
+
     // set the current product
     if ($routeParams.productName) {
         service.currentProduct = $routeParams.productName;
