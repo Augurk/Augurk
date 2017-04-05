@@ -7,7 +7,7 @@ in conjunction with [SpecFlow](http://www.specflow.org) and
 
 Augurk provides an accessible, easy-to-use overview of all the features describing your application(s).
 
-##Inspiration##
+## Inspiration ##
 Augurk is greatly influenced by [Relish](https://www.relishapp.com/)
 and [Pickles](http://www.picklesdoc.com/). While Relish is a great SaaS application,
 it requires you to publish your documentation to the cloud. While this is not an issue when your sources live in the cloud as well,
@@ -23,19 +23,17 @@ for all your documentation. While Augurk is based upon the same principles as Pi
 been rebuild completely from the ground-up, allowing Augurk to provide all the same functionality but simultenously
 improving and extending it where necessary.
 
-###Augurk?###
-The <em>Gherkin</em> language is used to write <em>Cucumber</em> specifications. 
-Seeing as a <em>Gherkin</em> is a pickled cucumber, the naming of <em>Pickles</em>
-and <em>Relish</em> (a pickled food item) make perfect sense. Since that doesn't leave much
-<em>Gherkin</em> related terms in the English language, it was an almost natural choice to switch
-to a different language. Since <em>Codename Augurk</em> is being developed in The Netherlands, 
-<em>Augurk</em> (meaning pickle[d cucumber]) was a perfect fit.
+### Augurk? ###
+The *Gherkin* language is used to write *Cucumber* specifications. 
+Seeing as a *Gherkin* is a pickled cucumber, the naming of *Pickles*
+and *Relish* (a pickled food item) make perfect sense. Since that doesn't leave much
+*Gherkin* related terms in the English language, it was an almost natural choice to switch
+to a different language. Since *Augurk* is being developed in The Netherlands, 
+*Augurk* (meaning pickle[d cucumber]) was a perfect fit.
 
-##ToDo##
+## ToDo ##
 
-+ Description on Github page
 + Proper starting page
 + Proper branch page
 + Separate MSBuild task to publish testresults
-+ Command line tool to publish features and testresults
 + Maintenance pages (Remove branches, declare server side tags)

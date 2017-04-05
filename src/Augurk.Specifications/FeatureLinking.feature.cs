@@ -32,7 +32,7 @@ namespace Augurk.Specifications
         {
             testRunner = TechTalk.SpecFlow.TestRunnerManager.GetTestRunner();
             TechTalk.SpecFlow.FeatureInfo featureInfo = new TechTalk.SpecFlow.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Link to other features", "Occasionally, a feature might reference another feature. Augurk supports this in " +
-                    "the feature descriptions like this:  \r\n[Display Gherkin Scenarios]", ProgrammingLanguage.CSharp, new string[] {
+                    "the feature descriptions like this:  \n[Display Gherkin Scenarios]", ProgrammingLanguage.CSharp, new string[] {
                         "augurk",
                         "documentation"});
             testRunner.OnFeatureStart(featureInfo);
@@ -81,11 +81,11 @@ namespace Augurk.Specifications
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("This feature references the Display Gherkin Scenarios feature", ((string[])(null)));
 #line 6
 this.ScenarioSetup(scenarioInfo);
-#line 8
- testRunner.Given("the description of this feature contains the text \"[Display Gherkin Scenarios]\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 9
- testRunner.When("I view this feature in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.Given("the description of this feature contains the text \"[Display Gherkin Scenarios]\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 10
+ testRunner.When("I view this feature in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 11
  testRunner.Then("the description contains the text \"Display Gherkin Scenarios\" linking to that fea" +
                     "ture", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden

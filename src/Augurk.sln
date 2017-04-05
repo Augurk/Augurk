@@ -18,7 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.Specifications", "Augurk.Specifications\Augurk.Specifications\Augurk.Specifications.csproj", "{E4C65CB7-8B5D-4530-9B22-A00A77D8CDA9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.Specifications", "Augurk.Specifications\Augurk.Specifications.csproj", "{E4C65CB7-8B5D-4530-9B22-A00A77D8CDA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

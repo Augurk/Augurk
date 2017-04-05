@@ -4,7 +4,8 @@ Occasionally, a feature might reference another feature. Augurk supports this in
 [Display Gherkin Scenarios]
 
 Scenario: This feature references the Display Gherkin Scenarios feature
-Augurk allows other features to be referenced by enclosing their name between \[brackets\]
+Augurk allows other features to be referenced by enclosing their name between \[brackets\]. And it looks like this:
+![Feature Linking](FeatureLinking.png)
 	Given the description of this feature contains the text "[Display Gherkin Scenarios]" 
 	When I view this feature in Augurk
 	Then the description contains the text "Display Gherkin Scenarios" linking to that feature
