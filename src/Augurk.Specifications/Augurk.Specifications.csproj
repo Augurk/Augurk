@@ -93,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Documentation.md" />
     <None Include="FeatureLinking.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>FeatureLinking.feature.cs</LastGenOutput>
