@@ -23,6 +23,7 @@ using System.Reflection;
 using System.Web.Configuration;
 using System.Web.Http;
 using Augurk.Api.Filters;
+using Augurk.Api.Formatters;
 using Augurk.Api.Managers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -66,6 +67,9 @@ namespace Augurk.Api
             config.Formatters.JsonFormatter.SerializerSettings.Converters.Add(new StringEnumConverter());
             // Be flexible with additional data, for backwards compatability purposes
             config.Formatters.JsonFormatter.SerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+
+            // Allow for plaintext
+            config.Formatters.Insert(0, new TextMediaTypeFormatter());
 
             // Share the formatter settings with the manager
             FeatureManager.JsonSerializerSettings = config.Formatters.JsonFormatter.SerializerSettings;
