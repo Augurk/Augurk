@@ -16,4 +16,5 @@
 
 <h3 ng-if="showProductName">{{productName}}</h3>
 
-<div ng-bind-html="productDescription|markdown|featurereferences"></div>
+<div ng-if="productDescription" ng-bind-html="productDescription|markdown|featurereferences"></div>
+<div ng-if="!productDescription">No description could be found for <em>{{productName}}</em>, you can provide one using the commandline tool (from version 3.1.0 onward).</div>
