@@ -29,7 +29,6 @@ namespace Augurk.Api
 
         public static string GetIdentifier(string productName)
         {
-
             using (var cryptoServiceProvider = new MD5CryptoServiceProvider())
             {
                 byte[] bytes = Encoding.Default.GetBytes(productName);
