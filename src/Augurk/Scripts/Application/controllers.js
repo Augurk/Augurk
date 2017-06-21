@@ -152,8 +152,12 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
     }
 ]);
 
-AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'productService',
-    function ($rootScope, $scope, productService) {
+AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'productService', 'customizationService',
+    function ($rootScope, $scope, productService, customizationService) {
+            customizationService.get().$promise.then(function(customization) {
+                setCustomization($rootScope, customization);
+            });
+        
 
         $scope.currentProduct = productService.currentProduct;
         $scope.$on('currentProductChanged', function (event, data) {
@@ -163,12 +167,23 @@ AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'produ
         productService.products.then(function (products) {
             $scope.products = products.sort();
         });
+
     }
 ]);
 
-AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
-    function($rootScope, $scope) {
+AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService',
+    function($rootScope, $scope, customizationService) {
         $rootScope.allowMenu = false;
+
+        customizationService.get().$promise.then(function (customization) {
+            $scope.customizationSettings = customization;
+            $scope.save = function () {
+                $scope.customizationSettings.$save();
+                setCustomization($rootScope, $scope.customizationSettings);
+            };
+        });
+
+        
     }
 ]);
 
@@ -197,5 +212,9 @@ function getFlatList(productName, groupName, featureTree, level, parentTitle) {
     });
 
     return featureList;
+}
+
+function setCustomization($rootScope, customization) {
+    $rootScope.instanceName = customization.instanceName;
 }
 

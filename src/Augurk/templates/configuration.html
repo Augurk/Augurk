@@ -24,11 +24,11 @@
 
             <div class="input-group">
                 <span class="input-group-addon"><strong>Instance name</strong></span>
-                <input type="text" class="form-control" id="basic-url">
+                <input type="text" class="form-control" id="basic-url" ng-model="customizationSettings.instanceName"/>
             </div>
 
             <div style="margin-top: 10px;">
-                <button type="button" class="btn btn-primary pull-right">Save changes</button>
+                <button type="button" class="btn btn-primary pull-right" ng-click="save()">Save changes</button>
             </div>
         </div>
     </div>
