@@ -16,9 +16,18 @@
 
 var AugurkControllers = angular.module('AugurkControllers', ['AugurkServices']);
 
+AugurkControllers.controller('homeController', ['$rootScope',
+    function ($rootScope) {
+        $rootScope.allowMenu = false;
+    }
+]);
+
+
 AugurkControllers.controller('productController', ['$rootScope', '$scope', '$routeParams', 'productService',
     function ($rootScope, $scope, $routeParams, productService) {
-        productService.getDescription( $routeParams.productName).then(function(productDescription) {
+        $rootScope.allowMenu = true;
+
+        productService.getDescription($routeParams.productName).then(function (productDescription) {
             $scope.productDescription = productDescription;
             $scope.showProductName = productDescription ? productDescription[0] !== "#" : true;
         });
@@ -29,6 +38,8 @@ AugurkControllers.controller('productController', ['$rootScope', '$scope', '$rou
 
 AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$routeParams', 'featureService', 'featureVersionService',
     function ($rootScope, $scope, $routeParams, featureService, featureVersionService) {
+        $rootScope.allowMenu = true;
+
         $scope.feature = featureService.get({
             productName: $routeParams.productName,
             groupName: $routeParams.groupName,
@@ -152,6 +163,12 @@ AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'produ
         productService.products.then(function (products) {
             $scope.products = products.sort();
         });
+    }
+]);
+
+AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
+    function($rootScope, $scope) {
+        $rootScope.allowMenu = false;
     }
 ]);
 

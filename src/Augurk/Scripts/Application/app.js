@@ -21,7 +21,12 @@ function ($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(false);
     $routeProvider
         .when('/home', {
-            templateUrl: 'templates/home.html'
+            templateUrl: 'templates/home.html',
+            controller: 'homeController'
+        })
+        .when('/configuration', {
+            templateUrl: 'templates/configuration.html',
+            controller: 'configurationController'
         })
         .when('/home/:productName', {
             templateUrl: 'templates/product.html',

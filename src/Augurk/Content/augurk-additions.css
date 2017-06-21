@@ -105,10 +105,14 @@ li.step {
     color: #000000;
 }
 
-.panel-heading .no-match{
+.panel-heading .no-match {
     color: #b5b2b2;
 }
 
-.menu-item .no-match{
+.menu-item .no-match {
     color: #AAAAAA;
+}
+
+.largeglyph {
+    font-size: 18px;
 }
