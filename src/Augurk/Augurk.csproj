@@ -93,6 +93,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\angular-bootstrap-toggle.css" />
+    <Content Include="Content\angular-bootstrap-toggle.min.css" />
     <Content Include="Content\Augurk-additions.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
@@ -115,6 +117,8 @@
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\select.min.css.map" />
     <None Include="Properties\PublishProfiles\DeploymentPackage.pubxml" />
+    <Content Include="Scripts\angular-bootstrap-toggle.js" />
+    <Content Include="Scripts\angular-bootstrap-toggle.min.js" />
     <Content Include="Scripts\angular-mocks.js" />
     <Content Include="Scripts\angular-resource.js" />
     <Content Include="Scripts\angular-resource.min.js" />

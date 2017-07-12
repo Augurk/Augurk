@@ -14,7 +14,7 @@
  limitations under the License.
 */
 
-var Augurk = angular.module('Augurk', ['AugurkControllers', 'AugurkServices', 'AugurkFilters', 'ngSanitize', 'ngRoute', 'ui.select']);
+var Augurk = angular.module('Augurk', ['AugurkControllers', 'AugurkServices', 'AugurkFilters', 'ngSanitize', 'ngRoute', 'ui.select', 'ui.toggle']);
 
 Augurk.config(['$routeProvider', '$locationProvider',
 function ($routeProvider, $locationProvider) {

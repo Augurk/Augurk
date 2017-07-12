@@ -150,3 +150,7 @@ AugurkServices.factory('productService', ['$http', '$q', '$routeParams', '$rootS
 AugurkServices.factory('customizationService', ['$resource', function ($resource) {
     return $resource('api/v2/customization');
 }]);
+
+AugurkServices.factory('configurationService', ['$resource', function ($resource) {
+    return $resource('api/v2/configuration');
+}]);

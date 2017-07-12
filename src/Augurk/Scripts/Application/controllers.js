@@ -121,14 +121,14 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
                 );
             },
             matchFeature: function (featureName) {
-                if ($scope.filter.tags.length == 0) {
+                if ($scope.filter.tags.length === 0) {
                     return true;
                 }
 
                 var result = false;
                 
                 $.each($scope.filter.tags, function (index, tag) {
-                    if (tag.features.some(function (feature) { return feature.title == featureName; })) {
+                    if (tag.features.some(function (feature) { return feature.title === featureName; })) {
                         // Set the value
                         result = true;
                         // Break out of the loop
@@ -171,19 +171,24 @@ AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'produ
     }
 ]);
 
-AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService',
-    function($rootScope, $scope, customizationService) {
+AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService', 'configurationService',
+    function($rootScope, $scope, customizationService, configurationService) {
         $rootScope.allowMenu = false;
 
         customizationService.get().$promise.then(function (customization) {
             $scope.customizationSettings = customization;
-            $scope.save = function () {
+            $scope.saveCustomization = function () {
                 $scope.customizationSettings.$save();
                 setCustomization($rootScope, $scope.customizationSettings);
             };
         });
 
-        
+        configurationService.get().$promise.then(function(configuration) {
+            $scope.configuration = configuration;
+            $scope.saveConfiguration = function() {
+                $scope.configuration.$save();
+            }
+        });
     }
 ]);
 
