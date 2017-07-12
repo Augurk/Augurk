@@ -20,44 +20,49 @@ using Augurk.Entities;
 namespace Augurk.Api.Managers
 {
     /// <summary>
-    /// Provides methods to persist and retrieve customization settings from storage.
+    /// Provides methods to persist and retrieve configuration from storage.
     /// </summary>
-    public class CustomizationManager
+    public class ConfigurationManager
     {
-        private const string KEY = "urn:Augurk:Customization";
+        private const string KEY = "urn:Augurk:Configuration";
 
         /// <summary>
-        /// Retrieves the customization settings; or, creates them if they do not exist.
+        /// Retrieves the configuration; or, creates it if it does not exist.
         /// </summary>
-        /// <returns>A <see cref="Customization"/> instance containing the customization settings.</returns>
-        public async Task<Customization> GetOrCreateCustomizationSettingsAsync()
+        /// <returns>A <see cref="Configuration"/> instance containing the configuration.</returns>
+        public async Task<Configuration> GetOrCreateConfigurationAsync()
         {
-            Customization customizationSettings = null;
+            Configuration configuration = null;
 
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                customizationSettings = await session.LoadAsync<Customization>(KEY);
+                configuration = await session.LoadAsync<Configuration>(KEY);
             }
 
-            if (customizationSettings == null)
+            if (configuration == null)
             {
-                customizationSettings = new Customization {InstanceName = "Augurk"};
-                await PersistCustomizationSettingsAsync(customizationSettings);
+                configuration = new Configuration
+                {
+                    ExpirationEnabled = false,
+                    ExpirationDays = 30,
+                    ExpirationRegex = "[0-9.]+-.*"
+                };
+                await PersistConfigurationAsync(configuration);
             }
 
-            return customizationSettings;
+            return configuration;
         }
 
         /// <summary>
-        /// Persists the provided customization settings.
+        /// Persists the provided configuration.
         /// </summary>
-        /// <param name="customizationSettings">A <see cref="Customization"/> instance containing the settings that should be persisted.</param>
-        public async Task PersistCustomizationSettingsAsync(Customization customizationSettings)
+        /// <param name="configuration">A <see cref="Configuration"/> instance containing the configuration that should be persisted.</param>
+        public async Task PersistConfigurationAsync(Configuration configuration)
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
                 // Using the store method when the product already exists in the database will override it completely, this is acceptable
-                await session.StoreAsync(customizationSettings, KEY);
+                await session.StoreAsync(configuration, KEY);
                 await session.SaveChangesAsync();
             }
         }

@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014-2015, Mark Taling
+ Copyright 2014-2017, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,8 +23,11 @@ using Augurk.Entities;
 using Augurk.Entities.Test;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Raven.Client;
 using Raven.Abstractions.Data;
+using Raven.Json.Linq;
+using Group = Augurk.Entities.Group;
 
 namespace Augurk.Api.Managers
 {
@@ -37,6 +40,22 @@ namespace Augurk.Api.Managers
         /// Gets or sets the JsonSerializerSettings that should be used when (de)serializing.
         /// </summary>
         internal static JsonSerializerSettings JsonSerializerSettings { get; set; }
+
+        /// <summary>
+        /// Gets or sets the configuration manager which should be used by this instance.
+        /// </summary>
+        private ConfigurationManager ConfigurationManager { get; set; }
+
+        public FeatureManager()
+            : this(new ConfigurationManager())
+        {
+               
+        }
+
+        internal FeatureManager(ConfigurationManager configurationManager)
+        {
+            ConfigurationManager = configurationManager;
+        }
 
         /// <summary>
         /// Gets the available versions of a particular feature.
@@ -96,7 +115,7 @@ namespace Augurk.Api.Managers
         /// Gets groups containing the descriptions for all features for the specified branch.
         /// </summary>
         /// <param name="productName">The name of the product for which the feature descriptions should be retrieved.</param>
-        /// <returns>An enumerable collection of <see cref="Group"/> instances.</returns>
+        /// <returns>An enumerable collection of <see cref="Entities.Group"/> instances.</returns>
         public async Task<IEnumerable<Group>> GetGroupedFeatureDescriptionsAsync(string productName)
         {
             Dictionary<string, List<FeatureDescription>> featureDescriptions = new Dictionary<string, List<FeatureDescription>>();
@@ -228,10 +247,21 @@ namespace Augurk.Api.Managers
 
             DbFeature dbFeature = new DbFeature(feature, productName, groupName, parentTitle, version);
 
+            var configuration = await ConfigurationManager.GetOrCreateConfigurationAsync();
+
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
                 // Using the store method when the feature already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
+
+                if (configuration.ExpirationEnabled && 
+                    Regex.IsMatch(version, configuration.ExpirationRegex))
+                {
+                    // Set the expiration in the metadata
+                    session.Advanced.GetMetadataFor(dbFeature)["Raven-Expiration-Date"] = 
+                        new RavenJValue(DateTime.UtcNow.Date.AddDays(configuration.ExpirationDays));
+                }
+
                 await session.SaveChangesAsync();
             }
         }

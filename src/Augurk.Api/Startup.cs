@@ -29,9 +29,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Owin;
-using Raven.Client;
+using Raven.Abstractions.Data;
 using Raven.Client.Embedded;
 using Raven.Client.Indexes;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace Augurk.Api
 {
@@ -120,11 +121,35 @@ namespace Augurk.Api
         {
             Database.DocumentStore = new EmbeddableDocumentStore
             {
-                ConnectionStringName = "RavenDB"
+                ConnectionStringName = "RavenDB",
+                Configuration =
+                {
+                    Settings =
+                    {
+                        {"Raven/ActiveBundles", "DocumentExpiration"}
+                    }
+                }
             };
+
             Database.DocumentStore.Conventions.IdentityPartsSeparator = "-";
             Database.DocumentStore.Initialize();
             IndexCreation.CreateIndexes(Assembly.GetCallingAssembly(), Database.DocumentStore);
+        }
+
+        public static void ActivateBundle(string bundleName)
+        {
+            var documentStore = (EmbeddableDocumentStore)Database.DocumentStore;
+
+            var settings = documentStore.Configuration.Settings;
+            var activeBundles = settings[Constants.ActiveBundles];
+            if (string.IsNullOrEmpty(activeBundles))
+            {
+                settings[Constants.ActiveBundles] = bundleName;
+            }
+            else if (!activeBundles.Split(';').Contains(bundleName, StringComparer.OrdinalIgnoreCase))
+            {
+                settings[Constants.ActiveBundles] = activeBundles + ";" + bundleName;
+            }
         }
     }
 }

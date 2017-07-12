@@ -29,6 +29,7 @@ namespace Augurk.Api.Controllers.V2
     public class AugurkController : ApiController
     {
         private readonly CustomizationManager _customizationManager = new CustomizationManager();
+        private readonly ConfigurationManager _configurationManager = new ConfigurationManager();
 
         /// <summary>
         /// Gets the customization settings.
@@ -50,6 +51,28 @@ namespace Augurk.Api.Controllers.V2
         public async Task PersistCustomizationAsync(Customization customizationSettings)
         {
             await _customizationManager.PersistCustomizationSettingsAsync(customizationSettings);
+        }
+
+        /// <summary>
+        /// Gets the configuration.
+        /// </summary>
+        /// <returns>All configuration.</returns>
+        [Route("configuration")]
+        [HttpGet]
+        public async Task<Configuration> GetConfigurationAsync()
+        {
+            return await _configurationManager.GetOrCreateConfigurationAsync();
+        }
+
+        /// <summary>
+        /// Pesists the provided configurations.
+        /// </summary>
+        [Route("configuration")]
+        [HttpPut]
+        [HttpPost]
+        public async Task PersisConfigurationAsync(Configuration configuration)
+        {
+            await _configurationManager.PersistConfigurationAsync(configuration);
         }
     }
 }
