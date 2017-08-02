@@ -41,7 +41,10 @@ namespace Augurk.Api.Managers
 
             if (customizationSettings == null)
             {
-                customizationSettings = new Customization {InstanceName = "Augurk"};
+                customizationSettings = new Customization
+                {
+                    InstanceName = "Augurk",
+                };
                 await PersistCustomizationSettingsAsync(customizationSettings);
             }
 
@@ -56,7 +59,7 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                // Using the store method when the product already exists in the database will override it completely, this is acceptable
+                // Using the store method when the customization already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(customizationSettings, KEY);
                 await session.SaveChangesAsync();
             }

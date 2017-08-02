@@ -21,6 +21,7 @@ namespace Augurk.Entities
     /// </summary>
     public class Configuration
     {
+        #region Expiration
         /// <summary>
         /// Indicates whether the expiration of features is enabled.
         /// </summary>
@@ -35,5 +36,6 @@ namespace Augurk.Entities
         /// Defines the regular expression which a feature version must match to expire.
         /// </summary>
         public string ExpirationRegex;
+        #endregion
     }
 }

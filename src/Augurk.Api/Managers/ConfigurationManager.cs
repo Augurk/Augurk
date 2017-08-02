@@ -45,7 +45,7 @@ namespace Augurk.Api.Managers
                 {
                     ExpirationEnabled = false,
                     ExpirationDays = 30,
-                    ExpirationRegex = "[0-9.]+-.*"
+                    ExpirationRegex = "[0-9.]+-.*",
                 };
                 await PersistConfigurationAsync(configuration);
             }
@@ -61,7 +61,7 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                // Using the store method when the product already exists in the database will override it completely, this is acceptable
+                // Using the store method when the configuration already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(configuration, KEY);
                 await session.SaveChangesAsync();
             }

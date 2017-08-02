@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2015, Mark Taling
+ Copyright 2015, 2017, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 */
 
 using System;
-using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
@@ -29,7 +28,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Owin;
-using Raven.Abstractions.Data;
 using Raven.Client.Embedded;
 using Raven.Client.Indexes;
 using ConfigurationManager = System.Configuration.ConfigurationManager;
@@ -134,22 +132,6 @@ namespace Augurk.Api
             Database.DocumentStore.Conventions.IdentityPartsSeparator = "-";
             Database.DocumentStore.Initialize();
             IndexCreation.CreateIndexes(Assembly.GetCallingAssembly(), Database.DocumentStore);
-        }
-
-        public static void ActivateBundle(string bundleName)
-        {
-            var documentStore = (EmbeddableDocumentStore)Database.DocumentStore;
-
-            var settings = documentStore.Configuration.Settings;
-            var activeBundles = settings[Constants.ActiveBundles];
-            if (string.IsNullOrEmpty(activeBundles))
-            {
-                settings[Constants.ActiveBundles] = bundleName;
-            }
-            else if (!activeBundles.Split(';').Contains(bundleName, StringComparer.OrdinalIgnoreCase))
-            {
-                settings[Constants.ActiveBundles] = activeBundles + ";" + bundleName;
-            }
         }
     }
 }
