@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2015, Mark Taling
+ Copyright 2015, 2017, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 */
 
 using System;
-using System.Configuration;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
@@ -29,9 +28,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Owin;
-using Raven.Client;
 using Raven.Client.Embedded;
 using Raven.Client.Indexes;
+using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace Augurk.Api
 {
@@ -120,8 +119,16 @@ namespace Augurk.Api
         {
             Database.DocumentStore = new EmbeddableDocumentStore
             {
-                ConnectionStringName = "RavenDB"
+                ConnectionStringName = "RavenDB",
+                Configuration =
+                {
+                    Settings =
+                    {
+                        {"Raven/ActiveBundles", "DocumentExpiration"}
+                    }
+                }
             };
+
             Database.DocumentStore.Conventions.IdentityPartsSeparator = "-";
             Database.DocumentStore.Initialize();
             IndexCreation.CreateIndexes(Assembly.GetCallingAssembly(), Database.DocumentStore);

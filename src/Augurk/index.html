@@ -21,12 +21,13 @@
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <link href="Content/Augurk-additions.css" rel="stylesheet" />
     <link href="Content/select.css" rel="stylesheet" />
+    <link href="Content/angular-bootstrap-toggle.min.css" rel="stylesheet" />
     <link href="Content/icon16.png"rel="shortcut icon" type="image/png" />
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 </head>
 <body>
 
-    <nav class="navbar navbar-default" role="navigation" ng-controller="navbarController">
+    <nav class="navbar navbar-default" role="navigation" ng-controller="navbarController" ng-cloak>
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
@@ -35,7 +36,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Augurk</a>
+                <a class="navbar-brand" href="#">{{instanceName}}</a>
             </div>
 
             <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -45,22 +46,29 @@
                         <a href="#/home/{{product}}">{{product}}</a>
                     </li>
                 </ul>
-                <!--                
+                <!--
                 <form class="navbar-form navbar-right" role="search">
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search" />
+                        <input type="text" class="form-control" placeholder="Search"/>
                     </div>
                     <button type="submit" class="btn btn-default" onclick="javascript:alert('This feature has not yet been implemented.');">Submit</button>
                 </form>
                 -->
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#/configuration"><span class="glyphicon glyphicon-cog largeglyph"></span></a>
+                    </li>
+                </ul>
+
+            
             </div>
         </div>
     </nav>
 
     <div class="container">
         <div class="row">
-            <div class="col-md-3" ng-controller="menuController" ng-include="'templates/menu.html'"></div>
-            <div class="col-md-9" ng-view></div>
+            <div class="col-md-3" ng-if="allowMenu" ng-controller="menuController" ng-include="'templates/menu.html'"></div>
+            <div ng-class="{ 'col-md-9' : allowMenu, 'col-md-12' : !allowMenu }" ng-view></div>
         </div>
     </div>
 
@@ -77,5 +85,6 @@
     <script src="Scripts/Application/services.js"></script>
     <script src="Scripts/Application/controllers.js"></script>
     <script src="Scripts/Application/app.js"></script>
+    <script src="Scripts/angular-bootstrap-toggle.min.js"></script>
 </body>
 </html>

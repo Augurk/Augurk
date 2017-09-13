@@ -54,38 +54,43 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="FeatureLinking.feature.cs">
+    <Compile Include="Configuration\RetentionPolicy.feature.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RetentionPolicy.feature</DependentUpon>
+    </Compile>
+    <Compile Include="Gherkin\FeatureLinking.feature.cs">
       <DependentUpon>FeatureLinking.feature</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="DisplayGherkin.feature.cs">
+    <Compile Include="Gherkin\DisplayGherkin.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DisplayGherkin.feature</DependentUpon>
     </Compile>
-    <Compile Include="NotImplementedTag.feature.cs">
+    <Compile Include="Gherkin\NotImplementedTag.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>NotImplementedTag.feature</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ChildOfTag.feature.cs">
+    <Compile Include="Gherkin\ChildOfTag.feature.cs">
       <DependentUpon>ChildOfTag.feature</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="ServerSideTags.feature.cs">
+    <Compile Include="Gherkin\ServerSideTags.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ServerSideTags.feature</DependentUpon>
     </Compile>
-    <Compile Include="Versioned Features\V1\Versioning1.0.feature.cs">
+    <Compile Include="Portal\Versioned Features\V1\Versioning1.0.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Versioning1.0.feature</DependentUpon>
     </Compile>
-    <Compile Include="Versioned Features\V2\Versioning2.0.feature.cs">
+    <Compile Include="Portal\Versioned Features\V2\Versioning2.0.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Versioning2.0.feature</DependentUpon>
@@ -93,39 +98,43 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Configuration\RetentionPolicy.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>RetentionPolicy.feature.cs</LastGenOutput>
+    </None>
     <None Include="Documentation.md" />
-    <None Include="FeatureLinking.feature">
+    <None Include="Gherkin\FeatureLinking.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>FeatureLinking.feature.cs</LastGenOutput>
     </None>
-    <None Include="DisplayGherkin.feature">
+    <None Include="Gherkin\DisplayGherkin.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>DisplayGherkin.feature.cs</LastGenOutput>
     </None>
-    <None Include="NotImplementedTag.feature">
+    <None Include="Gherkin\NotImplementedTag.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>NotImplementedTag.feature.cs</LastGenOutput>
     </None>
-    <None Include="ChildOfTag.feature">
+    <None Include="Gherkin\ChildOfTag.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ChildOfTag.feature.cs</LastGenOutput>
     </None>
     <None Include="packages.config" />
-    <None Include="ServerSideTags.feature">
+    <None Include="Gherkin\ServerSideTags.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ServerSideTags.feature.cs</LastGenOutput>
     </None>
-    <None Include="Versioned Features\V1\Versioning1.0.feature">
+    <None Include="Portal\Versioned Features\V1\Versioning1.0.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Versioning1.0.feature.cs</LastGenOutput>
     </None>
-    <None Include="Versioned Features\V2\Versioning2.0.feature">
+    <None Include="Portal\Versioned Features\V2\Versioning2.0.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>Versioning2.0.feature.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FeatureLinking.png" />
+    <Content Include="Gherkin\FeatureLinking.png" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -43,6 +43,8 @@
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Background.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="Customization.cs" />
     <Compile Include="DisplayableFeature.cs" />
     <Compile Include="ExampleSet.cs" />
     <Compile Include="Feature.cs" />

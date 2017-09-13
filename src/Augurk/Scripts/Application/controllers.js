@@ -16,9 +16,18 @@
 
 var AugurkControllers = angular.module('AugurkControllers', ['AugurkServices']);
 
+AugurkControllers.controller('homeController', ['$rootScope',
+    function ($rootScope) {
+        $rootScope.allowMenu = false;
+    }
+]);
+
+
 AugurkControllers.controller('productController', ['$rootScope', '$scope', '$routeParams', 'productService',
     function ($rootScope, $scope, $routeParams, productService) {
-        productService.getDescription( $routeParams.productName).then(function(productDescription) {
+        $rootScope.allowMenu = true;
+
+        productService.getDescription($routeParams.productName).then(function (productDescription) {
             $scope.productDescription = productDescription;
             $scope.showProductName = productDescription ? productDescription[0] !== "#" : true;
         });
@@ -29,6 +38,8 @@ AugurkControllers.controller('productController', ['$rootScope', '$scope', '$rou
 
 AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$routeParams', 'featureService', 'featureVersionService',
     function ($rootScope, $scope, $routeParams, featureService, featureVersionService) {
+        $rootScope.allowMenu = true;
+
         $scope.feature = featureService.get({
             productName: $routeParams.productName,
             groupName: $routeParams.groupName,
@@ -110,14 +121,14 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
                 );
             },
             matchFeature: function (featureName) {
-                if ($scope.filter.tags.length == 0) {
+                if ($scope.filter.tags.length === 0) {
                     return true;
                 }
 
                 var result = false;
                 
                 $.each($scope.filter.tags, function (index, tag) {
-                    if (tag.features.some(function (feature) { return feature.title == featureName; })) {
+                    if (tag.features.some(function (feature) { return feature.title === featureName; })) {
                         // Set the value
                         result = true;
                         // Break out of the loop
@@ -141,8 +152,12 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
     }
 ]);
 
-AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'productService',
-    function ($rootScope, $scope, productService) {
+AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'productService', 'customizationService',
+    function ($rootScope, $scope, productService, customizationService) {
+            customizationService.get().$promise.then(function(customization) {
+                setCustomization($rootScope, customization);
+            });
+        
 
         $scope.currentProduct = productService.currentProduct;
         $scope.$on('currentProductChanged', function (event, data) {
@@ -151,6 +166,28 @@ AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'produ
 
         productService.products.then(function (products) {
             $scope.products = products.sort();
+        });
+
+    }
+]);
+
+AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService', 'configurationService',
+    function($rootScope, $scope, customizationService, configurationService) {
+        $rootScope.allowMenu = false;
+
+        customizationService.get().$promise.then(function (customization) {
+            $scope.customizationSettings = customization;
+            $scope.saveCustomization = function () {
+                $scope.customizationSettings.$save();
+                setCustomization($rootScope, $scope.customizationSettings);
+            };
+        });
+
+        configurationService.get().$promise.then(function(configuration) {
+            $scope.configuration = configuration;
+            $scope.saveConfiguration = function() {
+                $scope.configuration.$save();
+            }
         });
     }
 ]);
@@ -180,5 +217,9 @@ function getFlatList(productName, groupName, featureTree, level, parentTitle) {
     });
 
     return featureList;
+}
+
+function setCustomization($rootScope, customization) {
+    $rootScope.instanceName = customization.instanceName;
 }
 

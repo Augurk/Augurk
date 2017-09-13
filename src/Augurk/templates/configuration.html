@@ -1,0 +1,86 @@
+﻿<!--
+ Copyright 2017, Augurk
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<div>
+    <h2>Customization &amp; Configuration</h2>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Customization</div>
+        <div class="panel-body">
+            <div style="margin-top: -12px; margin-bottom: 12px;">
+                <em>Use the features in this panel to customize this Augurk instance to better suit your needs.</em>
+            </div>
+
+            <div class="input-group">
+                <span class="input-group-addon"><strong>Instance name</strong></span>
+                <input type="text" class="form-control" ng-model="customizationSettings.instanceName" />
+            </div>
+
+            <div style="margin-top: 10px;">
+                <button type="button" class="btn btn-primary pull-right" ng-click="saveCustomization()">Save changes</button>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Configuration</div>
+        <div class="panel-body">
+            <div style="margin-top: -12px; margin-bottom: 12px;">
+                <em>Use the features in this panel to configure the behaviour of this Augurk instance. <strong>Make sure you know what you are doing!</strong></em>
+            </div>
+
+            
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <toggle ng-model="configuration.expirationEnabled" on="enabled" off="disabled" size="btn-xs"></toggle>
+                    &nbsp;<strong>Expire features</strong>
+                </div>
+                <div class="panel-body">
+                    <div style="margin-top: -12px; margin-bottom: 12px;">
+                        Features can be configured to expire after a configured number of days when their version matches a configured regular expression.<br />
+                        <em>
+                            Changing these settings only affects features that are published after the change has been made.
+                        </em>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                            <span class="input-group-addon"><strong>Expire after</strong></span>
+                            <input type="text" class="form-control" ng-model="configuration.expirationDays" />
+                            <span class="input-group-addon"><strong>day(s)</strong></span>
+                        </div>
+                    </div>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <span class="input-group-addon"><strong>Version Regular Expression</strong></span>
+                            <input type="text" class="form-control" ng-model="configuration.expirationRegex" />
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-sm-12">
+                    <div style="margin-top: 10px;">
+                        <button type="button" class="btn btn-primary pull-right" ng-click="saveConfiguration()">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

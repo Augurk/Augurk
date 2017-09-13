@@ -14,14 +14,19 @@
  limitations under the License.
 */
 
-var Augurk = angular.module('Augurk', ['AugurkControllers', 'AugurkServices', 'AugurkFilters', 'ngSanitize', 'ngRoute', 'ui.select']);
+var Augurk = angular.module('Augurk', ['AugurkControllers', 'AugurkServices', 'AugurkFilters', 'ngSanitize', 'ngRoute', 'ui.select', 'ui.toggle']);
 
 Augurk.config(['$routeProvider', '$locationProvider',
 function ($routeProvider, $locationProvider) {
     $locationProvider.html5Mode(false);
     $routeProvider
         .when('/home', {
-            templateUrl: 'templates/home.html'
+            templateUrl: 'templates/home.html',
+            controller: 'homeController'
+        })
+        .when('/configuration', {
+            templateUrl: 'templates/configuration.html',
+            controller: 'configurationController'
         })
         .when('/home/:productName', {
             templateUrl: 'templates/product.html',

@@ -90,10 +90,12 @@
     <Compile Include="Controllers\V1\BranchController.cs" />
     <Compile Include="Controllers\V2\FeatureV2Controller.cs" />
     <Compile Include="Controllers\V2\GroupsController.cs" />
+    <Compile Include="Controllers\V2\AugurkController.cs" />
     <Compile Include="Controllers\V2\ProductsController.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DbFeature.cs" />
     <Compile Include="DbProduct.cs" />
+    <Compile Include="Defaults.cs" />
     <Compile Include="Extensions\DbProductExtensions.cs" />
     <Compile Include="Extensions\DbFeatureExtensions.cs" />
     <Compile Include="Controllers\V1\FeatureController.cs" />
@@ -104,6 +106,8 @@
     <Compile Include="Indeces\Products_ByName.cs" />
     <Compile Include="Indeces\Features_ByTitleProductAndGroup.cs" />
     <Compile Include="Indeces\IndexHelper.cs" />
+    <Compile Include="Managers\ConfigurationManager.cs" />
+    <Compile Include="Managers\CustomizationManager.cs" />
     <Compile Include="Managers\FeatureManager.cs" />
     <Compile Include="Managers\ProductManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
