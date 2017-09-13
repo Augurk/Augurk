@@ -95,6 +95,7 @@
     <Compile Include="Database.cs" />
     <Compile Include="DbFeature.cs" />
     <Compile Include="DbProduct.cs" />
+    <Compile Include="Defaults.cs" />
     <Compile Include="Extensions\DbProductExtensions.cs" />
     <Compile Include="Extensions\DbFeatureExtensions.cs" />
     <Compile Include="Controllers\V1\FeatureController.cs" />

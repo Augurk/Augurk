@@ -41,10 +41,7 @@ namespace Augurk.Api.Managers
 
             if (customizationSettings == null)
             {
-                customizationSettings = new Customization
-                {
-                    InstanceName = "Augurk",
-                };
+                customizationSettings = Defaults.Customization;
                 await PersistCustomizationSettingsAsync(customizationSettings);
             }
 

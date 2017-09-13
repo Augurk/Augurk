@@ -41,12 +41,7 @@ namespace Augurk.Api.Managers
 
             if (configuration == null)
             {
-                configuration = new Configuration
-                {
-                    ExpirationEnabled = false,
-                    ExpirationDays = 30,
-                    ExpirationRegex = "[0-9.]+-.*",
-                };
+                configuration = Defaults.Configuration;
                 await PersistConfigurationAsync(configuration);
             }
 
