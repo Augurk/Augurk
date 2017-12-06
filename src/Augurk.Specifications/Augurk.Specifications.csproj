@@ -54,6 +54,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\Augurk\Properties\AssemblyVersion.cs">
+      <Link>Properties\AssemblyVersion.cs</Link>
+    </Compile>
     <Compile Include="Configuration\RetentionPolicy.feature.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Augurk.Api")]
-[assembly: AssemblyCopyright("Copyright 2014 - 2015, Mark Taling")]
+[assembly: AssemblyCopyright("Copyright 2014 - 2017, Augurk")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
