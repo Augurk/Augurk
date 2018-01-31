@@ -1,11 +1,9 @@
 Augurk
 ======
 
-Augurk is a work-in-progress living documentation system created especially to be used 
-in conjunction with [SpecFlow](http://www.specflow.org) and 
-[Visual Studio Team Foundation Server](http://msdn.microsoft.com/en-us/vstudio/ff637362.aspx).
+Augurk is an always improving, open source, living documentation system designed to get maximum value out of [Gherkin](https://github.com/cucumber/cucumber/wiki/Gherkin)-based specifications. By continuously listening to the struggles and desires of various agile teams, Augurk aims to be the most natural fit for anyone wishing to publish their living documentation.
 
-Augurk provides an accessible, easy-to-use overview of all the features describing your application(s).
+Augurk provides an accessible, easy-to-use overview of all the features describing your application(s) on a webportal you can host within your own organization.
 
 ## Inspiration ##
 Augurk is greatly influenced by [Relish](https://www.relishapp.com/)
@@ -30,10 +28,3 @@ and *Relish* (a pickled food item) make perfect sense. Since that doesn't leave 
 *Gherkin* related terms in the English language, it was an almost natural choice to switch
 to a different language. Since *Augurk* is being developed in The Netherlands, 
 *Augurk* (meaning pickle[d cucumber]) was a perfect fit.
-
-## ToDo ##
-
-+ Proper starting page
-+ Proper branch page
-+ Separate MSBuild task to publish testresults
-+ Maintenance pages (Remove branches, declare server side tags)
