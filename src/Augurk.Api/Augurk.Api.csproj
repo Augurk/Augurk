@@ -86,6 +86,7 @@
     <Compile Include="..\Augurk\Properties\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="Controllers\V1\TagController.cs" />
     <Compile Include="Controllers\V1\BranchController.cs" />
     <Compile Include="Controllers\V2\AnalysisController.cs" />
