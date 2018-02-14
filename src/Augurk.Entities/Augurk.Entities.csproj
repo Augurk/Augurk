@@ -42,6 +42,9 @@
     <Compile Include="..\Augurk\Properties\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="Analysis\AnalysisReport.cs" />
+    <Compile Include="Analysis\Invocation.cs" />
+    <Compile Include="Analysis\InvocationKind.cs" />
     <Compile Include="Background.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Customization.cs" />
