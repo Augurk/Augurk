@@ -29,6 +29,7 @@ namespace Augurk.Api.Controllers
         /// Gets the version of this Augurk instance.
         /// </summary>
         /// <returns>The versionnumber.</returns>
+        [Route]
         [HttpGet]
         public string GetVersion()
         {
