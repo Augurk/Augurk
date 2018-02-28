@@ -122,6 +122,7 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <Content Include="Content\select.min.css.map" />
+    <None Include="Properties\PublishProfiles\AugurkDemo - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\DeploymentPackage.pubxml" />
     <Content Include="Scripts\angular-bootstrap-toggle.js" />
     <Content Include="Scripts\angular-bootstrap-toggle.min.js" />
