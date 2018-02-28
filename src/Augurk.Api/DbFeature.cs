@@ -46,9 +46,14 @@ namespace Augurk.Api
         public string ParentTitle { get; set; }
 
         /// <summary>
-        /// Gets or sets the the test result
+        /// Gets or sets the the test result.
         /// </summary>
         public FeatureTestResult TestResult { get; set; }
+
+        /// <summary>
+        /// Gets or sets the signatures of the direct invocations performed by this feature.
+        /// </summary>
+        public string[] DirectInvocationSignatures { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DbFeature"/> class.

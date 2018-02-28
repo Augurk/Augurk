@@ -96,6 +96,7 @@
     <Compile Include="Controllers\V2\ProductsController.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DbFeature.cs" />
+    <Compile Include="DbInvocation.cs" />
     <Compile Include="DbProduct.cs" />
     <Compile Include="Defaults.cs" />
     <Compile Include="Extensions\AsyncDocumentSessionExtensions.cs" />
@@ -105,6 +106,8 @@
     <Compile Include="FeatureProcessor.cs" />
     <Compile Include="Filters\NoCacheHeaderFilter.cs" />
     <Compile Include="Formatters\TextMediaTypeFormatter.cs" />
+    <Compile Include="Indeces\Analysis\Features_ByIDirectInvocations.cs" />
+    <Compile Include="Indeces\Analysis\Features_ByIndirectInvocations.cs" />
     <Compile Include="Indeces\Features_ByTagAndBranch.cs" />
     <Compile Include="Indeces\Products_ByName.cs" />
     <Compile Include="Indeces\Features_ByTitleProductAndGroup.cs" />
