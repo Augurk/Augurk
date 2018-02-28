@@ -13,6 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
+using Augurk.Api.Managers;
 using Augurk.Entities.Analysis;
 using System.Net;
 using System.Net.Http;
@@ -27,6 +28,8 @@ namespace Augurk.Api.Controllers.V2
     [RoutePrefix("api/v2/products/{productName}/versions/{version}/analysis")]
     public class AnalysisController : ApiController
     {
+        private readonly AnalysisReportManager _analysisReportManager = new AnalysisReportManager();
+
         /// <summary>
         /// Persists an analysis report for further analysis.
         /// </summary>
@@ -39,7 +42,7 @@ namespace Augurk.Api.Controllers.V2
         {
             analysisReport.Version = version;
 
-            // TODO: Persist report
+            await _analysisReportManager.InsertOrUpdateAnalysisReportAsync(analysisReport, productName, version);
 
             return Request.CreateResponse(HttpStatusCode.Created);
         }

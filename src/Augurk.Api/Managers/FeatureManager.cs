@@ -254,13 +254,7 @@ namespace Augurk.Api.Managers
                 // Using the store method when the feature already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
 
-                if (configuration.ExpirationEnabled && 
-                    Regex.IsMatch(version, configuration.ExpirationRegex))
-                {
-                    // Set the expiration in the metadata
-                    session.Advanced.GetMetadataFor(dbFeature)["Raven-Expiration-Date"] = 
-                        new RavenJValue(DateTime.UtcNow.Date.AddDays(configuration.ExpirationDays));
-                }
+                session.SetExpirationIfEnabled(dbFeature, version, configuration);
 
                 await session.SaveChangesAsync();
             }
