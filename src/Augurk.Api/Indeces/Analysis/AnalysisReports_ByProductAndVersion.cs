@@ -13,38 +13,32 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-
-using System.Collections.Generic;
-using System.Linq;
+using Augurk.Entities.Analysis;
 using Raven.Client.Indexes;
+using System.Linq;
 
 namespace Augurk.Api.Indeces.Analysis
 {
-    ///<summary>
-    /// This index persists which direct invocations are made
-    ///</summary>
-    public class Features_ByDirectInvocations : AbstractIndexCreationTask<DbFeature, Features_ByDirectInvocations.Feature>
+    /// <summary>
+    /// This index creates a map from the product and version.
+    /// </summary>
+    public class AnalysisReports_ByProductAndVersion : AbstractIndexCreationTask<AnalysisReport>
     {
-        public Features_ByDirectInvocations()
+        public AnalysisReports_ByProductAndVersion()
         {
-            Map = features => from feature in features    
+            Map = reports => from report in reports
+                             let metadata = MetadataFor(report)
                               select new
                               {
-                                  feature.Title,
-                                  feature.Product,
-                                  feature.Group,
-                                  DirectInvocations = feature.DirectInvocationSignatures
+                                  Product = metadata.Value<string>("Product"),
+                                  report.Version
                               };
-
-            StoreAllFields(Raven.Abstractions.Indexing.FieldStorage.Yes);
         }
 
-        public class Feature
+        public class Entry
         {
-            public string Title { get; set; }
             public string Product { get; set; }
             public string Version { get; set; }
-            public IList<string> DirectInvocations { get; set; }
         }
     }
 }

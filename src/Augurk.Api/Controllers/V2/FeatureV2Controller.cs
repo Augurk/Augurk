@@ -35,6 +35,15 @@ namespace Augurk.Api.Controllers.V2
     public class FeatureV2Controller : ApiController
     {
         private readonly FeatureManager _featureManager = new FeatureManager();
+        private readonly Analyzer _analyzer;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FeatureV2Controller"/>.
+        /// </summary>
+        public FeatureV2Controller()
+        {
+            _analyzer = new Analyzer(_featureManager, new AnalysisReportManager());
+        }
 
         /// <summary>
         /// Gets the available features.
@@ -98,13 +107,27 @@ namespace Augurk.Api.Controllers.V2
 
             var response = Request.CreateResponse(HttpStatusCode.Created);
 
+            DbFeature dbFeature = null;
             try
             {
-                await _featureManager.InsertOrUpdateFeatureAsync(feature, productName, groupName, version);
+                dbFeature = await _featureManager.InsertOrUpdateFeatureAsync(feature, productName, groupName, version);
             }
             catch (Exception exception)
             {
                 response = Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exception);
+            }
+
+            // Run the analysis for this feature
+            if (dbFeature != null)
+            {
+                try
+                {
+                    await _analyzer.AnalyzeAndPeristResultsAsync(productName, version, dbFeature);
+                }
+                catch
+                {
+                    // Don't do anything, a broken analysis is no reason to report an error
+                }
             }
 
             return response;

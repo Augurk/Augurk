@@ -29,6 +29,15 @@ namespace Augurk.Api.Controllers.V2
     public class AnalysisController : ApiController
     {
         private readonly AnalysisReportManager _analysisReportManager = new AnalysisReportManager();
+        private readonly Analyzer _analyzer;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AnalysisController"/>.
+        /// </summary>
+        public AnalysisController()
+        {
+            _analyzer = new Analyzer(new FeatureManager(), _analysisReportManager);
+        }
 
         /// <summary>
         /// Persists an analysis report for further analysis.
@@ -43,6 +52,9 @@ namespace Augurk.Api.Controllers.V2
             analysisReport.Version = version;
 
             await _analysisReportManager.InsertOrUpdateAnalysisReportAsync(analysisReport, productName, version);
+
+            // Run the analysis
+            await _analyzer.AnalyzeAndPersistResultsAsync(productName, version);
 
             return Request.CreateResponse(HttpStatusCode.Created);
         }

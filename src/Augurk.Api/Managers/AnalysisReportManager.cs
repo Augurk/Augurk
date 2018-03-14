@@ -20,6 +20,11 @@ using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using Raven.Json.Linq;
 using Augurk.Entities.Analysis;
+using Augurk.Api.Indeces;
+using Raven.Client.Linq;
+using System.Collections.Generic;
+using System.Linq;
+using Augurk.Api.Indeces.Analysis;
 
 namespace Augurk.Api.Managers
 {
@@ -59,9 +64,49 @@ namespace Augurk.Api.Managers
                 await session.StoreAsync(report, $"{productName}/{version}/{report.AnalyzedProject}");
 
                 session.SetExpirationIfEnabled(report, version, configuration);
+                session.Advanced.GetMetadataFor(report)["Product"] = new RavenJValue(productName);
 
                 await session.SaveChangesAsync();
             }
+        }
+
+        public IEnumerable<AnalysisReport> GetAnalysisReportsByProductAndVersionAsync(string productName, string version)
+        {
+            using(var session = Database.DocumentStore.OpenSession())
+            {
+                return session.Query<AnalysisReports_ByProductAndVersion.Entry, AnalysisReports_ByProductAndVersion>()
+                           .Where(report => report.Product == productName && report.Version == version)
+                           .OfType<AnalysisReport>()
+                           .ToList();
+            }
+        }
+
+        public async Task PersistDbInvocationsAsync(string productName, string version, IEnumerable<DbInvocation> invocations)
+        {
+            var configuration = await ConfigurationManager.GetOrCreateConfigurationAsync();
+
+            using (var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                foreach(var invocation in invocations)
+                {
+                    await session.StoreAsync(invocation, $"{productName}/{version}/{invocation.Signature}");
+                    session.SetExpirationIfEnabled(invocation, version, configuration);
+                    var metadata = session.Advanced.GetMetadataFor(invocation);
+                    metadata["Product"] = new RavenJValue(productName);
+                    metadata["Version"] = new RavenJValue(version);
+                }
+
+                await session.SaveChangesAsync();
+            }
+        }
+
+        public async Task DeleteDbInvocationsAsync(string productName, string version)
+        {
+            await Database.DocumentStore.DatabaseCommands.DeleteByIndex(nameof(AnalysisReports_ByProductAndVersion).Replace("_", "/"),
+                new Raven.Abstractions.Data.IndexQuery()
+                {
+                    Query = $"Product:{productName} AND Version:{version}"
+                }).WaitForCompletionAsync();
         }
     }
 }
