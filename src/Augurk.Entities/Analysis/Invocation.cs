@@ -32,12 +32,22 @@ namespace Augurk.Entities.Analysis
         public string Signature { get; set; }
 
         /// <summary>
+        /// Whether the invocation is defined in source, but outside the specifications project.
+        /// </summary>
+        public bool Local { get; set; }
+
+        /// <summary>
         /// The regular expressions which can be used to map steps to this invocation.
         /// </summary>
         /// <remarks>
         /// May be NULL or Empty if there are no mapped expressions.
         /// </remarks>
         public string[] RegularExpressions { get; set; }
+
+        /// <summary>
+        /// The actual target of the automation logic if annotated.
+        /// </summary>
+        public string[] AutomationTargets { get; set; }
 
         /// <summary>
         /// The ordered invocations made from with this invocation.

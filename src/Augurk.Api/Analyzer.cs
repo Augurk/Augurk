@@ -31,7 +31,7 @@ namespace Augurk.Api
             IEnumerable<DbFeature> features = await _featureManager.GetDbFeaturesByProductAndVersionAsync(productName, version);
 
             // Collect all analysisreports for the provided product/version combination
-            IEnumerable<AnalysisReport> reports = _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
+            IEnumerable<AnalysisReport> reports = await _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
 
             if (reports.Any())
             {
@@ -43,7 +43,7 @@ namespace Augurk.Api
         public async Task AnalyzeAndPeristResultsAsync(string productName, string version, DbFeature feature)
         {
             // Collect all analysisreports for the provided product/version combination
-            IEnumerable<AnalysisReport> reports = _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
+            IEnumerable<AnalysisReport> reports = await _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
 
             if (reports.Any())
             {
@@ -69,7 +69,7 @@ namespace Augurk.Api
             // Remove any old invocations in these features
             foreach(var feature in features)
             {
-                feature.DirectInvocationSignatures.Clear();
+                feature.DirectInvocationSignatures = new List<string>();
             }
 
             // Determine the possible entrypoints
@@ -87,28 +87,36 @@ namespace Augurk.Api
                 if (invokingFeatures.Any())
                 {
                     // Update the features
-                    invokingFeatures.ForEach(feature => feature.DirectInvocationSignatures.Add(invocation.Signature));
+                    var localInvocations = GetHighestLocalInvocations(invocation).ToList();
+                    var localInvocationSignatures = localInvocations.Select(i => i.Signature).ToList();
+                    invokingFeatures.ForEach(feature => feature.DirectInvocationSignatures.AddRange(localInvocationSignatures));
 
                     // Prepare the invocation for storage
-                    activeInvocations.Add(new DbInvocation()
+                    activeInvocations.AddRange(localInvocations.Select(i => new DbInvocation()
                     {
-                        Signature = invocation.Signature,
-                        InvokedSignatures = Flatten(invocation)
-                    });
+                        Signature = i.Signature,
+                        InvokedSignatures = Flatten(i)
+                    }));
                 }
+            }
+
+            // Make sure we only save unique signatures
+            foreach (var feature in features)
+            {
+                feature.DirectInvocationSignatures = new List<string>(feature.DirectInvocationSignatures.Distinct());
             }
 
             // Persist the features
             await _featureManager.PersistDbFeatures(features);
 
             // Persist the activeInvocations
-            await _analysisReportManager.PersistDbInvocationsAsync(productName, version, activeInvocations);
+            await _analysisReportManager.PersistDbInvocationsAsync(productName, version, activeInvocations.GroupBy(i => i.Signature).Select(g => g.First()));
         }
 
         private string[] Flatten(Invocation invocation)
         {
             List<string> invocations = new List<string>();
-            foreach (var inv in invocation.Invocations)
+            foreach (var inv in invocation.Invocations ?? new Invocation[0])
             {
                 Flatten(inv, invocations);
             }
@@ -118,10 +126,32 @@ namespace Augurk.Api
         private void Flatten(Invocation invocation, List<string> invocations)
         {
             invocations.Add(invocation.Signature);
-            foreach (var inv in invocation.Invocations)
+            foreach (var inv in invocation.Invocations ?? new Invocation[0])
             {
                 Flatten(inv, invocations);
             }
+        }
+
+        private IEnumerable<Invocation> GetHighestLocalInvocations(Invocation invocation)
+        {
+            if (invocation.AutomationTargets != null)
+            {
+                return invocation.AutomationTargets.Select(target => new Invocation { Signature = target });
+            }
+
+            List<Invocation> invocations = new List<Invocation>();
+            foreach (var childInvocation in invocation.Invocations ?? new Invocation[0])
+            {
+                if (childInvocation.Local)
+                {
+                    invocations.Add(childInvocation);
+                }
+                else
+                {
+                    invocations.AddRange(GetHighestLocalInvocations(childInvocation));
+                }
+            }
+            return invocations;
         }
     }
 }

@@ -15,6 +15,7 @@
 */
 using Augurk.Api.Managers;
 using Augurk.Entities.Analysis;
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -49,14 +50,22 @@ namespace Augurk.Api.Controllers.V2
         [HttpPost]
         public async Task<HttpResponseMessage> PostAnalysisReport(AnalysisReport analysisReport, string productName, string version)
         {
-            analysisReport.Version = version;
+            try
+            {
+                analysisReport.Version = version;
 
-            await _analysisReportManager.InsertOrUpdateAnalysisReportAsync(analysisReport, productName, version);
+                await _analysisReportManager.InsertOrUpdateAnalysisReportAsync(analysisReport, productName, version);
 
-            // Run the analysis
-            await _analyzer.AnalyzeAndPersistResultsAsync(productName, version);
+                // Run the analysis
+                await _analyzer.AnalyzeAndPersistResultsAsync(productName, version);
 
-            return Request.CreateResponse(HttpStatusCode.Created);
+                return Request.CreateResponse(HttpStatusCode.Created);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.WriteLine(ex);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
         }
     }
 }

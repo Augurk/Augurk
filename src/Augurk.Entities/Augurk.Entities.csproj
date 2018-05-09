@@ -52,6 +52,7 @@
     <Compile Include="ExampleSet.cs" />
     <Compile Include="Feature.cs" />
     <Compile Include="FeatureDescription.cs" />
+    <Compile Include="FeatureGraph.cs" />
     <Compile Include="FeatureOptions.cs" />
     <Compile Include="Group.cs" />
     <Compile Include="StepKeyword.cs" />

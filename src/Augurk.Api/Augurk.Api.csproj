@@ -87,6 +87,7 @@
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Analyzer.cs" />
+    <Compile Include="Controllers\V2\DependencyController.cs" />
     <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="Controllers\V1\TagController.cs" />
     <Compile Include="Controllers\V1\BranchController.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="Managers\ConfigurationManager.cs" />
     <Compile Include="Managers\CustomizationManager.cs" />
     <Compile Include="Managers\AnalysisReportManager.cs" />
+    <Compile Include="Managers\DependencyManager.cs" />
     <Compile Include="Managers\FeatureManager.cs" />
     <Compile Include="Managers\ProductManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

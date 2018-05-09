@@ -25,6 +25,8 @@ using Raven.Client.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using Augurk.Api.Indeces.Analysis;
+using Raven.Client.Document;
+using Raven.Client;
 
 namespace Augurk.Api.Managers
 {
@@ -70,7 +72,7 @@ namespace Augurk.Api.Managers
             }
         }
 
-        public IEnumerable<AnalysisReport> GetAnalysisReportsByProductAndVersionAsync(string productName, string version)
+        public async Task<IEnumerable<AnalysisReport>> GetAnalysisReportsByProductAndVersionAsync(string productName, string version)
         {
             using(var session = Database.DocumentStore.OpenSession())
             {
@@ -102,7 +104,7 @@ namespace Augurk.Api.Managers
 
         public async Task DeleteDbInvocationsAsync(string productName, string version)
         {
-            await Database.DocumentStore.DatabaseCommands.DeleteByIndex(nameof(AnalysisReports_ByProductAndVersion).Replace("_", "/"),
+            await Database.DocumentStore.DatabaseCommands.DeleteByIndex(nameof(Invocation_ByProductAndVersion).Replace("_", "/"),
                 new Raven.Abstractions.Data.IndexQuery()
                 {
                     Query = $"Product:{productName} AND Version:{version}"
