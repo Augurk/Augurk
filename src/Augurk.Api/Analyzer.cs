@@ -88,7 +88,16 @@ namespace Augurk.Api
                 {
                     // Update the features
                     var localInvocations = GetHighestLocalInvocations(invocation).ToList();
-                    var localInvocationSignatures = localInvocations.Select(i => i.Signature).ToList();
+                    var localInvocationSignatures = localInvocations.SelectMany(i => {
+                        List<string> invocations = new List<string>();
+                        invocations.Add(i.Signature);
+                        // Add the interface definitions, if available
+                        if(i.InterfaceDefinitions != null)
+                        {
+                            invocations.AddRange(i.InterfaceDefinitions);
+                        }
+                        return invocations;
+                        }).ToList();
                     invokingFeatures.ForEach(feature => feature.DirectInvocationSignatures.AddRange(localInvocationSignatures));
 
                     // Prepare the invocation for storage
