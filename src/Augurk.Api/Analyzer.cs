@@ -105,13 +105,16 @@ namespace Augurk.Api
                         });
 
                         // Add a copy for each interface definition
-                        dbInvocations.AddRange(i.InterfaceDefinitions?.Select(definition =>
-                            new DbInvocation()
-                            {
-                                Signature = definition,
-                                InvokedSignatures = invokedSignatures
-                            }
-                        ));
+                        if (i.InterfaceDefinitions != null)
+                        {
+                            dbInvocations.AddRange(i.InterfaceDefinitions.Select(definition =>
+                                new DbInvocation()
+                                {
+                                    Signature = definition,
+                                    InvokedSignatures = invokedSignatures
+                                }
+                            ));
+                        }
 
                         return dbInvocations;
                     }));
