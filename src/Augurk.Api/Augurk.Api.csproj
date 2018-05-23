@@ -105,6 +105,7 @@
     <Compile Include="Extensions\DbProductExtensions.cs" />
     <Compile Include="Extensions\DbFeatureExtensions.cs" />
     <Compile Include="Controllers\V1\FeatureController.cs" />
+    <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="FeatureProcessor.cs" />
     <Compile Include="Filters\NoCacheHeaderFilter.cs" />
     <Compile Include="Formatters\TextMediaTypeFormatter.cs" />

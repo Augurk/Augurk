@@ -45,6 +45,14 @@ namespace Augurk.Entities.Analysis
         public string[] RegularExpressions { get; set; }
 
         /// <summary>
+        /// A list of signatures for interfaces implemented by this invocation.
+        /// </summary>
+        /// <remarks>
+        /// May be NULL or empty if there are not interface definitions.
+        /// </remarks>
+        public string[] InterfaceDefinitions { get; set; }
+
+        /// <summary>
         /// The actual target of the automation logic if annotated.
         /// </summary>
         public string[] AutomationTargets { get; set; }

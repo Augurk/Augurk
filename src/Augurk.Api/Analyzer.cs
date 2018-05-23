@@ -136,7 +136,8 @@ namespace Augurk.Api
         {
             if (invocation.AutomationTargets != null)
             {
-                return invocation.AutomationTargets.Select(target => new Invocation { Signature = target });
+                return invocation.AutomationTargets.SelectMany(target =>
+                    invocation.Invocations.Descendants(i => i.Invocations).Where(i => i.Signature == target));
             }
 
             List<Invocation> invocations = new List<Invocation>();
