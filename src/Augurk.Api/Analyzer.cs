@@ -92,10 +92,28 @@ namespace Augurk.Api
                     invokingFeatures.ForEach(feature => feature.DirectInvocationSignatures.AddRange(localInvocationSignatures));
 
                     // Prepare the invocation for storage
-                    activeInvocations.AddRange(localInvocations.Select(i => new DbInvocation()
+                    activeInvocations.AddRange(localInvocations.SelectMany(i =>
                     {
-                        Signature = i.Signature,
-                        InvokedSignatures = Flatten(i)
+                        List<DbInvocation> dbInvocations = new List<DbInvocation>();
+                        string[] invokedSignatures = Flatten(i);
+
+                        // Add the current invocation
+                        dbInvocations.Add(new DbInvocation()
+                        {
+                            Signature = i.Signature,
+                            InvokedSignatures = invokedSignatures
+                        });
+
+                        // Add a copy for each interface definition
+                        dbInvocations.AddRange(i.InterfaceDefinitions?.Select(definition =>
+                            new DbInvocation()
+                            {
+                                Signature = definition,
+                                InvokedSignatures = invokedSignatures
+                            }
+                        ));
+
+                        return dbInvocations;
                     }));
                 }
             }
