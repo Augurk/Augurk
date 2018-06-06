@@ -66,9 +66,9 @@
     </nav>
 
     <div class="container">
-        <div class="row">
-            <div class="col-md-3" ng-if="allowMenu" ng-controller="menuController" ng-include="'templates/menu.html'"></div>
-            <div ng-class="{ 'col-md-9' : allowMenu, 'col-md-12' : !allowMenu }" ng-view></div>
+        <div class="row viewport">
+            <div class="col-md-3 scrollview-y" ng-if="allowMenu" ng-controller="menuController" ng-include="'templates/menu.html'"></div>
+            <div class="scrollview-y" ng-class="{ 'col-md-9' : allowMenu, 'col-md-12' : !allowMenu }" ng-view></div>
         </div>
     </div>
 
