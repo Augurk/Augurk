@@ -37,5 +37,12 @@ namespace Augurk.Entities
         /// </summary>
         public string ExpirationRegex;
         #endregion
+
+        #region Dependencies
+        /// <summary>
+        /// Indicates whether the analysis of dependencies is enabled.
+        /// </summary>
+        public bool DependenciesEnabled;
+        #endregion
     }
 }
