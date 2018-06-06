@@ -19,7 +19,7 @@ html, body {
 }
 
 .container {
-    height: calc(100% - 75px);
+    height: calc(100% - 75px); /* Take the header into consideration by detracting the top 75 pixels  */
 }
 
 [data-toggle] {
