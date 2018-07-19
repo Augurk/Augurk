@@ -52,7 +52,7 @@ namespace Augurk.Api
             IEnumerable<DbFeature> features = await _featureManager.GetDbFeaturesByProductAndVersionAsync(productName, version);
 
             // Collect all analysisreports for the provided product/version combination
-            IEnumerable<AnalysisReport> reports = await _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
+            IEnumerable<AnalysisReport> reports = _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
 
             if (reports.Any())
             {
@@ -70,7 +70,7 @@ namespace Augurk.Api
         public async Task AnalyzeAndPeristResultsAsync(string productName, string version, DbFeature feature)
         {
             // Collect all analysisreports for the provided product/version combination
-            IEnumerable<AnalysisReport> reports = await _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
+            IEnumerable<AnalysisReport> reports = _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
 
             if (reports.Any())
             {

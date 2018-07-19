@@ -54,7 +54,7 @@ namespace Augurk.Api.Controllers.V2
             {
                 analysisReport.Version = version;
 
-                await _analysisReportManager.InsertOrUpdateAnalysisReportAsync(analysisReport, productName, version);
+                await _analysisReportManager.InsertOrUpdateAnalysisReportAsync(productName, version, analysisReport);
 
                 // Run the analysis
                 await _analyzer.AnalyzeAndPersistResultsAsync(productName, version);

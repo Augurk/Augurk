@@ -14,19 +14,14 @@
  limitations under the License.
 */
 
-using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using System.Text.RegularExpressions;
 using Raven.Json.Linq;
 using Augurk.Entities.Analysis;
-using Augurk.Api.Indeces;
 using Raven.Client.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using Augurk.Api.Indeces.Analysis;
-using Raven.Client.Document;
-using Raven.Client;
 
 namespace Augurk.Api.Managers
 {
@@ -56,7 +51,13 @@ namespace Augurk.Api.Managers
             ConfigurationManager = configurationManager;
         }
 
-        public async Task InsertOrUpdateAnalysisReportAsync(AnalysisReport report, string productName, string version)
+        /// <summary>
+        /// Inserts or updates the provided <paramref name="report"/> for the provided <paramref name="productName">product</paramref> and <paramref name="version"/>.
+        /// </summary>
+        /// <param name="productName">Name of the product that the analysis report relates to.</param>
+        /// <param name="version">Version of the product that the analysis report relates to.</param>
+        /// <param name="report">An <see cref="AnalysisReport"/> to insert or update.</param>
+        public async Task InsertOrUpdateAnalysisReportAsync(string productName, string version, AnalysisReport report)
         {
             var configuration = await ConfigurationManager.GetOrCreateConfigurationAsync();
 
@@ -72,7 +73,13 @@ namespace Augurk.Api.Managers
             }
         }
 
-        public async Task<IEnumerable<AnalysisReport>> GetAnalysisReportsByProductAndVersionAsync(string productName, string version)
+        /// <summary>
+        /// Gets all the available <see cref="AnalysisReports"/> stored for the provided <paramref name="productName">product</paramref> and <paramref name="version"/>.
+        /// </summary>
+        /// <param name="productName">Name of the product to get the analysis reports for.</param>
+        /// <param name="version">Version of the product to get the analysis reports for.</param>
+        /// <returns>A range of <see cref="AnalysisReport"/> instances stored for the provided product and version.</returns>
+        public IEnumerable<AnalysisReport> GetAnalysisReportsByProductAndVersionAsync(string productName, string version)
         {
             using(var session = Database.DocumentStore.OpenSession())
             {
@@ -83,6 +90,12 @@ namespace Augurk.Api.Managers
             }
         }
 
+        /// <summary>
+        /// Persists the provided range of <paramref name="invocations"/> for the provided <paramref name="productName">product</paramref> and <paramref name="version"/>.
+        /// </summary>
+        /// <param name="productName">Name of the product to store the invocations for.</param>
+        /// <param name="version">Version of the product to store the invocations for.</param>
+        /// <param name="invocations">A range of <see cref="DbInvocation"/> instances representing the invocations to persist.</param>
         public async Task PersistDbInvocationsAsync(string productName, string version, IEnumerable<DbInvocation> invocations)
         {
             var configuration = await ConfigurationManager.GetOrCreateConfigurationAsync();
@@ -102,6 +115,11 @@ namespace Augurk.Api.Managers
             }
         }
 
+        /// <summary>
+        /// Deletes all stored invocations for the provided <paramref name="productName">product</paramref> and <paramref name="version"/>.
+        /// </summary>
+        /// <param name="productName">Name of the product to delete the invocations for.</param>
+        /// <param name="version">Version of the product to delete the invocations for.</param>
         public async Task DeleteDbInvocationsAsync(string productName, string version)
         {
             await Database.DocumentStore.DatabaseCommands.DeleteByIndex(nameof(Invocation_ByProductAndVersion).Replace("_", "/"),
