@@ -1,13 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27703.2042
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk", "Augurk\Augurk.csproj", "{13364A29-2A72-4F65-AE13-28B270801EB3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.MSBuild", "Augurk.MSBuild\Augurk.MSBuild.csproj", "{8E18EF20-0263-4692-9A07-E5692E7F298A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.MSBuild.UnitTest", "Augurk.MSBuild.UnitTest\Augurk.MSBuild.UnitTest.csproj", "{68043D2D-1D63-44AE-B3B2-592C4718AE77}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.Entities", "Augurk.Entities\Augurk.Entities.csproj", "{8EA75685-A3A8-4852-B0A5-B067D4290382}"
 EndProject
@@ -30,14 +26,6 @@ Global
 		{13364A29-2A72-4F65-AE13-28B270801EB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13364A29-2A72-4F65-AE13-28B270801EB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13364A29-2A72-4F65-AE13-28B270801EB3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8E18EF20-0263-4692-9A07-E5692E7F298A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E18EF20-0263-4692-9A07-E5692E7F298A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E18EF20-0263-4692-9A07-E5692E7F298A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E18EF20-0263-4692-9A07-E5692E7F298A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{68043D2D-1D63-44AE-B3B2-592C4718AE77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{68043D2D-1D63-44AE-B3B2-592C4718AE77}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{68043D2D-1D63-44AE-B3B2-592C4718AE77}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{68043D2D-1D63-44AE-B3B2-592C4718AE77}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8EA75685-A3A8-4852-B0A5-B067D4290382}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8EA75685-A3A8-4852-B0A5-B067D4290382}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EA75685-A3A8-4852-B0A5-B067D4290382}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -53,5 +41,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9E5148E4-9BC2-4187-BF97-46BDA9AC9A66}
 	EndGlobalSection
 EndGlobal

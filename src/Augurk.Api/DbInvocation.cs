@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2015, Augurk
+ Copyright 2018, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -13,18 +13,24 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-using Raven.Client;
 
 namespace Augurk.Api
 {
     /// <summary>
-    /// A static accesspoint for the database
+    /// Describes an invication with al other invocations made from there
     /// </summary>
-    internal static class Database
+    public class DbInvocation
     {
         /// <summary>
-        /// Gets or sets the documentstore which should be used to access the features.
+        /// Gets or sets the signature of this invocation
         /// </summary>
-        public static IDocumentStore DocumentStore { get; set; } 
+        public string Signature { get; set; }
+
+        /// <summary>
+        /// Gets or sets a flat list of all signatures invoked 
+        /// by this invocation; both directly and indirectly.
+        /// </summary>
+        public string[] InvokedSignatures { get; set; }
+
     }
 }

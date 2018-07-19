@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014, Mark Taling
+ Copyright 2018, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,16 +14,26 @@
  limitations under the License.
 */
 
-namespace Augurk.MSBuild
+using System.Web.Http;
+using System.Reflection;
+
+namespace Augurk.Api.Controllers
 {
     /// <summary>
-    /// An enumeration of supported testengines.
+    /// ApiController for retrieving the currently installed Augurk version.
     /// </summary>
-    public enum TestEngine
+    [RoutePrefix("api/version")]
+    public class VersionController : ApiController
     {
         /// <summary>
-        /// MSTest
+        /// Gets the version of this Augurk instance.
         /// </summary>
-        MsTest
+        /// <returns>The versionnumber.</returns>
+        [Route]
+        [HttpGet]
+        public string GetVersion()
+        {
+            return GetType().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
+        }
     }
 }

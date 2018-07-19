@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2017, Augurk
+ Copyright 2018, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,35 +14,36 @@
  limitations under the License.
 */
 
-namespace Augurk.Entities
+namespace Augurk.Entities.Analysis
 {
     /// <summary>
-    /// Contains the Augurk configuration.
+    /// Represents the different invocation kinds supported by Augurk
     /// </summary>
-    public class Configuration
+    public enum InvocationKind
     {
-        #region Expiration
         /// <summary>
-        /// Indicates whether the expiration of features is enabled.
+        /// Default value
         /// </summary>
-        public bool ExpirationEnabled;
+        None = 0,
 
         /// <summary>
-        /// Defines the number of days after which an features should expire.
+        /// The invocation represents an automated When step
         /// </summary>
-        public int ExpirationDays;
+        When = 1,
 
         /// <summary>
-        /// Defines the regular expression which a feature version must match to expire.
+        /// The method invoked is marked as public
         /// </summary>
-        public string ExpirationRegex;
-        #endregion
+        Public = 2,
 
-        #region Dependencies
         /// <summary>
-        /// Indicates whether the analysis of dependencies is enabled.
+        /// The method invoked is marked as private
         /// </summary>
-        public bool DependenciesEnabled;
-        #endregion
+        Private = 4,
+
+        /// <summary>
+        /// The method invoked is marked as internal 
+        /// </summary>
+        Internal = 8
     }
 }

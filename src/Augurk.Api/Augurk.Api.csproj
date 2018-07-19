@@ -71,6 +71,9 @@
     <Reference Include="System.Net.Http.Formatting, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.4\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.4\lib\net45\System.Web.Http.dll</HintPath>
@@ -92,28 +95,41 @@
     <Compile Include="..\Augurk\Properties\AssemblyVersion.cs">
       <Link>Properties\AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="Analyzer.cs" />
+    <Compile Include="Controllers\V2\DependencyController.cs" />
+    <Compile Include="Controllers\VersionController.cs" />
     <Compile Include="Controllers\V1\TagController.cs" />
     <Compile Include="Controllers\V1\BranchController.cs" />
+    <Compile Include="Controllers\V2\AnalysisController.cs" />
     <Compile Include="Controllers\V2\FeatureV2Controller.cs" />
     <Compile Include="Controllers\V2\GroupsController.cs" />
     <Compile Include="Controllers\V2\AugurkController.cs" />
     <Compile Include="Controllers\V2\ProductsController.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DbFeature.cs" />
+    <Compile Include="DbInvocation.cs" />
     <Compile Include="DbProduct.cs" />
     <Compile Include="Defaults.cs" />
+    <Compile Include="Extensions\AsyncDocumentSessionExtensions.cs" />
     <Compile Include="Extensions\DbProductExtensions.cs" />
     <Compile Include="Extensions\DbFeatureExtensions.cs" />
     <Compile Include="Controllers\V1\FeatureController.cs" />
+    <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="FeatureProcessor.cs" />
     <Compile Include="Filters\NoCacheHeaderFilter.cs" />
     <Compile Include="Formatters\TextMediaTypeFormatter.cs" />
+    <Compile Include="Indeces\Analysis\Invocation_ByProductAndVersion.cs" />
+    <Compile Include="Indeces\Analysis\Features_ByIDirectInvocations.cs" />
+    <Compile Include="Indeces\Analysis\Features_ByIndirectInvocations.cs" />
     <Compile Include="Indeces\Features_ByTagAndBranch.cs" />
+    <Compile Include="Indeces\Analysis\AnalysisReports_ByProductAndVersion.cs" />
     <Compile Include="Indeces\Products_ByName.cs" />
     <Compile Include="Indeces\Features_ByTitleProductAndGroup.cs" />
     <Compile Include="Indeces\IndexHelper.cs" />
     <Compile Include="Managers\ConfigurationManager.cs" />
     <Compile Include="Managers\CustomizationManager.cs" />
+    <Compile Include="Managers\AnalysisReportManager.cs" />
+    <Compile Include="Managers\DependencyManager.cs" />
     <Compile Include="Managers\FeatureManager.cs" />
     <Compile Include="Managers\ProductManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

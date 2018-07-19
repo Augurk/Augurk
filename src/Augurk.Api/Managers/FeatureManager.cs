@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014-2017, Augurk
+ Copyright 2014-2018, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,10 +23,8 @@ using Augurk.Entities;
 using Augurk.Entities.Test;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using Raven.Client;
 using Raven.Abstractions.Data;
-using Raven.Json.Linq;
 using Group = Augurk.Entities.Group;
 
 namespace Augurk.Api.Managers
@@ -208,8 +206,8 @@ namespace Augurk.Api.Managers
         /// <summary>
         /// Gets a collection of features for the specified <paramref name="productName">product</paramref> and <paramref name="groupName">group</paramref>.
         /// </summary>
-        /// <param name="productName">The name of the branch for which the feature descriptions should be retrieved.</param>
-        /// <param name="groupName">A tag which should be used to filter the results.</param>
+        /// <param name="productName">The name of the product for which the feature descriptions should be retrieved.</param>
+        /// <param name="groupName">The group which should be used to filter the results.</param>
         /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
         public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByProductAndGroupAsync(string productName, string groupName)
         {
@@ -229,6 +227,42 @@ namespace Augurk.Api.Managers
             }
         }
 
+        /// <summary>
+        /// Gets a collection of <see cref="DbFeature"/> instances that match the 
+        /// provided <paramref name="productName"/> and <paramref name="version"/>.
+        /// </summary>
+        /// <param name="productName">The name of the product for which the features should be retrieved.</param>
+        /// <param name="version">The version of the product for which the features should be retrieved.</param>
+        /// <returns>An enumerable collection of <see cref="DbFeature"/> instances.</returns>
+        public async Task<IEnumerable<DbFeature>> GetDbFeaturesByProductAndVersionAsync(string productName, string version)
+        {
+            using(var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                var featureQuery =  session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                                            .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
+                                                           && feature.Version.Equals(version, StringComparison.OrdinalIgnoreCase));
+
+                return await featureQuery.ToListAsync();
+            }
+        }
+
+        /// <summary>
+        /// Persists the provided <see cref="DbFeature"/> instances.
+        /// </summary>
+        /// <param name="features">A collection of <see cref="DbFeature"/> instances that should be persisted.</param>
+        public async Task PersistDbFeatures(IEnumerable<DbFeature> features)
+        {
+            using(var session = Database.DocumentStore.OpenAsyncSession())
+            {
+                foreach(var feature in features)
+                {
+                    await session.StoreAsync(feature, feature.GetIdentifier());
+                }
+
+                await session.SaveChangesAsync();
+            }
+        }
+
         private void AddChildren(FeatureDescription feature, Dictionary<string, List<FeatureDescription>> childRepository)
         {
             var strippedTitle = feature.Title.Replace(" ", String.Empty);
@@ -240,7 +274,7 @@ namespace Augurk.Api.Managers
             }
         }
 
-        public async Task InsertOrUpdateFeatureAsync(Feature feature, string productName, string groupName, string version)
+        public async Task<DbFeature> InsertOrUpdateFeatureAsync(Feature feature, string productName, string groupName, string version)
         {
             var processor = new FeatureProcessor();
             string parentTitle = processor.DetermineParent(feature);
@@ -254,16 +288,12 @@ namespace Augurk.Api.Managers
                 // Using the store method when the feature already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
 
-                if (configuration.ExpirationEnabled && 
-                    Regex.IsMatch(version, configuration.ExpirationRegex))
-                {
-                    // Set the expiration in the metadata
-                    session.Advanced.GetMetadataFor(dbFeature)["Raven-Expiration-Date"] = 
-                        new RavenJValue(DateTime.UtcNow.Date.AddDays(configuration.ExpirationDays));
-                }
+                session.SetExpirationIfEnabled(dbFeature, version, configuration);
 
                 await session.SaveChangesAsync();
             }
+
+            return dbFeature;
         }
 
         public async Task PersistFeatureTestResultAsync(FeatureTestResult testResult, string productName, string groupName, string version)

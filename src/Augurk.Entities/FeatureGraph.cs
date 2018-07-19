@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2015, Augurk
+ Copyright 2018, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -13,18 +13,20 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-using Raven.Client;
+using System.Collections.Generic;
 
-namespace Augurk.Api
+namespace Augurk.Entities
 {
-    /// <summary>
-    /// A static accesspoint for the database
-    /// </summary>
-    internal static class Database
+    public class FeatureGraph
     {
-        /// <summary>
-        /// Gets or sets the documentstore which should be used to access the features.
-        /// </summary>
-        public static IDocumentStore DocumentStore { get; set; } 
+        public string FeatureName { get; set; }
+
+        public string ProductName { get; set; }
+
+        public string Version { get; set; }
+
+        public IEnumerable<string> Tags { get; set; }
+
+        public List<FeatureGraph> DependsOn { get; set; }
     }
 }
