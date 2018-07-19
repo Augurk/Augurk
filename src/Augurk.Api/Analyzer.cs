@@ -72,6 +72,8 @@ namespace Augurk.Api
                 feature.DirectInvocationSignatures = new List<string>();
             }
 
+            var invocationsToPostProcess = new List<(DbInvocation dbInvocation, Invocation invocationToFlatten)>();
+
             // Determine the possible entrypoints
             foreach(var invocation in reports.SelectMany(report => report.RootInvocations).Where(ri => ri.RegularExpressions?.Length > 0))
             {
@@ -104,30 +106,38 @@ namespace Augurk.Api
                     activeInvocations.AddRange(localInvocations.SelectMany(i =>
                     {
                         List<DbInvocation> dbInvocations = new List<DbInvocation>();
-                        string[] invokedSignatures = Flatten(i);
 
                         // Add the current invocation
-                        dbInvocations.Add(new DbInvocation()
+                        var dbInvocation = new DbInvocation()
                         {
-                            Signature = i.Signature,
-                            InvokedSignatures = invokedSignatures
-                        });
+                            Signature = i.Signature
+                        };
+                        dbInvocations.Add(dbInvocation);
+                        invocationsToPostProcess.Add((dbInvocation, i));
 
                         // Add a copy for each interface definition
                         if (i.InterfaceDefinitions != null)
                         {
-                            dbInvocations.AddRange(i.InterfaceDefinitions.Select(definition =>
+                            var dbis = i.InterfaceDefinitions.Select(definition =>
                                 new DbInvocation()
                                 {
-                                    Signature = definition,
-                                    InvokedSignatures = invokedSignatures
+                                    Signature = definition
                                 }
-                            ));
+                            ).ToList();
+                            dbInvocations.AddRange(dbis);
+                            dbis.ForEach(dbi => invocationsToPostProcess.Add((dbi, i)));
                         }
 
                         return dbInvocations;
                     }));
                 }
+            }
+
+            var strippedDbInvocations = activeInvocations.Select(ai => ai.Signature).ToList();
+            // Flatten the invocations
+            foreach(var invocation in invocationsToPostProcess)
+            {
+                invocation.dbInvocation.InvokedSignatures = FlattenUntilAMatchIsFound(invocation.invocationToFlatten, strippedDbInvocations);
             }
 
             // Make sure we only save unique signatures
@@ -143,22 +153,25 @@ namespace Augurk.Api
             await _analysisReportManager.PersistDbInvocationsAsync(productName, version, activeInvocations.GroupBy(i => i.Signature).Select(g => g.First()));
         }
 
-        private string[] Flatten(Invocation invocation)
+        private string[] FlattenUntilAMatchIsFound(Invocation invocation, IEnumerable<string> possibleMatches)
         {
             List<string> invocations = new List<string>();
             foreach (var inv in invocation.Invocations ?? new Invocation[0])
             {
-                Flatten(inv, invocations);
+                FlattenUntilAMatchIsFound(inv, invocations, possibleMatches);
             }
             return invocations.ToArray();
         }
 
-        private void Flatten(Invocation invocation, List<string> invocations)
+        private void FlattenUntilAMatchIsFound(Invocation invocation, List<string> invocations, IEnumerable<string> possibleMatches)
         {
             invocations.Add(invocation.Signature);
-            foreach (var inv in invocation.Invocations ?? new Invocation[0])
+            if (!possibleMatches.Contains(invocation.Signature))
             {
-                Flatten(inv, invocations);
+                foreach (var inv in invocation.Invocations ?? new Invocation[0])
+                {
+                    FlattenUntilAMatchIsFound(inv, invocations, possibleMatches);
+                }
             }
         }
 
