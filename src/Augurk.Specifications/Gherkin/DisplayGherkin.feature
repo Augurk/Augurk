@@ -8,6 +8,8 @@ For one, **Augurk** fully supports _Markdown_ in  feature summaries. Allowing yo
 +	Lists
 +	**Bold**, and or _Italic_
 +	[Links](https://en.wikipedia.org/wiki/Markdown)
++	Diacritics (e.g. é, à, ü)
+
 
 Scenario: Scenario with a large data table
 In order to improve readability, data tables can be collapsed by clicking their header
@@ -78,3 +80,9 @@ Markdown is not support in scenario and feature titles
 	Given the title of this scenario is written in Markdown
 	When I view this scenario in Augurk
 	Then the title of this scenario is rendered as plain-text
+
+Scenario: Fancy diacritics in the steps (e.g. é, à, ü)
+Markdown is not support in scenario and feature titles, diacritics however, are.
+  Given the title of this scenario is written in Markdown 
+  When I view this scenario in Augurk 
+  Then the title of this scenario is rendered as "Fancy diacritics in the steps (e.g. é, à, ü)" 

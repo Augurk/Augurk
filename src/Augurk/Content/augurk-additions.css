@@ -14,6 +14,14 @@
  limitations under the License.
 */
 
+html, body {
+    height: 100%;  
+}
+
+.container {
+    height: calc(100% - 75px); /* Take the header into consideration by detracting the top 75 pixels  */
+}
+
 [data-toggle] {
     cursor: pointer;
 }
@@ -115,4 +123,14 @@ li.step {
 
 .largeglyph {
     font-size: 18px;
+}
+
+div.scrollview-y {
+    overflow-y: auto;
+    height: 100%;
+}
+
+div.viewport {
+    height: 100%;
+    max-height:100%;
 }

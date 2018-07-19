@@ -30,6 +30,7 @@ using Newtonsoft.Json.Serialization;
 using Owin;
 using Raven.Client.Embedded;
 using Raven.Client.Indexes;
+using Swagger.Net.Application;
 using ConfigurationManager = System.Configuration.ConfigurationManager;
 
 namespace Augurk.Api
@@ -78,6 +79,24 @@ namespace Augurk.Api
 
             // Set the error detail policy to match the asp.net configuration
             SetErrorDetailPolicy(config);
+
+            // Enable documentation
+            config.EnableSwagger("doc/api/{apiVersion}", c => c.MultipleApiVersions(
+                (description, version) =>
+                {
+                    if (version == "V2")
+                    {
+                        return description.RelativePath.StartsWith("api/v2", StringComparison.InvariantCultureIgnoreCase);
+                    }
+
+                    // Because V1 does not contain the version we can only check wether it isn't a V2
+                    return !description.RelativePath.StartsWith("api/v2", StringComparison.InvariantCultureIgnoreCase);
+                },
+                (versionbuilder) =>
+                {
+                    versionbuilder.Version("V1", "Augurk Branch based API (Legacy)");
+                    versionbuilder.Version("V2", "Augurk Product based API");
+                })).EnableSwaggerUi("doc/ui/{*assetPath}", c => c.EnableDiscoveryUrlSelector());
         }
 
         /// <summary>
