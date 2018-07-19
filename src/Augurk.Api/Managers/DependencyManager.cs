@@ -32,19 +32,19 @@ namespace Augurk.Api.Managers
                 var features = await session.Query<DbFeature>().ToListAsync();
                 var invocations = await session.Query<DbInvocation>().ToListAsync();
 
-                var invocationFeatures = from invocation in invocations
-                                         select new
-                                         {
-                                             Invocation = invocation,
-                                             Features = features.Where(f => f.DirectInvocationSignatures.Intersect(invocation.InvokedSignatures).Any()).ToList()
-                                         };
-
-                var featuresInvocations = from feature in features
+                var invocationFeatures = (from invocation in invocations
                                           select new
                                           {
-                                              Feature = feature,
-                                              Invocations = invocationFeatures.Where(i => feature.DirectInvocationSignatures.Contains(i.Invocation.Signature))
-                                          };
+                                              Invocation = invocation,
+                                              Features = features.Where(f => f.DirectInvocationSignatures.Intersect(invocation.InvokedSignatures).Any()).ToList()
+                                          }).ToList();
+
+                var featuresInvocations = (from feature in features
+                                           select new
+                                           {
+                                               Feature = feature,
+                                               Invocations = invocationFeatures.Where(i => feature.DirectInvocationSignatures.Contains(i.Invocation.Signature))
+                                           }).ToList();
 
                 var featureGraphs = new Dictionary<DbFeature, FeatureGraph>();
                 foreach (var feature in featuresInvocations)
