@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 namespace Augurk.Api
 {
     /// <summary>
-    /// Processes analysuis reports together with their associated features in order to discover connections between them.
+    /// Processes analysis reports together with their associated features in order to discover connections between them.
     /// </summary>
     public class Analyzer
     {
