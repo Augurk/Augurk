@@ -1,4 +1,19 @@
-﻿using Augurk.Api.Managers;
+﻿/*
+ Copyright 2018, Augurk
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+using Augurk.Api.Managers;
 using Augurk.Entities;
 using Augurk.Entities.Analysis;
 using System.Collections.Generic;
@@ -9,7 +24,7 @@ using System.Threading.Tasks;
 namespace Augurk.Api
 {
     /// <summary>
-    /// TODO
+    /// Processes analysuis reports together with their associated features in order to discover connections between them.
     /// </summary>
     public class Analyzer
     {
@@ -22,6 +37,12 @@ namespace Augurk.Api
             _analysisReportManager = analysisReportManager;
         }
 
+        /// <summary>
+        /// Processes all analysis reports and features for the provided <paramref name="productName">product</paramref> at the provided <paramref name="version"/>
+        /// and stores the results of the analysis.
+        /// </summary>
+        /// <param name="productName">Name of the product to process.</param>
+        /// <param name="version">Version of the product to process.</param>
         public async Task AnalyzeAndPersistResultsAsync(string productName, string version)
         {
             // Because we will analyze the entire product, remove the old results
@@ -40,6 +61,12 @@ namespace Augurk.Api
             }
         }
 
+        /// <summary>
+        /// Processes the provided <paramref name="feature"/> after it has been uploaded and stores the results of the analysis.
+        /// </summary>
+        /// <param name="productName">Name of the product containing the feature.</param>
+        /// <param name="version">Version of the porudct containing the feature.</param>
+        /// <param name="feature">A <see cref="DbFeature"/> representing the feature to process.</param>
         public async Task AnalyzeAndPeristResultsAsync(string productName, string version, DbFeature feature)
         {
             // Collect all analysisreports for the provided product/version combination

@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2017, Augurk
+ Copyright 2017-2018, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Augurk.Entities;
+using System.Web.Http.Description;
 
 namespace Augurk.Api.Controllers.V2
 {
@@ -26,6 +27,7 @@ namespace Augurk.Api.Controllers.V2
     /// ApiController for retrieving and persisting Augurk settings.
     /// </summary>
     [RoutePrefix("api/v2")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class AugurkController : ApiController
     {
         private readonly CustomizationManager _customizationManager = new CustomizationManager();

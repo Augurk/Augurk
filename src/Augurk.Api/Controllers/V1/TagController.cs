@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2015, Mark Taling
+ Copyright 2015-2018, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -17,11 +17,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using System.Web.Http.Description;
 using Augurk.Api.Managers;
 using Augurk.Entities;
 
 namespace Augurk.Api.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class TagController : ApiController
     {
         private readonly ProductManager _productManager = new ProductManager();

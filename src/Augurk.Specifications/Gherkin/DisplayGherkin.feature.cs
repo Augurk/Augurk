@@ -37,7 +37,8 @@ For one, **Augurk** fully supports _Markdown_ in  feature summaries. Allowing yo
 
 +	Lists
 +	**Bold**, and or _Italic_
-+	[Links](https://en.wikipedia.org/wiki/Markdown)", ProgrammingLanguage.CSharp, new string[] {
++	[Links](https://en.wikipedia.org/wiki/Markdown)
++	Diacritics (e.g. é, à, ü)", ProgrammingLanguage.CSharp, new string[] {
                         "augurk",
                         "documentation"});
             testRunner.OnFeatureStart(featureInfo);
@@ -84,7 +85,7 @@ For one, **Augurk** fully supports _Markdown_ in  feature summaries. Allowing yo
         public virtual void ScenarioWithALargeDataTable()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Scenario with a large data table", ((string[])(null)));
-#line 12
+#line 14
 this.ScenarioSetup(scenarioInfo);
 #line hidden
             TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
@@ -203,11 +204,11 @@ this.ScenarioSetup(scenarioInfo);
                         "de-CH",
                         "German - Switzerland",
                         "0x0807"});
-#line 15
+#line 17
  testRunner.Given("this scenario has a large data table", ((string)(null)), table1, "Given ");
-#line 45
+#line 47
  testRunner.When("I click the header of the table in the given step", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line 46
+#line 48
  testRunner.Then("the table in the given step is collapsed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -221,13 +222,13 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void CollapsingScenario()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Collapsing scenario", ((string[])(null)));
-#line 48
-this.ScenarioSetup(scenarioInfo);
 #line 50
- testRunner.Given("I am viewing this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 51
- testRunner.When("I click the title of this scenario", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+this.ScenarioSetup(scenarioInfo);
 #line 52
+ testRunner.Given("I am viewing this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 53
+ testRunner.When("I click the title of this scenario", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 54
  testRunner.Then("the scenario is collapsed", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -242,15 +243,15 @@ this.ScenarioSetup(scenarioInfo);
                 @__tags = System.Linq.Enumerable.ToArray(System.Linq.Enumerable.Concat(@__tags, exampleTags));
             }
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Readable Scenario Outlines", @__tags);
-#line 55
+#line 57
 this.ScenarioSetup(scenarioInfo);
-#line 59
- testRunner.Given("this scenario outline contains multiple examples", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 60
- testRunner.When(string.Format("I click in the example described as \'{0}\'", description), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 61
- testRunner.Then("the placeholder above is updated with the value of the description column", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+ testRunner.Given("this scenario outline contains multiple examples", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line 62
+ testRunner.When(string.Format("I click in the example described as \'{0}\'", description), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 63
+ testRunner.Then("the placeholder above is updated with the value of the description column", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line 64
  testRunner.And(string.Format("{0}", expectation), ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             this.ScenarioCleanup();
@@ -294,13 +295,13 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void MarkdownEnhancedScenarioSummary()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Markdown enhanced scenario summary", ((string[])(null)));
-#line 69
+#line 71
 this.ScenarioSetup(scenarioInfo);
-#line 72
- testRunner.Given("the summary of this scenario is written in Markdown", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 73
- testRunner.When("I view this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line 74
+ testRunner.Given("the summary of this scenario is written in Markdown", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 75
+ testRunner.When("I view this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 76
  testRunner.Then("the summary of this scenario is rendered as rich-text", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
@@ -314,14 +315,35 @@ this.ScenarioSetup(scenarioInfo);
         public virtual void AttemptedMarkdownInAScenarioTitle()
         {
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Attempted **Markdown** in a scenario title", ((string[])(null)));
-#line 76
-this.ScenarioSetup(scenarioInfo);
 #line 78
- testRunner.Given("the title of this scenario is written in Markdown", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line 79
- testRunner.When("I view this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+this.ScenarioSetup(scenarioInfo);
 #line 80
+ testRunner.Given("the title of this scenario is written in Markdown", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 81
+ testRunner.When("I view this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 82
  testRunner.Then("the title of this scenario is rendered as plain-text", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            this.ScenarioCleanup();
+        }
+        
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestMethodAttribute()]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.DescriptionAttribute("Fancy diacritics in the steps (e.g. é, à, ü)")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestPropertyAttribute("FeatureTitle", "Display Gherkin Scenarios")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("augurk")]
+        [Microsoft.VisualStudio.TestTools.UnitTesting.TestCategoryAttribute("documentation")]
+        public virtual void FancyDiacriticsInTheStepsE_G_EAU()
+        {
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Fancy diacritics in the steps (e.g. é, à, ü)", ((string[])(null)));
+#line 84
+this.ScenarioSetup(scenarioInfo);
+#line 86
+  testRunner.Given("the title of this scenario is written in Markdown", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line 87
+  testRunner.When("I view this scenario in Augurk", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line 88
+  testRunner.Then("the title of this scenario is rendered as \"Fancy diacritics in the steps (e.g. é," +
+                    " à, ü)\"", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             this.ScenarioCleanup();
         }

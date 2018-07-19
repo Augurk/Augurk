@@ -230,3 +230,6 @@ _Pvt_Extensions
 
 # Ini files
 *.ini
+
+# SpecFlow Generated Code
+*.feature.cs
