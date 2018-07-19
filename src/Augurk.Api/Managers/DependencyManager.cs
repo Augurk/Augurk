@@ -15,16 +15,25 @@
 */
 using Augurk.Entities;
 using Raven.Client;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Augurk.Api.Managers
 {
+    /// <summary>
+    /// Provides methods to query featuredependencies from Augurk.
+    /// </summary>
     public class DependencyManager
     {
+        /// <summary>
+        /// Gets the top level feature graphs, that is the graphs 
+        /// for features that do not have a parent feature.
+        /// </summary>
+        /// <returns>
+        /// A collection of <see cref="FeatureGraph"/> instances representing 
+        /// the dependency graphs for the unparented features.
+        /// </returns>
         public async Task<IEnumerable<FeatureGraph>> GetTopLevelFeatureGraphs()
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
