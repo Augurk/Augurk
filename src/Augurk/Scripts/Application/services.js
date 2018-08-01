@@ -23,6 +23,13 @@ AugurkServices.factory('featureService', ['$resource', function ($resource) {
                      { productName: '@productName', groupName: '@groupName', featureName: '@featureName', version: '@version' });
 }]);
 
+AugurkServices.factory('featureDependencyService', ['$resource', function ($resource) {
+    // The featurename might contain a period, which webapi only allows if you finish with a slash
+    // Since AngularJS doesn't allow for trailing slashes, use a backslash instead
+    return $resource('api/v2/dependencies/products/:productName/features/:featureName/versions/:version\\',
+        { productName: '@productName', featureName: '@featureName', version: '@version' });
+}]);
+
 AugurkServices.factory('featureDescriptionService', ['$resource', function ($resource) {
 
     // The branchname might contain a period, which webapi only allows if you finish with a slash

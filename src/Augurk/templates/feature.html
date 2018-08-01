@@ -52,6 +52,40 @@
     </div>
 </div>
 
+<div class="panel panel-success" ng-show="configuration.dependenciesEnabled">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-font" title="This feature is still in Alpha"></span>
+        Feature Dependencies
+    </div>
+    <div class="panel-body">
+        <p ng-if="dependencies.dependants.length > 0">
+            This feature is being used by:
+            <ul>
+                <li ng-repeat="dependency in dependencies.dependants">
+                    <a href="#/feature/{{dependency.productName}}/{{dependency.groupName}}/{{dependency.featureName}}/{{dependency.version}}">{{dependency.featureName}}</a>
+                    <span ng-if="dependency.productName !== dependencies.productName">(from <a href="#/home/{{dependency.productName}}">{{dependency.productName}}</a>)</span>
+                </li>
+            </ul>
+        </p>
+        <p ng-if="dependencies.dependants.length === 0">
+            There are no known features that make use of this feature.
+        </p>
+
+        <p ng-if="dependencies.dependsOn.length > 0">
+            This feature depends on:
+            <ul>
+                <li ng-repeat="dependency in dependencies.dependsOn">
+                    <a href="#/feature/{{dependency.productName}}/{{dependency.groupName}}/{{dependency.featureName}}/{{dependency.version}}">{{dependency.featureName}}</a>
+                    <span ng-if="dependency.productName !== dependencies.productName">(from <a href="#/home/{{dependency.productName}}">{{dependency.productName}}</a>)</span>
+                </li>
+            </ul>
+        </p>
+        <p ng-if="dependencies.dependsOn.length === 0">
+            This feature has no known dependencies
+        </p>
+    </div>
+</div>
+
 <div class="panel" ng-class="{'panel-danger': feature.testResult && feature.testResult.result == 'Failed', 'panel-success': feature.testResult && feature.testResult.result == 'Passed'}" ng-show="feature.testResult">
     <div class="panel-heading">
         <span class="glyphicon pull-right" ng-class="{'glyphicon-thumbs-down': feature.testResult && feature.testResult.result == 'Failed', 'glyphicon-thumbs-up': feature.testResult && feature.testResult.result == 'Passed'}" ></span>

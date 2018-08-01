@@ -63,6 +63,7 @@ namespace Augurk.Api.Managers
                     {
                         FeatureName = feature.Feature.Title,
                         ProductName = feature.Feature.Product,
+                        GroupName = feature.Feature.Group,
                         Tags = feature.Feature.Tags,
                         Version = feature.Feature.Version,
                         DependsOn = new List<FeatureGraph>()
@@ -112,6 +113,7 @@ namespace Augurk.Api.Managers
                     {
                         ProductName = dependency.ProductName,
                         FeatureName = dependency.FeatureName,
+                        GroupName = dependency.GroupName,
                         Version = dependency.Version
                     });
                 }
@@ -124,6 +126,7 @@ namespace Augurk.Api.Managers
                 {
                     ProductName = node.ProductName,
                     FeatureName = node.FeatureName,
+                    GroupName = node.GroupName,
                     Version = node.Version
                 });
             }

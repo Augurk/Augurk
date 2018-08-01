@@ -23,6 +23,8 @@ namespace Augurk.Entities
 
         public string ProductName { get; set; }
 
+        public string GroupName { get; set; }
+
         public string Version { get; set; }
 
         public IEnumerable<string> Tags { get; set; }
