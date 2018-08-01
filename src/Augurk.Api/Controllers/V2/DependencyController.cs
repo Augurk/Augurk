@@ -32,5 +32,12 @@ namespace Augurk.Api.Controllers.V2
         {
             return _dependencyManager.GetTopLevelFeatureGraphsAsync();
         }
+
+        [Route("products/{productName}/features/{featureName}/versions/{version}")]
+        [HttpGet]
+        public Task<FeatureGraph> GetFeatureGraph(string productName, string featureName, string version)
+        {
+            return _dependencyManager.GetFeatureGraphAsync(productName, featureName, version);
+        }
     }
 }
