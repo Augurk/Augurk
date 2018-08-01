@@ -103,19 +103,26 @@ namespace Augurk.Api.Managers
 
         private void ExtractFeatureRelations(FeatureGraph node, FeatureGraph result)
         {
-            if (node.DescribesSameFeature(result)
-                // Only do this the first time we encounter this feature
-                && result.DependsOn.Count == 0)
+            if (node.DescribesSameFeature(result))
             {
-                foreach(var dependency in node.DependsOn)
+                // If it is the first time we encounter ourselves, continue on
+                if (result.DependsOn.Count == 0)
                 {
-                    result.DependsOn.Add(new FeatureGraph()
+                    foreach (var dependency in node.DependsOn)
                     {
-                        ProductName = dependency.ProductName,
-                        FeatureName = dependency.FeatureName,
-                        GroupName = dependency.GroupName,
-                        Version = dependency.Version
-                    });
+                        result.DependsOn.Add(new FeatureGraph()
+                        {
+                            ProductName = dependency.ProductName,
+                            FeatureName = dependency.FeatureName,
+                            GroupName = dependency.GroupName,
+                            Version = dependency.Version
+                        });
+                    }
+                }
+                // otherwise, return
+                else
+                {
+                    return;
                 }
             }
             
