@@ -34,7 +34,7 @@ namespace Augurk.Api.Managers
         /// A collection of <see cref="FeatureGraph"/> instances representing 
         /// the dependency graphs for the unparented features.
         /// </returns>
-        public async Task<IEnumerable<FeatureGraph>> GetTopLevelFeatureGraphs()
+        public async Task<IEnumerable<FeatureGraph>> GetTopLevelFeatureGraphsAsync()
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
@@ -81,6 +81,13 @@ namespace Augurk.Api.Managers
 
                 return unparentedGraphs;
             }
+        }
+
+
+
+        public async Task<FeatureGraph> GetFeatureGraphAsync(string productName, string featureName, string version)
+        {
+            return new FeatureGraph();
         }
     }
 }

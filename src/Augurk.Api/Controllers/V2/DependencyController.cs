@@ -30,7 +30,7 @@ namespace Augurk.Api.Controllers.V2
         [HttpGet]
         public Task<IEnumerable<FeatureGraph>> GetSystemWideDependencies()
         {
-            return _dependencyManager.GetTopLevelFeatureGraphs();
+            return _dependencyManager.GetTopLevelFeatureGraphsAsync();
         }
     }
 }
