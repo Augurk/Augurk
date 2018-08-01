@@ -27,6 +27,8 @@ namespace Augurk.Entities
 
         public IEnumerable<string> Tags { get; set; }
 
-        public List<FeatureGraph> DependsOn { get; set; }
+        public List<FeatureGraph> DependsOn { get; set; } = new List<FeatureGraph>();
+
+        public List<FeatureGraph> Dependants { get; set; } = new List<FeatureGraph>();
     }
 }

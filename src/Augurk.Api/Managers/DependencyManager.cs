@@ -15,6 +15,7 @@
 */
 using Augurk.Entities;
 using Raven.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -83,11 +84,51 @@ namespace Augurk.Api.Managers
             }
         }
 
-
-
         public async Task<FeatureGraph> GetFeatureGraphAsync(string productName, string featureName, string version)
         {
-            return new FeatureGraph();
+            // Create the result variable
+            var result = new FeatureGraph();
+            result.ProductName = productName;
+            result.FeatureName = featureName;
+            result.Version = version;
+
+            // For now, just use all tree as a source
+            var trees = (await GetTopLevelFeatureGraphsAsync()).ToList();
+
+            trees.ForEach(tree => ExtractFeatureRelations(tree, result));
+
+            return result;
+        }
+
+        private void ExtractFeatureRelations(FeatureGraph node, FeatureGraph result)
+        {
+            if (node.FeatureName.Equals(result.FeatureName, StringComparison.Ordinal)
+                // Only do this the first time we encounter this feature
+                && result.DependsOn.Count == 0)
+            {
+                foreach(var dependency in node.DependsOn)
+                {
+                    result.DependsOn.Add(new FeatureGraph()
+                    {
+                        ProductName = dependency.ProductName,
+                        FeatureName = dependency.FeatureName,
+                        Version = dependency.Version
+                    });
+                }
+            }
+            
+            if(node.DependsOn.Any(dependency => dependency.FeatureName.Equals(result.FeatureName, StringComparison.Ordinal))
+               && !result.Dependants.Any(dependant => dependant.FeatureName.Equals(node.FeatureName, StringComparison.Ordinal)))
+            {
+                result.Dependants.Add(new FeatureGraph()
+                {
+                    ProductName = node.ProductName,
+                    FeatureName = node.FeatureName,
+                    Version = node.Version
+                });
+            }
+
+            node.DependsOn.ForEach(dependency => ExtractFeatureRelations(dependency, result));
         }
     }
 }
