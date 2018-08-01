@@ -103,7 +103,7 @@ namespace Augurk.Api.Managers
 
         private void ExtractFeatureRelations(FeatureGraph node, FeatureGraph result)
         {
-            if (node.FeatureName.Equals(result.FeatureName, StringComparison.Ordinal)
+            if (node.DescribesSameFeature(result)
                 // Only do this the first time we encounter this feature
                 && result.DependsOn.Count == 0)
             {
@@ -119,8 +119,8 @@ namespace Augurk.Api.Managers
                 }
             }
             
-            if(node.DependsOn.Any(dependency => dependency.FeatureName.Equals(result.FeatureName, StringComparison.Ordinal))
-               && !result.Dependants.Any(dependant => dependant.FeatureName.Equals(node.FeatureName, StringComparison.Ordinal)))
+            if(node.DependsOn.Any(dependency => dependency.DescribesSameFeature(result))
+               && !result.Dependants.Any(dependant => dependant.DescribesSameFeature(node)))
             {
                 result.Dependants.Add(new FeatureGraph()
                 {
