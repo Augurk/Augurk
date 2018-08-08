@@ -46,14 +46,14 @@ namespace Augurk.Api.Managers
                                           select new
                                           {
                                               Invocation = invocation,
-                                              Features = features.Where(f => f.DirectInvocationSignatures.Intersect(invocation.InvokedSignatures).Any()).ToList()
+                                              Features = features.Where(f => f.DirectInvocationSignatures != null && f.DirectInvocationSignatures.Intersect(invocation.InvokedSignatures).Any()).ToList()
                                           }).ToList();
 
                 var featuresInvocations = (from feature in features
                                            select new
                                            {
                                                Feature = feature,
-                                               Invocations = invocationFeatures.Where(i => feature.DirectInvocationSignatures.Contains(i.Invocation.Signature))
+                                               Invocations = invocationFeatures.Where(i => feature.DirectInvocationSignatures != null && feature.DirectInvocationSignatures.Contains(i.Invocation.Signature))
                                            }).ToList();
 
                 var featureGraphs = new Dictionary<DbFeature, FeatureGraph>();
