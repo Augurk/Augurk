@@ -29,3 +29,8 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.SourcesDirectory)/deploy/Augurk.WebDeploy.zip
+    artifactName: webdeploy
