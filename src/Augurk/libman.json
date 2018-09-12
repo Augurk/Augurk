@@ -1,0 +1,66 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "js-sequence-diagrams@1.0.6",
+      "destination": "libs/js-sequence-diagrams"
+    },
+    {
+      "library": "twitter-bootstrap@3.3.7",
+      "destination": "libs/twitter-bootstrap",
+      "files": [
+        "css/bootstrap.min.css",
+        "css/bootstrap.css.map",
+        "css/bootstrap-theme.min.css",
+        "css/bootstrap-theme.min.css.map",
+        "js/bootstrap.min.js",
+        "fonts/glyphicons-halflings-regular.eot",
+        "fonts/glyphicons-halflings-regular.svg",
+        "fonts/glyphicons-halflings-regular.ttf",
+        "fonts/glyphicons-halflings-regular.woff",
+        "fonts/glyphicons-halflings-regular.woff2"
+      ]
+    },
+    {
+      "library": "angular.js@1.5.8",
+      "destination": "libs/angular",
+      "files": [
+        "angular.min.js",
+        "angular.min.js.map",
+        "angular-resource.min.js",
+        "angular-resource.min.js.map",
+        "angular-sanitize.min.js",
+        "angular-sanitize.min.js.map",
+        "angular-route.min.js",
+        "angular-route.min.js.map"
+      ]
+    },
+    {
+      "library": "jquery@3.1.1",
+      "destination": "libs/jquery",
+      "files": [
+        "jquery.min.js",
+        "jquery.min.map"
+      ]
+    },
+    {
+      "library": "showdown@1.8.6",
+      "destination": "libs/showdown",
+      "files": [
+        "showdown.min.js",
+        "showdown.min.js.map"
+      ]
+    },
+    {
+      "library": "angular-ui-select@0.18.1",
+      "destination": "libs/angular-ui-select",
+      "files": [
+        "select.min.css",
+        "select.min.css.map",
+        "select.min.js",
+        "select.min.js.map"
+      ]
+    }
+  ]
+}
