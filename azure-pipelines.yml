@@ -23,6 +23,7 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    msbuildArgs: /p:DeployOnBuild=true;PublishProfile=Properties/PublishProfiles/DeploymentPackage.pubxml
 
 - task: VSTest@2
   inputs:
