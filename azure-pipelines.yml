@@ -14,6 +14,12 @@ variables:
 steps:
 - task: NuGetToolInstaller@0
 
+steps:
+- task: GitVersion@3
+  inputs:
+    updateAssemblyInfo: true
+    updateAssemblyInfoFilename: src/Augurk/Properties/AssemblyVersion.cs
+
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
