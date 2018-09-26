@@ -34,6 +34,7 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    otherConsoleOptions: '/platform:X64'
 
 - task: PublishBuildArtifacts@1
   inputs:
