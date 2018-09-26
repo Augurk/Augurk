@@ -15,7 +15,6 @@
 */
 
 using Augurk.Api.Managers;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Augurk.Entities;
