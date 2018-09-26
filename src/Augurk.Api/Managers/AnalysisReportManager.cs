@@ -126,6 +126,9 @@ namespace Augurk.Api.Managers
                 new Raven.Abstractions.Data.IndexQuery()
                 {
                     Query = $"Product:{productName} AND Version:{version}"
+                }, new Raven.Abstractions.Data.BulkOperationOptions
+                {
+                    AllowStale = true
                 }).WaitForCompletionAsync();
         }
     }
