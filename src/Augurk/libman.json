@@ -67,7 +67,16 @@
       "destination": "libs/nonnoml",
       "files": [
         "nomnoml.min.js",
-        "nomnoml.min.js.map" 
+        "nomnoml.min.js.map"
+      ]
+    },
+    {
+      "provider": "unpkg",
+      "library": "angular-bootstrap-toggle@0.1.2",
+      "destination": "libs/angular-bootstrap-toggle",
+      "files": [
+        "dist/angular-bootstrap-toggle.min.js",
+        "dist/angular-bootstrap-toggle.min.css"
       ]
     }
   ]
