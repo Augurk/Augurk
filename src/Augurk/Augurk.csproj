@@ -108,6 +108,8 @@
     <Content Include="libs\angular\angular.min.js" />
     <Content Include="libs\jquery\jquery.min.js" />
     <Content Include="libs\js-sequence-diagrams\sequence-diagram-min.js" />
+    <Content Include="libs\nonnoml\nomnoml.js" />
+    <Content Include="libs\nonnoml\nomnoml.min.js" />
     <Content Include="libs\showdown\showdown.min.js" />
     <Content Include="libs\twitter-bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="libs\twitter-bootstrap\css\bootstrap.min.css" />
@@ -132,6 +134,7 @@
     <Content Include="libs\showdown\showdown.min.js.map" />
     <Content Include="libs\angular-ui-select\select.min.css.map" />
     <Content Include="libs\angular-ui-select\select.min.js.map" />
+    <Content Include="libs\nonnoml\nomnoml.min.js.map" />
     <None Include="Properties\PublishProfiles\AugurkDemo - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\DeploymentPackage.pubxml" />
     <Content Include="Scripts\angular-bootstrap-toggle.js" />

@@ -61,6 +61,14 @@
         "select.min.js",
         "select.min.js.map"
       ]
+    },
+    {
+      "library": "nomnoml@0.2.0",
+      "destination": "libs/nonnoml",
+      "files": [
+        "nomnoml.min.js",
+        "nomnoml.min.js.map" 
+      ]
     }
   ]
 }
