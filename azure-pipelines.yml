@@ -45,7 +45,7 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: $(Build.SourcesDirectory)/src/Augurk.Specifications
-    contents: "**/*.feature"
+    contents: "**/?(*.feature|*.md)"
     targetFolder: $(Build.ArtifactStagingDirectory)/features
 
 - task: PublishBuildArtifacts@1
