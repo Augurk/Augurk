@@ -18,9 +18,7 @@
 <span class="glyphicon glyphicon-tag" ng-show="feature.tags.length == 1"></span>
 <span class="tag" ng-repeat="tag in feature.tags">{{tag}}</span>
 
-<h3>{{feature.title}}</h3>
-
-<div class="dropdown" ng-hide="feature.version=='0.0.0'">
+<div class="dropdown version pull-right" ng-hide="feature.version=='0.0.0'">
     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownVersion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
         {{feature.version}}
         <span class="caret"></span>
@@ -29,6 +27,8 @@
         <li ng-repeat="version in availableVersions"><a href="#/feature/{{product}}/{{group}}/{{feature.title}}/{{version}}">{{version}}</a></li>
     </ul>
 </div>
+
+<h3>{{feature.title}}</h3>
 
 <div class="panel panel-warning" ng-show="feature.properties.indexOf('NotImplemented') >= 0">
     <div class="panel-heading">
