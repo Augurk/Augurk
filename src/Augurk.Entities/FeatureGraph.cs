@@ -13,6 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
+using System;
 using System.Collections.Generic;
 
 namespace Augurk.Entities
@@ -23,10 +24,21 @@ namespace Augurk.Entities
 
         public string ProductName { get; set; }
 
+        public string GroupName { get; set; }
+
         public string Version { get; set; }
 
         public IEnumerable<string> Tags { get; set; }
 
-        public List<FeatureGraph> DependsOn { get; set; }
+        public List<FeatureGraph> DependsOn { get; set; } = new List<FeatureGraph>();
+
+        public List<FeatureGraph> Dependants { get; set; } = new List<FeatureGraph>();
+
+        public bool DescribesSameFeature(FeatureGraph other)
+        {
+            return this.FeatureName.Equals(other.FeatureName, StringComparison.Ordinal) &&
+                   this.ProductName.Equals(other.ProductName, StringComparison.Ordinal) &&
+                   this.Version.Equals(other.Version, StringComparison.Ordinal);
+        }
     }
 }

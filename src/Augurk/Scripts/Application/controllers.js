@@ -36,8 +36,8 @@ AugurkControllers.controller('productController', ['$rootScope', '$scope', '$rou
     }
 ]);
 
-AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$routeParams', 'featureService', 'featureVersionService',
-    function ($rootScope, $scope, $routeParams, featureService, featureVersionService) {
+AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$routeParams', 'featureService', 'featureVersionService', 'featureDependencyService', 'configurationService',
+    function ($rootScope, $scope, $routeParams, featureService, featureVersionService, featureDependencyService, configurationService) {
         $rootScope.allowMenu = true;
 
         $scope.feature = featureService.get({
@@ -45,6 +45,18 @@ AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$rou
             groupName: $routeParams.groupName,
             featureName: $routeParams.featureName,
             version: $routeParams.version
+        });
+
+        configurationService.get().$promise.then(function (configuration) {
+            $scope.configuration = configuration;
+
+            if (configuration.dependenciesEnabled) {
+                $scope.dependencies = featureDependencyService.get({
+                    productName: $routeParams.productName,
+                    featureName: $routeParams.featureName,
+                    version: $routeParams.version
+                });
+            }
         });
 
 	    featureVersionService.versions.then(function(data) {
@@ -171,8 +183,8 @@ AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'produ
     }
 ]);
 
-AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService', 'configurationService',
-    function($rootScope, $scope, customizationService, configurationService) {
+AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService', 'configurationService', 'versionService',
+    function($rootScope, $scope, customizationService, configurationService, versionService) {
         $rootScope.allowMenu = false;
 
         customizationService.get().$promise.then(function (customization) {
@@ -185,9 +197,13 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
 
         configurationService.get().$promise.then(function(configuration) {
             $scope.configuration = configuration;
-            $scope.saveConfiguration = function() {
+            $scope.saveConfiguration = function () {
                 $scope.configuration.$save();
-            }
+            };
+        });
+
+        versionService.get().then(function (version) {
+            $scope.version = version;
         });
     }
 ]);

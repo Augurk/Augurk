@@ -23,6 +23,13 @@ AugurkServices.factory('featureService', ['$resource', function ($resource) {
                      { productName: '@productName', groupName: '@groupName', featureName: '@featureName', version: '@version' });
 }]);
 
+AugurkServices.factory('featureDependencyService', ['$resource', function ($resource) {
+    // The featurename might contain a period, which webapi only allows if you finish with a slash
+    // Since AngularJS doesn't allow for trailing slashes, use a backslash instead
+    return $resource('api/v2/dependencies/products/:productName/features/:featureName/versions/:version\\',
+        { productName: '@productName', featureName: '@featureName', version: '@version' });
+}]);
+
 AugurkServices.factory('featureDescriptionService', ['$resource', function ($resource) {
 
     // The branchname might contain a period, which webapi only allows if you finish with a slash
@@ -153,4 +160,32 @@ AugurkServices.factory('customizationService', ['$resource', function ($resource
 
 AugurkServices.factory('configurationService', ['$resource', function ($resource) {
     return $resource('api/v2/configuration');
+}]);
+
+AugurkServices.factory('versionService', ['$q', '$http', function ($q, $http) {
+    var service = {
+    };
+
+    service.get = function () {
+        var versionPromiseDeferrer = $q.defer();
+        $http({ method: 'GET', url: 'api/version' }).then(function (response) {
+            versionPromiseDeferrer.resolve(response.data);
+        });
+
+        return versionPromiseDeferrer.promise;
+    };
+
+    return service;
+}]);
+
+AugurkServices.factory('uniqueIntegerService', [function () {
+    var service = {
+        currentInteger: 1,
+        getNextInteger: function () {
+            service.currentInteger++;
+            return service.currentInteger;
+        }
+    };
+
+    return service;
 }]);

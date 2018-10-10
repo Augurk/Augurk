@@ -30,7 +30,14 @@ namespace Augurk.Api.Controllers.V2
         [HttpGet]
         public Task<IEnumerable<FeatureGraph>> GetSystemWideDependencies()
         {
-            return _dependencyManager.GetTopLevelFeatureGraphs();
+            return _dependencyManager.GetTopLevelFeatureGraphsAsync();
+        }
+
+        [Route("products/{productName}/features/{featureName}/versions/{version}")]
+        [HttpGet]
+        public Task<FeatureGraph> GetFeatureGraph(string productName, string featureName, string version)
+        {
+            return _dependencyManager.GetFeatureGraphAsync(productName, featureName, version);
         }
     }
 }

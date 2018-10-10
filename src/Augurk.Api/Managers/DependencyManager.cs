@@ -15,6 +15,7 @@
 */
 using Augurk.Entities;
 using Raven.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace Augurk.Api.Managers
         /// A collection of <see cref="FeatureGraph"/> instances representing 
         /// the dependency graphs for the unparented features.
         /// </returns>
-        public async Task<IEnumerable<FeatureGraph>> GetTopLevelFeatureGraphs()
+        public async Task<IEnumerable<FeatureGraph>> GetTopLevelFeatureGraphsAsync()
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
@@ -45,14 +46,14 @@ namespace Augurk.Api.Managers
                                           select new
                                           {
                                               Invocation = invocation,
-                                              Features = features.Where(f => f.DirectInvocationSignatures.Intersect(invocation.InvokedSignatures).Any()).ToList()
+                                              Features = features.Where(f => f.DirectInvocationSignatures != null && f.DirectInvocationSignatures.Intersect(invocation.InvokedSignatures).Any()).ToList()
                                           }).ToList();
 
                 var featuresInvocations = (from feature in features
                                            select new
                                            {
                                                Feature = feature,
-                                               Invocations = invocationFeatures.Where(i => feature.DirectInvocationSignatures.Contains(i.Invocation.Signature))
+                                               Invocations = invocationFeatures.Where(i => feature.DirectInvocationSignatures != null && feature.DirectInvocationSignatures.Contains(i.Invocation.Signature))
                                            }).ToList();
 
                 var featureGraphs = new Dictionary<DbFeature, FeatureGraph>();
@@ -62,6 +63,7 @@ namespace Augurk.Api.Managers
                     {
                         FeatureName = feature.Feature.Title,
                         ProductName = feature.Feature.Product,
+                        GroupName = feature.Feature.Group,
                         Tags = feature.Feature.Tags,
                         Version = feature.Feature.Version,
                         DependsOn = new List<FeatureGraph>()
@@ -81,6 +83,62 @@ namespace Augurk.Api.Managers
 
                 return unparentedGraphs;
             }
+        }
+
+        public async Task<FeatureGraph> GetFeatureGraphAsync(string productName, string featureName, string version)
+        {
+            // Create the result variable
+            var result = new FeatureGraph();
+            result.ProductName = productName;
+            result.FeatureName = featureName;
+            result.Version = version;
+
+            // For now, just use all tree as a source
+            var trees = (await GetTopLevelFeatureGraphsAsync()).ToList();
+
+            trees.ForEach(tree => ExtractFeatureRelations(tree, result));
+
+            return result;
+        }
+
+        private void ExtractFeatureRelations(FeatureGraph node, FeatureGraph result)
+        {
+            if (node.DescribesSameFeature(result))
+            {
+                // If it is the first time we encounter ourselves, continue on
+                if (result.DependsOn.Count == 0)
+                {
+                    foreach (var dependency in node.DependsOn)
+                    {
+                        result.DependsOn.Add(new FeatureGraph()
+                        {
+                            ProductName = dependency.ProductName,
+                            FeatureName = dependency.FeatureName,
+                            GroupName = dependency.GroupName,
+                            Version = dependency.Version
+                        });
+                    }
+                }
+                // otherwise, return
+                else
+                {
+                    return;
+                }
+            }
+            
+            if(node.DependsOn.Any(dependency => dependency.DescribesSameFeature(result))
+               && !result.Dependants.Any(dependant => dependant.DescribesSameFeature(node)))
+            {
+                result.Dependants.Add(new FeatureGraph()
+                {
+                    ProductName = node.ProductName,
+                    FeatureName = node.FeatureName,
+                    GroupName = node.GroupName,
+                    Version = node.Version
+                });
+            }
+
+            node.DependsOn.ForEach(dependency => ExtractFeatureRelations(dependency, result));
         }
     }
 }
