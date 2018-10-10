@@ -162,6 +162,22 @@ AugurkServices.factory('configurationService', ['$resource', function ($resource
     return $resource('api/v2/configuration');
 }]);
 
+AugurkServices.factory('versionService', ['$q', '$http', function ($q, $http) {
+    var service = {
+    };
+
+    service.get = function () {
+        var versionPromiseDeferrer = $q.defer();
+        $http({ method: 'GET', url: 'api/version' }).then(function (response) {
+            versionPromiseDeferrer.resolve(response.data);
+        });
+
+        return versionPromiseDeferrer.promise;
+    };
+
+    return service;
+}]);
+
 AugurkServices.factory('uniqueIntegerService', [function () {
     var service = {
         currentInteger: 1,

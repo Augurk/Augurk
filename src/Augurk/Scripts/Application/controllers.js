@@ -183,8 +183,8 @@ AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'produ
     }
 ]);
 
-AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService', 'configurationService',
-    function($rootScope, $scope, customizationService, configurationService) {
+AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService', 'configurationService', 'versionService',
+    function($rootScope, $scope, customizationService, configurationService, versionService) {
         $rootScope.allowMenu = false;
 
         customizationService.get().$promise.then(function (customization) {
@@ -197,9 +197,13 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
 
         configurationService.get().$promise.then(function(configuration) {
             $scope.configuration = configuration;
-            $scope.saveConfiguration = function() {
+            $scope.saveConfiguration = function () {
                 $scope.configuration.$save();
-            }
+            };
+        });
+
+        versionService.get().then(function (version) {
+            $scope.version = version;
         });
     }
 ]);
