@@ -41,3 +41,8 @@ steps:
   inputs:
     pathToPublish: $(Build.SourcesDirectory)/deploy/Augurk.WebDeploy.zip
     artifactName: webdeploy
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: $(Build.SourcesDirectory)/src/Augurk.Specifications/**/*.feature
+    artifactName: features
