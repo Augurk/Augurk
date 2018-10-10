@@ -30,8 +30,6 @@
     </ul>
 </div>
 
-<br/>
-
 <div class="panel panel-warning" ng-show="feature.properties.indexOf('NotImplemented') >= 0">
     <div class="panel-heading">
         <span class="glyphicon glyphicon-warning-sign"></span>
@@ -101,7 +99,7 @@
     </div>
 </div>
 
-<div class="well" ng-bind-html="feature.description|markdown|featurereferences"></div>
+<div class="feature-description" ng-bind-html="feature.description|markdown|featurereferences|uml"></div>
 
 <div class="panel panel-default" ng-show="feature.background">
     <div class="panel-heading"

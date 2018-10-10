@@ -63,11 +63,22 @@
       ]
     },
     {
+      "library": "lodash.js@3.10.1",
+      "destination": "libs/nomnoml",
+      "files": [ "lodash.min.js" ]
+    },
+    {
+      "provider": "filesystem",
+      "library": "../../extLib/Dagre@0.4.6",
+      "destination": "libs/nomnoml",
+      "files": [ "dagre.min.js" ]
+    },
+    {
       "library": "nomnoml@0.2.0",
-      "destination": "libs/nonnoml",
+      "destination": "libs/nomnoml",
       "files": [
         "nomnoml.min.js",
-        "nomnoml.min.js.map" 
+        "nomnoml.min.js.map"
       ]
     }
   ]

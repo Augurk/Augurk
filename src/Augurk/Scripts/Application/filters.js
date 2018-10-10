@@ -20,7 +20,10 @@ var AugurkFilters = angular.module('AugurkFilters', ['AugurkServices']);
 // ---------------
 // Runs all input through the Showdown script, effectively applying markdown.
 AugurkFilters.filter('markdown', function() {
-    return function(input) {
+    return function (input) {
+        if (!input) {
+            return "";
+        }
         var converter = new showdown.Converter({ 'tables': true });               
         var html = converter.makeHtml(input);
         html = html.replace("<table>", '<table class="table table-bordered table-condensed table-striped">');        
@@ -36,15 +39,17 @@ AugurkFilters.filter('markdown', function() {
 AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
     return function (input) {
         return input.replace(/\[([\w\s]*)\]/gm,
-		    function (originalContent, featureTitle) {
-		        var group = $.grep($rootScope.featureGroups, function (group) { return group.name == $rootScope.currentGroupName; })[0];
-		        var featureDescriptions = $.grep(group.features, function (feature) { return feature.title == featureTitle; });
-		        if (featureDescriptions.length == 1) {
-		            return $('<a/>', {
-		                html: featureDescriptions[0].title,
-		                href: featureDescriptions[0].uri
-		            })[0].outerHTML;
-		        }
+            function (originalContent, featureTitle) {
+                if ($rootScope.featureGroups) {
+                    var group = $.grep($rootScope.featureGroups, function (group) { return group.name == $rootScope.currentGroupName; })[0];
+                    var featureDescriptions = $.grep(group.features, function (feature) { return feature.title == featureTitle; });
+                    if (featureDescriptions.length == 1) {
+                        return $('<a/>', {
+                            html: featureDescriptions[0].title,
+                            href: featureDescriptions[0].uri
+                        })[0].outerHTML;
+                    }
+                }
 		        return originalContent;
 		    }
 	    );
@@ -70,6 +75,31 @@ AugurkFilters.filter('exampleparameters', function () {
 	    );
     };
 });
+
+// exampleparameters filter
+// ------------------------
+// Marks all text found between angle brackets as an example-parameter and marks the whole as an argument.
+// e.g. <some text> will be replaced with <span class="argument">&lt;<span class="example-parameter">some text</span>&gt;</span>
+AugurkFilters.filter('uml', ['$sce', 'uniqueIntegerService', function ($sce, uniqueIntegerService) {
+    return function (input) {
+        return $sce.trustAsHtml(input.replace(/\<pre><code class=\"UML language-UML\"\>(?:Label\:\W?(.*$))?([\s\S]*?)<\/code><\/pre>/gm,
+            function (entireString, title, match) {
+                var id = 'uml' + uniqueIntegerService.getNextInteger().toString();
+                var result = `<div class="uml">
+<canvas id="` + id + `"></canvas>
+<script>
+var canvas = document.getElementById("` + id + `");
+var source = \`` + _.unescape(match) + `\`;
+nomnoml.draw(canvas, source);</script></div>`;
+                if (title) {
+                    result += `<span class="uml-label">` + title + `</span>`;
+                }
+
+                return result;
+            }
+        ));
+    };
+}]);
 
 function findFeature(featureDescriptions, title) {
     var result = null;

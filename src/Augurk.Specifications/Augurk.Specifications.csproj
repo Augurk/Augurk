@@ -84,6 +84,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>NotImplementedTag.feature</DependentUpon>
     </Compile>
+    <Compile Include="Gherkin\UML.feature.cs">
+      <DependentUpon>UML.feature</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Gherkin\ChildOfTag.feature.cs">
       <DependentUpon>ChildOfTag.feature</DependentUpon>
@@ -130,6 +135,10 @@
     <None Include="Gherkin\ChildOfTag.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>
       <LastGenOutput>ChildOfTag.feature.cs</LastGenOutput>
+    </None>
+    <None Include="Gherkin\UML.feature">
+      <Generator>SpecFlowSingleFileGenerator</Generator>
+      <LastGenOutput>UML.feature.cs</LastGenOutput>
     </None>
     <None Include="Gherkin\ServerSideTags.feature">
       <Generator>SpecFlowSingleFileGenerator</Generator>

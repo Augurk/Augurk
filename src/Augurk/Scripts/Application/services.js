@@ -161,3 +161,15 @@ AugurkServices.factory('customizationService', ['$resource', function ($resource
 AugurkServices.factory('configurationService', ['$resource', function ($resource) {
     return $resource('api/v2/configuration');
 }]);
+
+AugurkServices.factory('uniqueIntegerService', [function () {
+    var service = {
+        currentInteger: 1,
+        getNextInteger: function () {
+            service.currentInteger++;
+            return service.currentInteger;
+        }
+    };
+
+    return service;
+}]);
