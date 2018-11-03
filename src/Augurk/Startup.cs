@@ -21,6 +21,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Configuration;
 using System.Web.Http;
+using Augurk.Api;
 using Augurk.Api.Filters;
 using Augurk.Api.Formatters;
 using Augurk.Api.Managers;
@@ -33,7 +34,7 @@ using Raven.Client.Indexes;
 using Swagger.Net.Application;
 using ConfigurationManager = System.Configuration.ConfigurationManager;
 
-namespace Augurk.Api
+namespace Augurk
 {
     /// <summary>
     /// OWIN startup class that configures the application.
