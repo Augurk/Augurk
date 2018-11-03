@@ -77,7 +77,7 @@ namespace Augurk.Api.Controllers.V2
         /// <param name="featureTitle">Title of the feature.</param>
         /// <param name="version">Version of the feature to get.</param>
         /// <returns>Returns a <see cref="DisplayableFeature"/>.</returns>
-        [Route("{featureTitle}/versions/{version}", Name = "GetFeature")]
+        [Route("{featureTitle}/versions/{version}", Name = "GetFeatureV2")]
         [HttpGet]
         public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string featureTitle, string version)
         {
@@ -117,7 +117,7 @@ namespace Augurk.Api.Controllers.V2
                 }
             }
 
-            return CreatedAtRoute("GetFeature", feature);
+            return CreatedAtRoute("GetFeatureV2", feature);
         }
 
         /// <summary>
