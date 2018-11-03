@@ -48,7 +48,7 @@ namespace Augurk.Api.Controllers.V2
         [Route("customization")]
         [HttpPut]
         [HttpPost]
-        public async Task PersistCustomizationAsync(Customization customizationSettings)
+        public async Task PersistCustomizationAsync([FromBody]Customization customizationSettings)
         {
             await _customizationManager.PersistCustomizationSettingsAsync(customizationSettings);
         }
@@ -70,7 +70,7 @@ namespace Augurk.Api.Controllers.V2
         [Route("configuration")]
         [HttpPut]
         [HttpPost]
-        public async Task PersisConfigurationAsync(Configuration configuration)
+        public async Task PersisConfigurationAsync([FromBody]Configuration configuration)
         {
             await _configurationManager.PersistConfigurationAsync(configuration);
         }
