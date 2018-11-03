@@ -4,11 +4,11 @@
   "libraries": [
     {
       "library": "js-sequence-diagrams@1.0.6",
-      "destination": "libs/js-sequence-diagrams"
+      "destination": "wwwroot/libs/js-sequence-diagrams"
     },
     {
       "library": "twitter-bootstrap@3.3.7",
-      "destination": "libs/twitter-bootstrap",
+      "destination": "wwwroot/libs/twitter-bootstrap",
       "files": [
         "css/bootstrap.min.css",
         "css/bootstrap.css.map",
@@ -24,7 +24,7 @@
     },
     {
       "library": "angular.js@1.5.8",
-      "destination": "libs/angular",
+      "destination": "wwwroot/libs/angular",
       "files": [
         "angular.min.js",
         "angular.min.js.map",
@@ -38,7 +38,7 @@
     },
     {
       "library": "jquery@3.1.1",
-      "destination": "libs/jquery",
+      "destination": "wwwroot/libs/jquery",
       "files": [
         "jquery.min.js",
         "jquery.min.map"
@@ -46,7 +46,7 @@
     },
     {
       "library": "showdown@1.8.6",
-      "destination": "libs/showdown",
+      "destination": "wwwroot/libs/showdown",
       "files": [
         "showdown.min.js",
         "showdown.min.js.map"
@@ -54,7 +54,7 @@
     },
     {
       "library": "angular-ui-select@0.18.1",
-      "destination": "libs/angular-ui-select",
+      "destination": "wwwroot/libs/angular-ui-select",
       "files": [
         "select.min.css",
         "select.min.css.map",
@@ -64,18 +64,18 @@
     },
     {
       "library": "lodash.js@3.10.1",
-      "destination": "libs/nomnoml",
+      "destination": "wwwroot/libs/nomnoml",
       "files": [ "lodash.min.js" ]
     },
     {
       "provider": "filesystem",
       "library": "../../extLib/Dagre@0.4.6",
-      "destination": "libs/nomnoml",
+      "destination": "wwwroot/libs/nomnoml",
       "files": [ "dagre.min.js" ]
     },
     {
       "library": "nomnoml@0.2.0",
-      "destination": "libs/nomnoml",
+      "destination": "wwwroot/libs/nomnoml",
       "files": [
         "nomnoml.min.js",
         "nomnoml.min.js.map"
@@ -84,7 +84,7 @@
     {
       "provider": "unpkg",
       "library": "angular-bootstrap-toggle@0.1.2",
-      "destination": "libs/angular-bootstrap-toggle",
+      "destination": "wwwroot/libs/angular-bootstrap-toggle",
       "files": [
         "dist/angular-bootstrap-toggle.min.js",
         "dist/angular-bootstrap-toggle.min.css"
