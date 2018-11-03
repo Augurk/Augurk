@@ -235,4 +235,4 @@ _Pvt_Extensions
 *.feature.cs
 
 # LibMan libraries
-src/Augurk/libs
+src/Augurk/wwwroot/libs
