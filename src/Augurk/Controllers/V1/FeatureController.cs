@@ -16,18 +16,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Augurk.Api.Controllers.V2;
 using Augurk.Api.Managers;
 using Augurk.Entities;
 using Augurk.Entities.Test;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Augurk.Api.Controllers
 {
-    public class FeatureController : ApiController
+    public class FeatureController : Controller
     {
         private const string UNKNOWN_VERSION = "0.0.0";
         private readonly FeatureManager _featureManager = new FeatureManager();
@@ -40,7 +38,7 @@ namespace Augurk.Api.Controllers
             return await _featureManager.GetGroupedFeatureDescriptionsAsync(branchName);
         }
 
-        [Route("api/features/{branchName}/{groupName}/{title}")]
+        [Route("api/features/{branchName}/{groupName}/{title}", Name = "GetFeature")]
         [HttpGet]
         public async Task<DisplayableFeature> GetAsync(string branchName, string groupName, string title)
         {
@@ -53,57 +51,37 @@ namespace Augurk.Api.Controllers
 
         [Route("api/features/{branchName}/{groupName}/{title}")]
         [HttpPost]
-        public async Task<HttpResponseMessage> PostAsync(Feature feature, string branchName, string groupName, string title)
+        public async Task<ActionResult<Feature>> PostAsync(Feature feature, string branchName, string groupName, string title)
         {
             if (!feature.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "The title provided by the POST data and the title in uri do not match!");
+                return BadRequest("The title provided by the POST data and the title in uri do not match!");
             }
 
-            var response = Request.CreateResponse(HttpStatusCode.Created);
-
-            try
-            {
-                // NOTE: Using the branchName as product name because of backwards compatability
-                await _featureManager.InsertOrUpdateFeatureAsync(feature, branchName, groupName, UNKNOWN_VERSION);
-            }
-            catch (Exception exception)
-            {
-                response = Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exception);
-            }
-
-            return response;
+            // NOTE: Using the branchName as product name because of backwards compatability
+            await _featureManager.InsertOrUpdateFeatureAsync(feature, branchName, groupName, UNKNOWN_VERSION);
+            return CreatedAtRoute("GetFeature", feature);
         }
 
         [Obsolete]
         [Route("api/features/{branchName}/{groupName}")]
         [HttpPost]
-        public async Task<HttpResponseMessage> PostAsync(Feature feature, string branchName, string groupName)
+        public async Task<ActionResult<Feature>> PostAsync(Feature feature, string branchName, string groupName)
         {
             return await PostAsync(feature, branchName, groupName, feature.Title);
         }
 
         [Route("api/features/{branchName}/{groupName}/{title}/testresult")]
         [HttpPost]
-        public async Task<HttpResponseMessage> PostAsync(FeatureTestResult testResult, string branchName, string groupName, string title)
+        public async Task<ActionResult<FeatureTestResult>> PostAsync(FeatureTestResult testResult, string branchName, string groupName, string title)
         {
             if (!testResult.FeatureTitle.Equals(title, StringComparison.OrdinalIgnoreCase))
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "The title provided by the POST data and the title in uri do not match!");
+                return BadRequest("The title provided by the POST data and the title in uri do not match!");
             }
 
-            var response = Request.CreateResponse(HttpStatusCode.Created);
-
-            try
-            {
-                await _featureManager.PersistFeatureTestResultAsync(testResult, branchName, groupName, UNKNOWN_VERSION);
-            }
-            catch (Exception exception)
-            {
-                response = Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exception);
-            }
-
-            return response;
+            await _featureManager.PersistFeatureTestResultAsync(testResult, branchName, groupName, UNKNOWN_VERSION);
+            return CreatedAtRoute("GetFeature", null);
         }
 
         [Route("api/features/{branchName}")]

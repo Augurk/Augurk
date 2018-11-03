@@ -14,9 +14,8 @@
  limitations under the License.
 */
 
-using System.Net.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net.Http.Headers;
-using System.Web.Http.Filters;
 
 namespace Augurk.Api.Filters
 {
@@ -28,24 +27,27 @@ namespace Augurk.Api.Filters
         /// <summary>
         /// Adds or alters the <see cref="CacheControlHeaderValue"/> on the response headers to ensure the repsonse will not be cached.
         /// </summary>
-        /// <param name="actionExecutedContext">The current context.</param>
-        public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
+        /// <param name="context">The current context.</param>
+        public override void OnActionExecuted(ActionExecutedContext context)
         {
-            if (actionExecutedContext.Response == null)
+            // TODO: Figure out how to handle this with ASP.NET Core
+            /*
+            if (context.HttpContext.Response == null)
             {
-                actionExecutedContext.Response = new HttpResponseMessage();
+                context.HttpContext.Response = new HttpResponseMessage();
             }
 
-            if (actionExecutedContext.Response.Headers.CacheControl == null)
+            if (context.Response.Headers.CacheControl == null)
             {
-                actionExecutedContext.Response.Headers.CacheControl = new CacheControlHeaderValue();
+                context.Response.Headers.CacheControl = new CacheControlHeaderValue();
             }
 
-            actionExecutedContext.Response.Headers.CacheControl.NoCache = true;
-            actionExecutedContext.Response.Headers.CacheControl.NoStore = true;
-            actionExecutedContext.Response.Headers.CacheControl.MustRevalidate = true;
+            context.Response.Headers.CacheControl.NoCache = true;
+            context.Response.Headers.CacheControl.NoStore = true;
+            context.Response.Headers.CacheControl.MustRevalidate = true;
 
-            actionExecutedContext.Response.Headers.Add("Pragma", "no-cache");
+            context.Response.Headers.Add("Pragma", "no-cache");
+            */
         }
     }
 }

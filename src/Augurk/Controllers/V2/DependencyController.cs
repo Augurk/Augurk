@@ -15,14 +15,14 @@
 */
 using Augurk.Api.Managers;
 using Augurk.Entities;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace Augurk.Api.Controllers.V2
 {
-    [RoutePrefix("api/v2/dependencies")]
-    public class DependencyController : ApiController
+    [Route("api/v2/dependencies")]
+    public class DependencyController : Controller
     {
         private readonly DependencyManager _dependencyManager = new DependencyManager();
 

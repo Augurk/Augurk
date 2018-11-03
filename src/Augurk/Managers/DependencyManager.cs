@@ -14,8 +14,7 @@
  limitations under the License.
 */
 using Augurk.Entities;
-using Raven.Client;
-using System;
+using Raven.Client.Documents;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

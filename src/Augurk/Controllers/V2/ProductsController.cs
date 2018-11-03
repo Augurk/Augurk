@@ -14,20 +14,18 @@
  limitations under the License.
 */
 
-using System;
 using Augurk.Api.Managers;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading.Tasks;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Augurk.Api.Controllers.V2
 {
     /// <summary>
     /// ApiController for retrieving the available products.
     /// </summary>
-    [RoutePrefix("api/v2/products")]
-    public class ProductsController : ApiController
+    [Route("api/v2/products")]
+    public class ProductsController : Controller
     {
         private readonly ProductManager _productsManager = new ProductManager();
 

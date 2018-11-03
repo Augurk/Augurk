@@ -16,15 +16,14 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Description;
 using Augurk.Api.Managers;
 using Augurk.Entities;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Augurk.Api.Controllers
 {
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class TagController : ApiController
+    public class TagController : Controller
     {
         private readonly ProductManager _productManager = new ProductManager();
         private readonly FeatureManager _featureManager = new FeatureManager();

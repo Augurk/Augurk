@@ -16,12 +16,12 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Augurk.Api.Managers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Augurk.Api.Controllers
 {
-    public class BranchController : ApiController
+    public class BranchController : Controller
     {
         private readonly ProductManager _productManager = new ProductManager();
 

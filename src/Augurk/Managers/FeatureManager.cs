@@ -23,9 +23,10 @@ using Augurk.Entities;
 using Augurk.Entities.Test;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using Raven.Client;
-using Raven.Abstractions.Data;
 using Group = Augurk.Entities.Group;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Queries;
+using Raven.Client.Documents.Operations;
 
 namespace Augurk.Api.Managers
 {
@@ -326,10 +327,9 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
-                    nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
-                    new IndexQuery() { Query = $"Product:\"{productName}\"AND Group:\"{groupName}\"" },
-                    new BulkOperationOptions() { AllowStale = true });
+                await session.Advanced.DocumentStore.Operations.SendAsync(
+                    new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
+                        x.Product == productName && x.Group == groupName));
             }
         }
 
@@ -343,10 +343,9 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
-                    nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
-                    new IndexQuery() { Query = $"Product:\"{productName}\"AND Group:\"{groupName}\"AND Version:\"{version}\"" },
-                    new BulkOperationOptions() { AllowStale = true });
+                await session.Advanced.DocumentStore.Operations.SendAsync(
+                    new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
+                        x.Product == productName && x.Group == groupName && x.Version == version));
             }
         }
 
@@ -360,10 +359,9 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
-                    nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
-                    new IndexQuery() { Query = $"Product:\"{productName}\"AND Group:\"{groupName}\"AND Title:\"{title}\"" },
-                    new BulkOperationOptions() { AllowStale = true });
+                await session.Advanced.DocumentStore.Operations.SendAsync(
+                    new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
+                        x.Product == productName && x.Group == groupName && x.Title == title));
             }
         }
 

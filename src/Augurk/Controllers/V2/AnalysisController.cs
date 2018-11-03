@@ -15,19 +15,19 @@
 */
 using Augurk.Api.Managers;
 using Augurk.Entities.Analysis;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace Augurk.Api.Controllers.V2
 {
     /// <summary>
     /// ApiController for publishing analysis results.
     /// </summary>
-    [RoutePrefix("api/v2/products/{productName}/versions/{version}/analysis")]
-    public class AnalysisController : ApiController
+    [Route("api/v2/products/{productName}/versions/{version}/analysis")]
+    public class AnalysisController : Controller
     {
         private readonly AnalysisReportManager _analysisReportManager = new AnalysisReportManager();
         private readonly Analyzer _analyzer;
@@ -48,24 +48,16 @@ namespace Augurk.Api.Controllers.V2
         /// <param name="groupName">Name of the group that the feature belongs to.</param>
         [Route("reports")]
         [HttpPost]
-        public async Task<HttpResponseMessage> PostAnalysisReport(AnalysisReport analysisReport, string productName, string version)
+        public async Task<ActionResult> PostAnalysisReport(AnalysisReport analysisReport, string productName, string version)
         {
-            try
-            {
-                analysisReport.Version = version;
+            analysisReport.Version = version;
 
-                await _analysisReportManager.InsertOrUpdateAnalysisReportAsync(productName, version, analysisReport);
+            await _analysisReportManager.InsertOrUpdateAnalysisReportAsync(productName, version, analysisReport);
 
-                // Run the analysis
-                await _analyzer.AnalyzeAndPersistResultsAsync(productName, version);
+            // Run the analysis
+            await _analyzer.AnalyzeAndPersistResultsAsync(productName, version);
 
-                return Request.CreateResponse(HttpStatusCode.Created);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Trace.WriteLine(ex);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
-            }
+            return Accepted();
         }
     }
 }

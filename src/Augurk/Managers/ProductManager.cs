@@ -17,11 +17,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Raven.Client;
-using Raven.Client.Linq;
 using Augurk.Api.Indeces;
 using System;
-using Raven.Abstractions.Data;
+using Raven.Client.Documents.Queries;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Operations;
 
 namespace Augurk.Api.Managers
 {
@@ -91,10 +91,9 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
-                    nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
-                    new IndexQuery() {Query = $"Product:\"{productName}\"" },
-                    new BulkOperationOptions() {AllowStale = true});
+                await session.Advanced.DocumentStore.Operations.SendAsync(
+                    new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
+                        x.Product == productName));
             }
         }
 
@@ -107,10 +106,9 @@ namespace Augurk.Api.Managers
         {
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.AsyncDatabaseCommands.DeleteByIndexAsync(
-                    nameof(Features_ByTitleProductAndGroup).Replace('_', '/'),
-                    new IndexQuery() { Query = $"Product:\"{productName}\"AND Version:\"{version}\"" },
-                    new BulkOperationOptions() { AllowStale = true });
+                await session.Advanced.DocumentStore.Operations.SendAsync(
+                    new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
+                        x.Product == productName && x.Version == version));
             }
         }
 

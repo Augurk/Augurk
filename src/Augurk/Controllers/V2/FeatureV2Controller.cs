@@ -16,23 +16,20 @@
 
 using Augurk.Api.Managers;
 using Augurk.Entities;
+using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace Augurk.Api.Controllers.V2
 {
     /// <summary>
     /// ApiController for retrieving the available features.
     /// </summary>
-    [RoutePrefix("api/v2/products/{productName}/groups/{groupName}/features")]
-    public class FeatureV2Controller : ApiController
+    [Route("api/v2/products/{productName}/groups/{groupName}/features")]
+    public class FeatureV2Controller : Controller
     {
         private readonly FeatureManager _featureManager = new FeatureManager();
         private readonly Analyzer _analyzer;
@@ -80,7 +77,7 @@ namespace Augurk.Api.Controllers.V2
         /// <param name="featureTitle">Title of the feature.</param>
         /// <param name="version">Version of the feature to get.</param>
         /// <returns>Returns a <see cref="DisplayableFeature"/>.</returns>
-        [Route("{featureTitle}/versions/{version}")]
+        [Route("{featureTitle}/versions/{version}", Name = "GetFeature")]
         [HttpGet]
         public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string featureTitle, string version)
         {
@@ -98,24 +95,14 @@ namespace Augurk.Api.Controllers.V2
         /// <returns>Returns a reponse message indicating whether saving the feature succeeded.</returns>
         [Route("{title}/versions/{version}")]
         [HttpPost]
-        public async Task<HttpResponseMessage> PostAsync(Feature feature, string productName, string groupName, string title, string version)
+        public async Task<ActionResult<Feature>> PostAsync(Feature feature, string productName, string groupName, string title, string version)
         {
             if (!feature.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "The title provided by the POST data and the title in uri do not match!");
+                return BadRequest("The title provided by the POST data and the title in uri do not match!");
             }
 
-            var response = Request.CreateResponse(HttpStatusCode.Created);
-
-            DbFeature dbFeature = null;
-            try
-            {
-                dbFeature = await _featureManager.InsertOrUpdateFeatureAsync(feature, productName, groupName, version);
-            }
-            catch (Exception exception)
-            {
-                response = Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exception);
-            }
+            DbFeature dbFeature = await _featureManager.InsertOrUpdateFeatureAsync(feature, productName, groupName, version);
 
             // Run the analysis for this feature
             if (dbFeature != null)
@@ -130,7 +117,7 @@ namespace Augurk.Api.Controllers.V2
                 }
             }
 
-            return response;
+            return CreatedAtRoute("GetFeature", feature);
         }
 
         /// <summary>
