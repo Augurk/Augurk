@@ -15,7 +15,7 @@
 */
 
 using System.Linq;
-using Raven.Client.Indexes;
+using Raven.Client.Documents.Indexes;
 
 namespace Augurk.Api.Indeces
 {
@@ -40,9 +40,7 @@ namespace Augurk.Api.Indeces
                                       feature.Group
                               };
 
-            MaxIndexOutputsPerDocument = 50;
-
-            StoreAllFields(Raven.Abstractions.Indexing.FieldStorage.Yes);
+            StoreAllFields(FieldStorage.Yes);
         }
 
         public class TaggedFeature

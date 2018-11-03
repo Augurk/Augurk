@@ -16,12 +16,13 @@
 
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Raven.Json.Linq;
 using Augurk.Entities.Analysis;
-using Raven.Client.Linq;
 using System.Collections.Generic;
 using System.Linq;
 using Augurk.Api.Indeces.Analysis;
+using Newtonsoft.Json.Linq;
+using Raven.Client.Documents.Queries;
+using Raven.Client.Documents.Operations;
 
 namespace Augurk.Api.Managers
 {
@@ -67,7 +68,7 @@ namespace Augurk.Api.Managers
                 await session.StoreAsync(report, $"{productName}/{version}/{report.AnalyzedProject}");
 
                 session.SetExpirationIfEnabled(report, version, configuration);
-                session.Advanced.GetMetadataFor(report)["Product"] = new RavenJValue(productName);
+                session.Advanced.GetMetadataFor(report)["Product"] = new JValue(productName);
 
                 await session.SaveChangesAsync();
             }
@@ -107,8 +108,8 @@ namespace Augurk.Api.Managers
                     await session.StoreAsync(invocation, $"{productName}/{version}/{invocation.Signature}");
                     session.SetExpirationIfEnabled(invocation, version, configuration);
                     var metadata = session.Advanced.GetMetadataFor(invocation);
-                    metadata["Product"] = new RavenJValue(productName);
-                    metadata["Version"] = new RavenJValue(version);
+                    metadata["Product"] = new JValue(productName);
+                    metadata["Version"] = new JValue(version);
                 }
 
                 await session.SaveChangesAsync();
@@ -122,14 +123,9 @@ namespace Augurk.Api.Managers
         /// <param name="version">Version of the product to delete the invocations for.</param>
         public async Task DeleteDbInvocationsAsync(string productName, string version)
         {
-            await Database.DocumentStore.DatabaseCommands.DeleteByIndex(nameof(Invocation_ByProductAndVersion).Replace("_", "/"),
-                new Raven.Abstractions.Data.IndexQuery()
-                {
-                    Query = $"Product:{productName} AND Version:{version}"
-                }, new Raven.Abstractions.Data.BulkOperationOptions
-                {
-                    AllowStale = true
-                }).WaitForCompletionAsync();
+            await Database.DocumentStore.Operations.Send(
+                new DeleteByQueryOperation(new IndexQuery { Query = $"Product:{productName} AND Version:{version}" }))
+                .WaitForCompletionAsync();
         }
     }
 }

@@ -16,7 +16,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Raven.Client.Indexes;
+using Raven.Client.Documents.Indexes;
 
 namespace Augurk.Api.Indeces.Analysis
 {
@@ -36,7 +36,7 @@ namespace Augurk.Api.Indeces.Analysis
                                   IndirectInvocations = feature.DirectInvocationSignatures.SelectMany(dis => LoadDocument<DbInvocation>(dis).InvokedSignatures)
                               };
 
-            StoreAllFields(Raven.Abstractions.Indexing.FieldStorage.Yes);
+            StoreAllFields(FieldStorage.Yes);
         }
 
         public class Feature

@@ -16,17 +16,17 @@
 
 using Augurk.Api.Managers;
 using Augurk.Entities;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace Augurk.Api.Controllers.V2
 {
     /// <summary>
     /// ApiController for retrieving the available groups of related features within a product.
     /// </summary>
-    [RoutePrefix("api/v2/products/{productName}/groups")]
-    public class GroupsController : ApiController
+    [Route("api/v2/products/{productName}/groups")]
+    public class GroupsController : Controller
     {
         private readonly FeatureManager _featureManager = new FeatureManager();
 

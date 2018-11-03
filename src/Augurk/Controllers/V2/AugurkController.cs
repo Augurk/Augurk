@@ -16,18 +16,17 @@
 
 using Augurk.Api.Managers;
 using System.Threading.Tasks;
-using System.Web.Http;
 using Augurk.Entities;
-using System.Web.Http.Description;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Augurk.Api.Controllers.V2
 {
     /// <summary>
     /// ApiController for retrieving and persisting Augurk settings.
     /// </summary>
-    [RoutePrefix("api/v2")]
+    [Route("api/v2")]
     [ApiExplorerSettings(IgnoreApi = true)]
-    public class AugurkController : ApiController
+    public class AugurkController : Controller
     {
         private readonly CustomizationManager _customizationManager = new CustomizationManager();
         private readonly ConfigurationManager _configurationManager = new ConfigurationManager();

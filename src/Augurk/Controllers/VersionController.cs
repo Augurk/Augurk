@@ -14,22 +14,21 @@
  limitations under the License.
 */
 
-using System.Web.Http;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Augurk.Api.Controllers
 {
     /// <summary>
     /// ApiController for retrieving the currently installed Augurk version.
     /// </summary>
-    [RoutePrefix("api/version")]
-    public class VersionController : ApiController
+    [Route("api/version")]
+    public class VersionController : Controller
     {
         /// <summary>
         /// Gets the version of this Augurk instance.
         /// </summary>
         /// <returns>The versionnumber.</returns>
-        [Route]
         [HttpGet]
         public string GetVersion()
         {

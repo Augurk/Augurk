@@ -1,12 +1,11 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Raven.Client.Embedded;
 using Augurk.Api;
 using Augurk.Api.Managers;
 using System.Threading.Tasks;
 using System.Linq;
+using Raven.TestDriver;
+using Raven.Client.Documents;
 
 namespace Augurk.Test.Managers
 {
@@ -14,24 +13,19 @@ namespace Augurk.Test.Managers
     /// Summary description for DependencyManagerTests
     /// </summary>
     [TestClass]
-    public class DependencyManagerTests
+    public class DependencyManagerTests : RavenTestDriver
     {
-
-        [TestInitialize()]
-        public void PrepareRavenDB() {
-            Database.DocumentStore = new EmbeddableDocumentStore()
-            {
-                Configuration =
-                {
-                    RunInUnreliableYetFastModeThatIsNotSuitableForProduction = true,
-                    RunInMemory = true,
-                }
-            };
-
-            Database.DocumentStore.Conventions.IdentityPartsSeparator = "-";
-            Database.DocumentStore.Initialize();
+        protected override void PreInitialize(IDocumentStore documentStore)
+        {
+            documentStore.Conventions.IdentityPartsSeparator = "-";
         }
-     
+
+        [TestInitialize]
+        public void TestInitialize()
+        {
+            Database.DocumentStore = GetDocumentStore();
+        }
+
         /// <summary>
         /// Verifies whether feature graphs can be discovered when two different features are available.
         /// </summary>

@@ -14,7 +14,7 @@
  limitations under the License.
 */
 
-using Raven.Client.Indexes;
+using Raven.Client.Documents.Indexes;
 using System.Linq;
 
 namespace Augurk.Api.Indeces
