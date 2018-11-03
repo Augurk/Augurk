@@ -66,14 +66,14 @@ namespace Augurk.Api.Controllers
         [Obsolete]
         [Route("api/features/{branchName}/{groupName}")]
         [HttpPost]
-        public async Task<ActionResult<Feature>> PostAsync(Feature feature, string branchName, string groupName)
+        public async Task<ActionResult<Feature>> PostAsync([FromBody]Feature feature, string branchName, string groupName)
         {
             return await PostAsync(feature, branchName, groupName, feature.Title);
         }
 
         [Route("api/features/{branchName}/{groupName}/{title}/testresult")]
         [HttpPost]
-        public async Task<ActionResult<FeatureTestResult>> PostAsync(FeatureTestResult testResult, string branchName, string groupName, string title)
+        public async Task<ActionResult<FeatureTestResult>> PostAsync([FromBody]FeatureTestResult testResult, string branchName, string groupName, string title)
         {
             if (!testResult.FeatureTitle.Equals(title, StringComparison.OrdinalIgnoreCase))
             {

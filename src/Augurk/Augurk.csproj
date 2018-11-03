@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="DataAccess\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
