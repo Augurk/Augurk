@@ -9,7 +9,7 @@ Augurk provides an accessible, easy-to-use overview of all the features describi
 Augurk is greatly influenced by [Relish](https://www.relishapp.com/)
 and [Pickles](http://www.picklesdoc.com/). While Relish is a great SaaS application,
 it requires you to publish your documentation to the cloud. While this is not an issue when your sources live in the cloud as well,
-in other cases it is often still preferable to keep the documentation within the corporate intranet.<br />
+in other cases it is often still preferable to keep the documentation within the corporate intranet.  
 This leaves Pickles. Although Pickles adresses the cloud issue (it was designed for that purpose), it has
 some short-comings of its own. Pickles generates a neat (Dynamic)HTML website for each project/solution you
 require it to. It does, however, not incorporate these. This means not only will you get a website for each solution,
@@ -28,3 +28,16 @@ and *Relish* (a pickled food item) make perfect sense. Since that doesn't leave 
 *Gherkin* related terms in the English language, it was an almost natural choice to switch
 to a different language. Since *Augurk* is being developed in The Netherlands, 
 *Augurk* (meaning pickle[d cucumber]) was a perfect fit.
+
+## How to set up your development environment ##
+Great, you want to open our jar of augurk's!  
+Let's us help you set up the development environment, there are 3 steps to get you up and running.
+1. First you'll need *Visual Studio 2015* or newer to open the solution
+1. On the `Augurk` project, change the *IIS Express* bitness to x64  
+![Screenshot showing Augurk project settings screen to set the IIS bitness setting to x64](img/screenshot-setting-iis-bitness.png)
+1. Change the bitness of the *Test Runner* to x64  
+![Screenshot showing the Visual Studio menu option to set the test runner bitness setting to x64](img/screenshot-setting-testrunner-bitness.png)
+
+Now you should be able to run and test all code.
+
+Just as a note, the feature files that are part of the `Augurk.Specification` project are not implemented. Therefore, when you run all tests in the solution they will be skipped.

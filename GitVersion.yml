@@ -1,5 +1,2 @@
 next-version: 2.7.0
-mode: ContinuousDeployment
-branches: {}
-ignore:
-  sha: []
+mode: Mainline
