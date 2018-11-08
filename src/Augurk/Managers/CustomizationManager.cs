@@ -16,6 +16,7 @@
 
 using System.Threading.Tasks;
 using Augurk.Entities;
+using Raven.Client.Documents;
 
 namespace Augurk.Api.Managers
 {
@@ -25,6 +26,12 @@ namespace Augurk.Api.Managers
     public class CustomizationManager
     {
         private const string KEY = "urn:Augurk:Customization";
+        private readonly IDocumentStore _documentStore;
+
+        public CustomizationManager(IDocumentStoreProvider storeProvider)
+        {
+            _documentStore = storeProvider.Store;
+        }
 
         /// <summary>
         /// Retrieves the customization settings; or, creates them if they do not exist.
@@ -34,7 +41,7 @@ namespace Augurk.Api.Managers
         {
             Customization customizationSettings = null;
 
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 customizationSettings = await session.LoadAsync<Customization>(KEY);
             }
@@ -54,7 +61,7 @@ namespace Augurk.Api.Managers
         /// <param name="customizationSettings">A <see cref="Customization"/> instance containing the settings that should be persisted.</param>
         public async Task PersistCustomizationSettingsAsync(Customization customizationSettings)
         {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 // Using the store method when the customization already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(customizationSettings, KEY);

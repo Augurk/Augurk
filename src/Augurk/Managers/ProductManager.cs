@@ -30,13 +30,20 @@ namespace Augurk.Api.Managers
     /// </summary>
     public class ProductManager
     {
+        private readonly IDocumentStore _documentStore;
+
+        public ProductManager(IDocumentStoreProvider storeProvider)
+        {
+            _documentStore = storeProvider.Store;
+        }
+
         /// <summary>
         /// Gets all available products.
         /// </summary>
         /// <returns>Returns a range of productName names.</returns>
         public async Task<IEnumerable<string>> GetProductsAsync()
         {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 return await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
                                     .OrderBy(feature => feature.Product)
@@ -53,7 +60,7 @@ namespace Augurk.Api.Managers
         /// <returns>The description of the requested product; or, null.</returns>
         public async Task<string> GetProductDescriptionAsync(string productName)
         {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 return await session.Query<DbProduct, Products_ByName>()
                                     .Where(product => product.Name.Equals(productName, StringComparison.OrdinalIgnoreCase))
@@ -75,7 +82,7 @@ namespace Augurk.Api.Managers
                 DescriptionMarkdown = descriptionMarkdown
             };
 
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 // Using the store method when the product already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(dbProduct, dbProduct.GetIdentifier());
@@ -89,7 +96,7 @@ namespace Augurk.Api.Managers
         /// <param name="productName">The name of the product to delete.</param>
         public async Task DeleteProductAsync(string productName)
         {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 await session.Advanced.DocumentStore.Operations.SendAsync(
                     new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
@@ -104,7 +111,7 @@ namespace Augurk.Api.Managers
         /// <param name="version">The version of the productName to delete.</param>
         public async Task DeleteProductAsync(string productName, string version)
         {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 await session.Advanced.DocumentStore.Operations.SendAsync(
                     new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
@@ -119,7 +126,7 @@ namespace Augurk.Api.Managers
         /// <returns>Returns a range of tags for the provided <paramref name="productName">productName</paramref>.</returns>
         public async Task<IEnumerable<string>> GetTagsAsync(string productName)
         {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 return await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
                                     .Where(feature => feature.Product.Equals(productName, StringComparison.CurrentCultureIgnoreCase))

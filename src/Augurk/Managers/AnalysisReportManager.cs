@@ -23,6 +23,8 @@ using Augurk.Api.Indeces.Analysis;
 using Newtonsoft.Json.Linq;
 using Raven.Client.Documents.Queries;
 using Raven.Client.Documents.Operations;
+using Raven.Client.Documents;
+using System;
 
 namespace Augurk.Api.Managers
 {
@@ -31,6 +33,8 @@ namespace Augurk.Api.Managers
     /// </summary>
     public class AnalysisReportManager
     {
+        private readonly IDocumentStore _documentStore;
+
         /// <summary>
         /// Gets or sets the JsonSerializerSettings that should be used when (de)serializing.
         /// </summary>
@@ -41,15 +45,9 @@ namespace Augurk.Api.Managers
         /// </summary>
         private ConfigurationManager ConfigurationManager { get; set; }
 
-        public AnalysisReportManager()
-            : this(new ConfigurationManager())
+        public AnalysisReportManager(IDocumentStoreProvider storeProvider, ConfigurationManager configurationManager)
         {
-               
-        }
-
-        internal AnalysisReportManager(ConfigurationManager configurationManager)
-        {
-            ConfigurationManager = configurationManager;
+            _documentStore = storeProvider?.Store ?? throw new ArgumentNullException(nameof(storeProvider));
         }
 
         /// <summary>
@@ -62,7 +60,7 @@ namespace Augurk.Api.Managers
         {
             var configuration = await ConfigurationManager.GetOrCreateConfigurationAsync();
 
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 // Store will override the existing report if it already exists
                 await session.StoreAsync(report, $"{productName}/{version}/{report.AnalyzedProject}");
@@ -82,7 +80,7 @@ namespace Augurk.Api.Managers
         /// <returns>A range of <see cref="AnalysisReport"/> instances stored for the provided product and version.</returns>
         public IEnumerable<AnalysisReport> GetAnalysisReportsByProductAndVersionAsync(string productName, string version)
         {
-            using(var session = Database.DocumentStore.OpenSession())
+            using(var session = _documentStore.OpenSession())
             {
                 return session.Query<AnalysisReports_ByProductAndVersion.Entry, AnalysisReports_ByProductAndVersion>()
                            .Where(report => report.Product == productName && report.Version == version)
@@ -101,7 +99,7 @@ namespace Augurk.Api.Managers
         {
             var configuration = await ConfigurationManager.GetOrCreateConfigurationAsync();
 
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 foreach(var invocation in invocations)
                 {
@@ -123,7 +121,7 @@ namespace Augurk.Api.Managers
         /// <param name="version">Version of the product to delete the invocations for.</param>
         public async Task DeleteDbInvocationsAsync(string productName, string version)
         {
-            await Database.DocumentStore.Operations.Send(
+            await _documentStore.Operations.Send(
                 new DeleteByQueryOperation(new IndexQuery { Query = $"Product:{productName} AND Version:{version}" }))
                 .WaitForCompletionAsync();
         }
