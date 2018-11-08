@@ -18,6 +18,7 @@ using Augurk.Api.Managers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Augurk.Api.Controllers.V2
 {
@@ -27,7 +28,12 @@ namespace Augurk.Api.Controllers.V2
     [Route("api/v2/products")]
     public class ProductsController : Controller
     {
-        private readonly ProductManager _productsManager = new ProductManager();
+        private readonly ProductManager _productsManager;
+
+        public ProductsController(ProductManager productManager)
+        {
+            _productsManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
+        }
 
         /// <summary>
         /// Gets all available products.

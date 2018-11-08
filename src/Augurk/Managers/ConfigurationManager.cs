@@ -16,6 +16,7 @@
 
 using System.Threading.Tasks;
 using Augurk.Entities;
+using Raven.Client.Documents;
 
 namespace Augurk.Api.Managers
 {
@@ -25,6 +26,12 @@ namespace Augurk.Api.Managers
     public class ConfigurationManager
     {
         private const string KEY = "urn:Augurk:Configuration";
+        private readonly IDocumentStore _documentStore;
+
+        public ConfigurationManager(IDocumentStoreProvider documentStoreProvider)
+        {
+            _documentStore = documentStoreProvider.Store;
+        }
 
         /// <summary>
         /// Retrieves the configuration; or, creates it if it does not exist.
@@ -34,7 +41,7 @@ namespace Augurk.Api.Managers
         {
             Configuration configuration = null;
 
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 configuration = await session.LoadAsync<Configuration>(KEY);
             }
@@ -54,7 +61,7 @@ namespace Augurk.Api.Managers
         /// <param name="configuration">A <see cref="Configuration"/> instance containing the configuration that should be persisted.</param>
         public async Task PersistConfigurationAsync(Configuration configuration)
         {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 // Using the store method when the configuration already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(configuration, KEY);

@@ -26,6 +26,13 @@ namespace Augurk.Api.Managers
     /// </summary>
     public class DependencyManager
     {
+        private readonly IDocumentStore _documentStore;
+
+        public DependencyManager(IDocumentStoreProvider storeProvider)
+        {
+            _documentStore = storeProvider.Store;
+        }
+        
         /// <summary>
         /// Gets the top level feature graphs, that is the graphs 
         /// for features that do not have a parent feature.
@@ -36,7 +43,7 @@ namespace Augurk.Api.Managers
         /// </returns>
         public async Task<IEnumerable<FeatureGraph>> GetTopLevelFeatureGraphsAsync()
         {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _documentStore.OpenAsyncSession())
             {
                 var features = await session.Query<DbFeature>().ToListAsync();
                 var invocations = await session.Query<DbInvocation>().ToListAsync();

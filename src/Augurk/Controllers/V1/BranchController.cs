@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Augurk.Api.Managers;
@@ -23,7 +24,12 @@ namespace Augurk.Api.Controllers
 {
     public class BranchController : Controller
     {
-        private readonly ProductManager _productManager = new ProductManager();
+        private readonly ProductManager _productManager;
+
+        public BranchController(ProductManager productManager)
+        {
+            _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
+        }
 
         [Route("api/branches")]
         [HttpGet]

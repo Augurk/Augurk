@@ -28,7 +28,14 @@ namespace Augurk.Api.Controllers
     public class FeatureController : Controller
     {
         private const string UNKNOWN_VERSION = "0.0.0";
-        private readonly FeatureManager _featureManager = new FeatureManager();
+        private readonly FeatureManager _featureManager;
+        private readonly ProductManager _productManager;
+
+        public FeatureController(FeatureManager featureManager, ProductManager productManager)
+        {
+            _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
+            _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
+        }
 
         [Route("api/features/{branchName}")]
         [HttpGet]
@@ -90,7 +97,7 @@ namespace Augurk.Api.Controllers
         {
             // In V2 this has become part of the ProductsController (formerly: Branchcontroller).
             // In order to minimize the duplication of code, use the new controller.
-            await new ProductsController().DeleteProductAsync(branchName);
+            await _productManager.DeleteProductAsync(branchName);
         }
 
         [Route("api/features/{branchName}/{groupName}")]

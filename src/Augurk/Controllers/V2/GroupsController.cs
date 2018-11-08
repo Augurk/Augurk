@@ -17,6 +17,7 @@
 using Augurk.Api.Managers;
 using Augurk.Entities;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -28,7 +29,12 @@ namespace Augurk.Api.Controllers.V2
     [Route("api/v2/products/{productName}/groups")]
     public class GroupsController : Controller
     {
-        private readonly FeatureManager _featureManager = new FeatureManager();
+        private readonly FeatureManager _featureManager;
+
+        public GroupsController(FeatureManager featureManager)
+        {
+            _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
+        }
 
         /// <summary>
         /// Gets all the groups for the provided <paramref name="productName">product</paramref>.

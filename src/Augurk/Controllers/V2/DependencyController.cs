@@ -16,6 +16,7 @@
 using Augurk.Api.Managers;
 using Augurk.Entities;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,7 +25,12 @@ namespace Augurk.Api.Controllers.V2
     [Route("api/v2/dependencies")]
     public class DependencyController : Controller
     {
-        private readonly DependencyManager _dependencyManager = new DependencyManager();
+        private readonly DependencyManager _dependencyManager;
+
+        public DependencyController(DependencyManager dependencyManager)
+        {
+            _dependencyManager = dependencyManager ?? throw new ArgumentNullException(nameof(dependencyManager));
+        }
 
         [Route("")]
         [HttpGet]

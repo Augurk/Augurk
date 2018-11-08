@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Augurk.Api.Managers;
@@ -25,8 +26,14 @@ namespace Augurk.Api.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class TagController : Controller
     {
-        private readonly ProductManager _productManager = new ProductManager();
-        private readonly FeatureManager _featureManager = new FeatureManager();
+        private readonly ProductManager _productManager;
+        private readonly FeatureManager _featureManager;
+
+        public TagController(ProductManager productManager, FeatureManager featureManager)
+        {
+            _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
+            _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
+        }
 
         [Route("api/tags/{branchName}")]
         [HttpGet]

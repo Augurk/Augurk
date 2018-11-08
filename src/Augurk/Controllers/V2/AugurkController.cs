@@ -18,6 +18,7 @@ using Augurk.Api.Managers;
 using System.Threading.Tasks;
 using Augurk.Entities;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Augurk.Api.Controllers.V2
 {
@@ -28,8 +29,14 @@ namespace Augurk.Api.Controllers.V2
     [ApiExplorerSettings(IgnoreApi = true)]
     public class AugurkController : Controller
     {
-        private readonly CustomizationManager _customizationManager = new CustomizationManager();
-        private readonly ConfigurationManager _configurationManager = new ConfigurationManager();
+        private readonly CustomizationManager _customizationManager;
+        private readonly ConfigurationManager _configurationManager;
+
+        public AugurkController(CustomizationManager customizationManager, ConfigurationManager configurationManager)
+        {
+            _customizationManager = customizationManager ?? throw new ArgumentNullException(nameof(customizationManager));
+            _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
+        }
 
         /// <summary>
         /// Gets the customization settings.

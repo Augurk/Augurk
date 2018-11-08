@@ -31,6 +31,5 @@ namespace Augurk.Api
         /// by this invocation; both directly and indirectly.
         /// </summary>
         public string[] InvokedSignatures { get; set; }
-
     }
 }
