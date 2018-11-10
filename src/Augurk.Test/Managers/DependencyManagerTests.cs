@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Linq;
 using Raven.TestDriver;
 using Raven.Client.Documents;
+using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Augurk.Test.Managers
 {
@@ -13,19 +15,8 @@ namespace Augurk.Test.Managers
     /// Summary description for DependencyManagerTests
     /// </summary>
     [TestClass]
-    public class DependencyManagerTests : RavenTestDriver
+    public class DependencyManagerTests : TestBase
     {
-        protected override void PreInitialize(IDocumentStore documentStore)
-        {
-            documentStore.Conventions.IdentityPartsSeparator = "-";
-        }
-
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            Database.DocumentStore = GetDocumentStore();
-        }
-
         /// <summary>
         /// Verifies whether feature graphs can be discovered when two different features are available.
         /// </summary>
@@ -35,7 +26,7 @@ namespace Augurk.Test.Managers
             var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
             var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
 
-            await new FeatureManager().PersistDbFeatures(new[] { callingFeature, calledFeature });
+            await ServiceProvider.GetService<FeatureManager>().PersistDbFeatures(new[] { callingFeature, calledFeature });
 
             var invocations = new DbInvocation[]
             {
@@ -58,10 +49,9 @@ namespace Augurk.Test.Managers
                 }
             };
 
-            await new AnalysisReportManager().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
+            await ServiceProvider.GetService<AnalysisReportManager>().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
 
-
-            var target = new DependencyManager();
+            var target = ServiceProvider.GetService<DependencyManager>();
 
             var graphs = (await target.GetTopLevelFeatureGraphsAsync()).ToList();
 
@@ -81,7 +71,7 @@ namespace Augurk.Test.Managers
             var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
             var unlinkedFeature = CreateDbFeature("UnlinkedFeature");
 
-            await new FeatureManager().PersistDbFeatures(new[] { callingFeature, calledFeature, unlinkedFeature });
+            await ServiceProvider.GetService<FeatureManager>().PersistDbFeatures(new[] { callingFeature, calledFeature, unlinkedFeature });
 
             var invocations = new DbInvocation[]
             {
@@ -104,10 +94,10 @@ namespace Augurk.Test.Managers
                 }
             };
 
-            await new AnalysisReportManager().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
+            await ServiceProvider.GetService<AnalysisReportManager>().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
 
 
-            var target = new DependencyManager();
+            var target = ServiceProvider.GetService<DependencyManager>();
 
             var graphs = (await target.GetTopLevelFeatureGraphsAsync()).ToList();
 
@@ -126,7 +116,7 @@ namespace Augurk.Test.Managers
             var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
             var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
 
-            await new FeatureManager().PersistDbFeatures(new[] { callingFeature, calledFeature, anotherCalledFeature });
+            await ServiceProvider.GetService<FeatureManager>().PersistDbFeatures(new[] { callingFeature, calledFeature, anotherCalledFeature });
 
             var invocations = new DbInvocation[]
             {
@@ -149,10 +139,10 @@ namespace Augurk.Test.Managers
                 }
             };
 
-            await new AnalysisReportManager().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
+            await ServiceProvider.GetService<AnalysisReportManager>().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
 
 
-            var target = new DependencyManager();
+            var target = ServiceProvider.GetService<DependencyManager>();
 
             var graph = await target.GetFeatureGraphAsync("TestProduct", "CalledFeature", "0.0.0");
 
@@ -173,7 +163,7 @@ namespace Augurk.Test.Managers
             var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
             var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
 
-            await new FeatureManager().PersistDbFeatures(new[] { callingFeature, calledFeature, anotherCalledFeature });
+            await ServiceProvider.GetService<FeatureManager>().PersistDbFeatures(new[] { callingFeature, calledFeature, anotherCalledFeature });
 
             var invocations = new DbInvocation[]
             {
@@ -204,10 +194,10 @@ namespace Augurk.Test.Managers
                 }
             };
 
-            await new AnalysisReportManager().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
+            await ServiceProvider.GetService<AnalysisReportManager>().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
 
 
-            var target = new DependencyManager();
+            var target = ServiceProvider.GetService<DependencyManager>();
 
             var graph = await target.GetFeatureGraphAsync("TestProduct", "CalledFeature", "0.0.0");
 
