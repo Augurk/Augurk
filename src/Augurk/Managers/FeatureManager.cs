@@ -36,21 +36,17 @@ namespace Augurk.Api.Managers
     public class FeatureManager
     {
         private readonly IDocumentStore _documentStore;
+        private readonly ConfigurationManager _configurationManager;
 
         /// <summary>
         /// Gets or sets the JsonSerializerSettings that should be used when (de)serializing.
         /// </summary>
         internal static JsonSerializerSettings JsonSerializerSettings { get; set; }
 
-        /// <summary>
-        /// Gets or sets the configuration manager which should be used by this instance.
-        /// </summary>
-        private ConfigurationManager ConfigurationManager { get; set; }
-
         public FeatureManager(IDocumentStoreProvider storeProvider, ConfigurationManager configurationManager)
         {
             _documentStore = storeProvider?.Store ?? throw new ArgumentNullException(nameof(storeProvider));
-            ConfigurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
+            _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
         }
 
         /// <summary>
@@ -279,7 +275,7 @@ namespace Augurk.Api.Managers
 
             DbFeature dbFeature = new DbFeature(feature, productName, groupName, parentTitle, version);
 
-            var configuration = await ConfigurationManager.GetOrCreateConfigurationAsync();
+            var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
 
             using (var session = _documentStore.OpenAsyncSession())
             {
