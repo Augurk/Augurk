@@ -16,6 +16,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using Microsoft.AspNetCore.Hosting;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Indexes;
@@ -31,7 +32,7 @@ namespace Augurk
         /// <summary>
         /// Default constructor for this class.
         /// </summary>
-        public DocumentStoreProvider()
+        public DocumentStoreProvider(IHostingEnvironment environment)
         {
             // Create the necessary options
             var serverOptions = new ServerOptions { DataDirectory = Path.Combine(Environment.CurrentDirectory, "data") };
@@ -49,6 +50,13 @@ namespace Augurk
 
             // Make sure that indexes are created
             IndexCreation.CreateIndexes(Assembly.GetExecutingAssembly(), Store);
+
+            // Check if we're running in development
+            if (environment.IsDevelopment())
+            {
+                // Open the RavenDB studio
+                EmbeddedServer.Instance.OpenStudioInBrowser();
+            }
         }
 
         /// <summary>
