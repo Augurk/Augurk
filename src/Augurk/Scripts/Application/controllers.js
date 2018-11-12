@@ -223,8 +223,10 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
                 data: formData
             });
 
-            ajaxRequest.done(function (xhr, textStatus) {
-                alert(textStatus);
+            ajaxRequest.done(function () {
+                alert("Import succesful. Please refresh the page.");
+            }).fail(function () {
+                alert("Import unsuccesful.")
             });
         };
 
