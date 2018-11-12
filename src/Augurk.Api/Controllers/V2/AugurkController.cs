@@ -27,6 +27,7 @@ using Raven.Abstractions.Data;
 using System.Net.Http;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Linq;
 
 namespace Augurk.Api.Controllers.V2
 {
@@ -84,6 +85,51 @@ namespace Augurk.Api.Controllers.V2
             await _configurationManager.PersistConfigurationAsync(configuration);
         }
 
+        /// <summary>
+        /// Imports existing data into Augurk.
+        /// </summary>
+        /// <returns></returns>
+        [Route("import")]
+        [HttpPost]
+        public async Task<HttpResponseMessage> Import()
+        {
+            // Make sure that we actually got the right data
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            try
+            {
+                // Store the uploaded file into a temporary location
+                var provider = new MultipartFormDataStreamProvider(Path.GetTempPath());
+                await Request.Content.ReadAsMultipartAsync(provider);
+
+                string filename = provider.FormData.GetValues("filename").First();
+                var file = provider.FileData.First();
+
+                // Setup an import using RavenDb's Smuggler API
+                var smuggler = new SmugglerDatabaseApi();
+                var importOptions = new SmugglerImportOptions<RavenConnectionStringOptions>()
+                {
+                    FromFile = file.LocalFileName,
+                    To = new RavenConnectionStringOptions { Url = "http://localhost:8888/" }
+                };
+
+                await smuggler.ImportData(importOptions);
+
+                return new HttpResponseMessage(HttpStatusCode.OK);
+            }
+            catch (Exception exp)
+            {
+                return this.Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exp);
+            }
+        }
+
+        /// <summary>
+        /// Exports data in Augurk to a file that can be used to import the data into another instance.
+        /// </summary>
+        /// <returns></returns>
         [Route("export")]
         [HttpGet]
         public async Task<HttpResponseMessage> Export()

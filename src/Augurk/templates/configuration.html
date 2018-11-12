@@ -116,6 +116,8 @@
         <div class="panel-heading">Import &amp; Export</div>
         <div class="panel-body">
             <div style="margin-top: 10px;">
+                <input type="file" id="importFile" accept=".bak" />
+                <button type="button" class="btn btn-primary" ng-click="import()">Import</button>
                 <button type="button" class="btn btn-primary" ng-click="export()">Export</button>
             </div>
         </div>

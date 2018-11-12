@@ -206,6 +206,28 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
             $scope.version = version;
         });
 
+        $scope.import = function () {
+            var element = document.getElementById("importFile");
+            var file = element.files[0];
+
+            var formData = new FormData();
+            formData.append("filename", file.name);
+            formData.append("file", file);
+
+            var ajaxRequest = $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/api/v2/import',
+                contentType: false,
+                processData: false,
+                data: formData
+            });
+
+            ajaxRequest.done(function (xhr, textStatus) {
+                alert(textStatus);
+            });
+        };
+
         $scope.export = function () {
             window.open('/api/v2/export', '_blank', '');
         };
