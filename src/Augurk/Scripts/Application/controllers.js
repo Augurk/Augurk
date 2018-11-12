@@ -183,8 +183,8 @@ AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'produ
     }
 ]);
 
-AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService', 'configurationService', 'versionService',
-    function($rootScope, $scope, customizationService, configurationService, versionService) {
+AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService', 'configurationService', 'versionService', '$http',
+    function($rootScope, $scope, customizationService, configurationService, versionService, $http) {
         $rootScope.allowMenu = false;
 
         customizationService.get().$promise.then(function (customization) {
@@ -205,6 +205,10 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
         versionService.get().then(function (version) {
             $scope.version = version;
         });
+
+        $scope.export = function () {
+            window.open('/api/v2/export', '_blank', '');
+        };
     }
 ]);
 

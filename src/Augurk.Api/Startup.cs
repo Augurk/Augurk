@@ -141,11 +141,13 @@ namespace Augurk.Api
                 ConnectionStringName = "RavenDB",
                 Configuration =
                 {
+                    Port = 8888,
                     Settings =
                     {
                         {"Raven/ActiveBundles", "DocumentExpiration"}
                     }
-                }
+                },
+                UseEmbeddedHttpServer = true
             };
 
             Database.DocumentStore.Conventions.IdentityPartsSeparator = "-";

@@ -19,6 +19,14 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Augurk.Entities;
 using System.Web.Http.Description;
+using Raven.Abstractions.Smuggler;
+using Raven.Smuggler;
+using System.IO;
+using System;
+using Raven.Abstractions.Data;
+using System.Net.Http;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace Augurk.Api.Controllers.V2
 {
@@ -74,6 +82,46 @@ namespace Augurk.Api.Controllers.V2
         public async Task PersisConfigurationAsync(Configuration configuration)
         {
             await _configurationManager.PersistConfigurationAsync(configuration);
+        }
+
+        [Route("export")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> Export()
+        {
+            try
+            {
+                // Setup an export using RavenDb's Smuggler API
+                var exportTimestamp = DateTime.Now;
+                var fileName = $"augurk-{exportTimestamp.ToString("yyyy-dd-M--HH-mm-ss")}.bak";
+                var smuggler = new SmugglerDatabaseApi();
+
+                var exportOptions = new SmugglerExportOptions<RavenConnectionStringOptions>()
+                {
+                    ToFile = Path.Combine(Path.GetTempPath(), fileName),
+                    From = new RavenConnectionStringOptions { Url = "http://localhost:8888/" }
+                };
+
+                // Perform the export
+                await smuggler.ExportData(exportOptions);
+
+                // Stream the backup back to the client
+                var result = new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new ByteArrayContent(File.ReadAllBytes(exportOptions.ToFile))
+                };
+
+                result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+                {
+                    FileName = fileName
+                };
+
+                result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                return result;
+            }
+            catch
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "An exception occured while generating export.");
+            }
         }
     }
 }
