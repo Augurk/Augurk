@@ -226,7 +226,7 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
             ajaxRequest.done(function () {
                 alert("Import succesful. Please refresh the page.");
             }).fail(function () {
-                alert("Import unsuccesful.")
+                alert("Import unsuccesful.");
             });
         };
 
