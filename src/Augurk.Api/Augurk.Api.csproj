@@ -118,8 +118,8 @@
     <Compile Include="Indeces\Analysis\Invocation_ByProductAndVersion.cs" />
     <Compile Include="Indeces\Analysis\Features_ByIDirectInvocations.cs" />
     <Compile Include="Indeces\Analysis\Features_ByIndirectInvocations.cs" />
-    <Compile Include="Indeces\Features_ByTagAndBranch.cs" />
     <Compile Include="Indeces\Analysis\AnalysisReports_ByProductAndVersion.cs" />
+    <Compile Include="Indeces\Features_ByProductAndBranch.cs" />
     <Compile Include="Indeces\Products_ByName.cs" />
     <Compile Include="Indeces\Features_ByTitleProductAndGroup.cs" />
     <Compile Include="Indeces\IndexHelper.cs" />

@@ -1,4 +1,5 @@
-﻿Feature: Sequence Diagrams
+﻿@augurk @documentation @childOf:UML
+Feature: Sequence Diagrams
 
 Within feature descriptions one can use sequence diagrams to provide additional context for a specific feature. This works by parsing *sequence diagram
 code blocks* with an embedded [js-sequence-diagrams](https://bramp.github.io/js-sequence-diagrams/) parser. For example, the following markdown will lead
