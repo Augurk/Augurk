@@ -25,6 +25,6 @@ D-->>A: Dashed open arrow
 
 Scenario: Using labels
 Providing a label in the first line of the Sequence Diagram block will render it in Augurk
-	Given the first line in an UML block is "Label: A simple Sequence Diagram" 
+	Given the first line in an Sequence Diagram block is "Label: A simple Sequence Diagram" 
 	When I open this feature in Augurk
 	Then the label "A simple Sequence Diagram" is rendered below the sequence diagram drawing
