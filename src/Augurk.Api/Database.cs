@@ -26,10 +26,5 @@ namespace Augurk.Api
         /// Gets or sets the documentstore which should be used to access the features.
         /// </summary>
         public static IDocumentStore DocumentStore { get; set; }
-
-        /// <summary>
-        /// Gets or sets the port number on which the embedded RavenDB is running.
-        /// </summary>
-        public static int RavenDbPort { get; set; }
     }
 }

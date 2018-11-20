@@ -139,46 +139,21 @@ namespace Augurk.Api
         /// </summary>
         private void InitializeRavenDB()
         {
-            Database.RavenDbPort = GetOpenPort();
             Database.DocumentStore = new EmbeddableDocumentStore
             {
                 ConnectionStringName = "RavenDB",
                 Configuration =
                 {
-                    Port = Database.RavenDbPort,
                     Settings =
                     {
                         {"Raven/ActiveBundles", "DocumentExpiration"}
                     }
                 },
-                UseEmbeddedHttpServer = true
             };
 
             Database.DocumentStore.Conventions.IdentityPartsSeparator = "-";
             Database.DocumentStore.Initialize();
             IndexCreation.CreateIndexes(Assembly.GetCallingAssembly(), Database.DocumentStore);
-        }
-
-        private int GetOpenPort()
-        {
-            const int PortStartIndex = 11000;
-            const int PortEndIndex = 12000;
-            IPGlobalProperties properties = IPGlobalProperties.GetIPGlobalProperties();
-            IPEndPoint[] tcpEndPoints = properties.GetActiveTcpListeners();
-
-            List<int> usedPorts = tcpEndPoints.Select(p => p.Port).ToList<int>();
-            int unusedPort = 0;
-
-            for (int port = PortStartIndex; port < PortEndIndex; port++)
-            {
-                if (!usedPorts.Contains(port))
-                {
-                    unusedPort = port;
-                    break;
-                }
-            }
-
-            return unusedPort;
         }
     }
 }

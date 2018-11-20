@@ -30,6 +30,7 @@ using System.Net.Http.Headers;
 using System.Linq;
 using System.Collections.Generic;
 using Raven.Database.Smuggler;
+using Raven.Client.Embedded;
 
 namespace Augurk.Api.Controllers.V2
 {
@@ -110,15 +111,31 @@ namespace Augurk.Api.Controllers.V2
                 string filename = provider.FormData.GetValues("filename").First();
                 var file = provider.FileData.First();
 
+                // Determine the appropriate import method to use
+                SmugglerDatabaseApiBase importer;
+                RavenConnectionStringOptions connectionStringOptions;
+                if (Database.DocumentStore is EmbeddableDocumentStore embeddableDocumentStore)
+                {
+                    importer = new DatabaseDataDumper(embeddableDocumentStore.DocumentDatabase);
+                    connectionStringOptions = new EmbeddedRavenConnectionStringOptions();
+                }
+                else
+                {
+                    importer = new SmugglerDatabaseApi();
+                    connectionStringOptions = new RavenConnectionStringOptions()
+                    {
+                        Url = Database.DocumentStore.Url
+                    };
+                }
+
                 // Setup an import using RavenDb's Smuggler API
-                var smuggler = new SmugglerDatabaseApi();
                 var importOptions = new SmugglerImportOptions<RavenConnectionStringOptions>()
                 {
                     FromFile = file.LocalFileName,
-                    To = new RavenConnectionStringOptions { Url = $"http://localhost:{Database.RavenDbPort}/" }
+                    To = connectionStringOptions
                 };
 
-                await smuggler.ImportData(importOptions);
+                await importer.ImportData(importOptions);
 
                 return new HttpResponseMessage(HttpStatusCode.OK);
             }
@@ -141,7 +158,7 @@ namespace Augurk.Api.Controllers.V2
                 // Setup an export using RavenDb's Smuggler API
                 var exportTimestamp = DateTime.Now;
                 var fileName = $"augurk-{exportTimestamp.ToString("yyyy-dd-M-HHmmss")}.bak";
-                var smuggler = new SmugglerDatabaseApi(new SmugglerDatabaseOptions
+                var options = new SmugglerDatabaseOptions
                 {
                     OperateOnTypes = ItemType.Documents,
                     Filters = new List<FilterSetting>
@@ -157,16 +174,33 @@ namespace Augurk.Api.Controllers.V2
                             }
                         }
                     }
-                });
+                };
+
+                // Determine the appropriate import method to use
+                SmugglerDatabaseApiBase exporter;
+                RavenConnectionStringOptions connectionStringOptions;
+                if (Database.DocumentStore is EmbeddableDocumentStore embeddableDocumentStore)
+                {
+                    exporter = new DatabaseDataDumper(embeddableDocumentStore.DocumentDatabase, options);
+                    connectionStringOptions = new EmbeddedRavenConnectionStringOptions();
+                }
+                else
+                {
+                    exporter = new SmugglerDatabaseApi(options);
+                    connectionStringOptions = new RavenConnectionStringOptions()
+                    {
+                        Url = Database.DocumentStore.Url
+                    };
+                }
 
                 var exportOptions = new SmugglerExportOptions<RavenConnectionStringOptions>()
                 {
                     ToFile = Path.Combine(Path.GetTempPath(), fileName),
-                    From = new RavenConnectionStringOptions { Url = $"http://localhost:{Database.RavenDbPort}/" }
+                    From = connectionStringOptions
                 };
 
                 // Perform the export
-                await smuggler.ExportData(exportOptions);
+                await exporter.ExportData(exportOptions);
 
                 // Stream the backup back to the client
                 var result = new HttpResponseMessage(HttpStatusCode.OK)
