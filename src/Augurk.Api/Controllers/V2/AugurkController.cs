@@ -28,6 +28,8 @@ using System.Net.Http;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Linq;
+using System.Collections.Generic;
+using Raven.Database.Smuggler;
 
 namespace Augurk.Api.Controllers.V2
 {
@@ -139,7 +141,23 @@ namespace Augurk.Api.Controllers.V2
                 // Setup an export using RavenDb's Smuggler API
                 var exportTimestamp = DateTime.Now;
                 var fileName = $"augurk-{exportTimestamp.ToString("yyyy-dd-M-HHmmss")}.bak";
-                var smuggler = new SmugglerDatabaseApi();
+                var smuggler = new SmugglerDatabaseApi(new SmugglerDatabaseOptions
+                {
+                    OperateOnTypes = ItemType.Documents,
+                    Filters = new List<FilterSetting>
+                    {
+                        new FilterSetting
+                        {
+                            Path = "@metadata.@id",
+                            ShouldMatch = false,
+                            Values = new List<string>
+                            {
+                                ConfigurationManager.DOCUMENT_KEY,
+                                CustomizationManager.DOCUMENT_KEY,
+                            }
+                        }
+                    }
+                });
 
                 var exportOptions = new SmugglerExportOptions<RavenConnectionStringOptions>()
                 {
