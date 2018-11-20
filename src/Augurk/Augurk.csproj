@@ -111,19 +111,21 @@
     <Content Include="libs\angular\angular.min.js" />
     <Content Include="libs\jquery\jquery.min.js" />
     <Content Include="libs\js-sequence-diagrams\sequence-diagram-min.js" />
+    <Content Include="libs\js-sequence-diagrams\sequence-diagram-snap-min.js" />
     <Content Include="libs\nomnoml\dagre.min.js" />
     <Content Include="libs\nomnoml\lodash.min.js" />
     <Content Include="libs\nomnoml\nomnoml.min.js" />
     <Content Include="libs\showdown\showdown.min.js" />
+    <Content Include="libs\snap.svg\snap.svg-min.js" />
     <Content Include="libs\twitter-bootstrap\css\bootstrap-theme.min.css" />
     <Content Include="libs\twitter-bootstrap\css\bootstrap.min.css" />
     <Content Include="libs\twitter-bootstrap\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="libs\twitter-bootstrap\js\bootstrap.min.js" />
+    <Content Include="libs\webfont\webfontloader.js" />
     <Content Include="license.xml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="libman.json" />
-    <Content Include="libs\js-sequence-diagrams\sequence-diagram-min.js.map" />
     <Content Include="libs\twitter-bootstrap\css\bootstrap-theme.min.css.map" />
     <Content Include="libs\twitter-bootstrap\css\bootstrap.css.map" />
     <Content Include="libs\twitter-bootstrap\fonts\glyphicons-halflings-regular.eot" />
@@ -139,6 +141,8 @@
     <Content Include="libs\angular-ui-select\select.min.css.map" />
     <Content Include="libs\angular-ui-select\select.min.js.map" />
     <Content Include="libs\nomnoml\nomnoml.min.js.map" />
+    <Content Include="libs\js-sequence-diagrams\sequence-diagram-min.js.map" />
+    <Content Include="libs\js-sequence-diagrams\sequence-diagram-snap-min.js.map" />
     <None Include="Properties\PublishProfiles\AugurkDemo - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\DeploymentPackage.pubxml" />
     <Content Include="templates\configuration.html" />
