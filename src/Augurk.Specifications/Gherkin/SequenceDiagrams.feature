@@ -2,7 +2,7 @@
 
 Within feature descriptions one can use sequence diagrams to provide additional context for a specific feature. This works by parsing *sequence diagram
 code blocks* with an embedded [js-sequence-diagrams](https://bramp.github.io/js-sequence-diagrams/) parser. For example, the following markdown will lead
-to the graph below it.
+to the graph below it (note that the language name *sequence* is case-sensitive).
 
     ```sequence
 	Label: A simple Sequence Diagram
