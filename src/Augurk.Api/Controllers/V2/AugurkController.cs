@@ -113,7 +113,7 @@ namespace Augurk.Api.Controllers.V2
                 var importOptions = new SmugglerImportOptions<RavenConnectionStringOptions>()
                 {
                     FromFile = file.LocalFileName,
-                    To = new RavenConnectionStringOptions { Url = "http://localhost:8888/" }
+                    To = new RavenConnectionStringOptions { Url = $"http://localhost:{Database.RavenDbPort}/" }
                 };
 
                 await smuggler.ImportData(importOptions);
@@ -138,7 +138,7 @@ namespace Augurk.Api.Controllers.V2
             {
                 // Setup an export using RavenDb's Smuggler API
                 var exportTimestamp = DateTime.Now;
-                var fileName = $"augurk-{exportTimestamp.ToString("yyyy-dd-M-HH-mm-ss")}.bak";
+                var fileName = $"augurk-{exportTimestamp.ToString("yyyy-dd-M-HHmmss")}.bak";
                 var smuggler = new SmugglerDatabaseApi();
 
                 var exportOptions = new SmugglerExportOptions<RavenConnectionStringOptions>()
