@@ -57,6 +57,9 @@
     <Reference Include="Raven.Database, Version=3.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
       <HintPath>..\packages\RavenDB.Database.3.0.30182\lib\net45\Raven.Database.dll</HintPath>
     </Reference>
+    <Reference Include="Raven.Smuggler">
+      <HintPath>..\packages\RavenDB.Server.3.0.30182\tools\Raven.Smuggler.exe</HintPath>
+    </Reference>
     <Reference Include="Swagger.Net, Version=8.3.14.202, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
       <HintPath>..\packages\Swagger-Net.8.3.14.202\lib\net45\Swagger.Net.dll</HintPath>
     </Reference>
@@ -135,7 +138,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Augurk.Entities\Augurk.Entities.csproj">
