@@ -4,7 +4,18 @@
   "libraries": [
     {
       "library": "js-sequence-diagrams@1.0.6",
-      "destination": "libs/js-sequence-diagrams"
+      "destination": "libs/js-sequence-diagrams",
+      "files": [
+        "sequence-diagram-min.js",
+        "sequence-diagram-min.js.map"
+      ]
+    },
+    {
+      "library": "raphael@2.2.7",
+      "destination": "libs/raphael",
+      "files": [
+        "raphael.min.js"
+      ]
     },
     {
       "library": "twitter-bootstrap@3.3.7",
