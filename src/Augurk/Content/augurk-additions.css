@@ -142,6 +142,10 @@ div.sequence {
     text-align: center;
 }
 
+div.sequence g rect {
+    fill: #FDF6E6;
+}
+
 span.uml-label {
     display: block;
     text-align: center;
