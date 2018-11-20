@@ -135,10 +135,15 @@ div.viewport {
     max-height:100%;
 }
 
-div.uml {
+div.uml,
+div.sequence {
     background-color: #FDF6E6;
     border: solid black;
     text-align: center;
+}
+
+div.sequence {
+    background-color: white;
 }
 
 span.uml-label {

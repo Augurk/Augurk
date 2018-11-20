@@ -98,10 +98,10 @@ nomnoml.draw(canvas, source);</script></div>`;
             }
         );
 
-        output = input.replace(/\<pre><code class=\"sequence language-sequence\"\>(?:Label\:\W?(.*$))?([\s\S]*?)<\/code><\/pre>/gm,
+        output = output.replace(/\<pre><code class=\"sequence language-sequence\"\>(?:Label\:\W?(.*$))?([\s\S]*?)<\/code><\/pre>/gm,
             function (entireString, title, match) {
                 var id = 'seq' + uniqueIntegerService.getNextInteger().toString();
-                var result = `<div id="` + id + `">
+                var result = `<div class="sequence" id="` + id + `">
 <script>
 var source = \`` + _.unescape(match) + `\`;
 var diagram = Diagram.parse(source);
