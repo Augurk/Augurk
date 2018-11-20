@@ -3,19 +3,20 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "js-sequence-diagrams@1.0.6",
+      "library": "../../extLib/js-sequence-diagrams@2.0.1",
       "destination": "libs/js-sequence-diagrams",
+      "provider": "filesystem"
+    },
+    {
+      "library": "snap.svg@0.5.1",
+      "destination": "libs/snap.svg",
       "files": [
-        "sequence-diagram-min.js",
-        "sequence-diagram-min.js.map"
+        "snap.svg-min.js"
       ]
     },
     {
-      "library": "raphael@2.2.7",
-      "destination": "libs/raphael",
-      "files": [
-        "raphael.min.js"
-      ]
+      "library": "webfont@1.6.28",
+      "destination": "libs/webfont"
     },
     {
       "library": "twitter-bootstrap@3.3.7",

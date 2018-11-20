@@ -142,10 +142,6 @@ div.sequence {
     text-align: center;
 }
 
-div.sequence {
-    background-color: white;
-}
-
 span.uml-label {
     display: block;
     text-align: center;

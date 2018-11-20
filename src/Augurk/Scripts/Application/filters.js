@@ -105,7 +105,7 @@ nomnoml.draw(canvas, source);</script></div>`;
 <script>
 var source = \`` + _.unescape(match) + `\`;
 var diagram = Diagram.parse(source);
-diagram.drawSVG("` + id + `", {theme: 'simple'});</script></div>`;
+diagram.drawSVG("` + id + `", {theme: 'snapSimple'});</script></div>`;
                 if (title) {
                     result += `<span class="uml-label">` + title + `</span>`;
                 }
