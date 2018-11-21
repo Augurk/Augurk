@@ -145,7 +145,7 @@ namespace Augurk.Api
                     {
                         {"Raven/ActiveBundles", "DocumentExpiration"}
                     }
-                }
+                },
             };
 
             Database.DocumentStore.Conventions.IdentityPartsSeparator = "-";

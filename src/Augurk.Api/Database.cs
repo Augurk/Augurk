@@ -25,6 +25,6 @@ namespace Augurk.Api
         /// <summary>
         /// Gets or sets the documentstore which should be used to access the features.
         /// </summary>
-        public static IDocumentStore DocumentStore { get; set; } 
+        public static IDocumentStore DocumentStore { get; set; }
     }
 }

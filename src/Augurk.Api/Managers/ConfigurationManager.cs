@@ -24,7 +24,7 @@ namespace Augurk.Api.Managers
     /// </summary>
     public class ConfigurationManager
     {
-        private const string KEY = "urn:Augurk:Configuration";
+        internal const string DOCUMENT_KEY = "urn:Augurk:Configuration";
 
         /// <summary>
         /// Retrieves the configuration; or, creates it if it does not exist.
@@ -36,7 +36,7 @@ namespace Augurk.Api.Managers
 
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
-                configuration = await session.LoadAsync<Configuration>(KEY);
+                configuration = await session.LoadAsync<Configuration>(DOCUMENT_KEY);
             }
 
             if (configuration == null)
@@ -57,7 +57,7 @@ namespace Augurk.Api.Managers
             using (var session = Database.DocumentStore.OpenAsyncSession())
             {
                 // Using the store method when the configuration already exists in the database will override it completely, this is acceptable
-                await session.StoreAsync(configuration, KEY);
+                await session.StoreAsync(configuration, DOCUMENT_KEY);
                 await session.SaveChangesAsync();
             }
         }

@@ -113,6 +113,46 @@
     </div>
 
     <div class="panel panel-default">
+        <div class="panel-heading">Import &amp; Export</div>
+        <div class="panel-body">
+            <div class="row" style="margin-top: 10px;">
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Import</div>
+                        <div class="panel-body">
+                            <p>
+                                Choose a file to import and then click the import button to restore the data from the
+                                selected file into this instance of Augurk.
+                            </p>
+                            <p>
+                                <strong>Note:</strong> This will <strong>overwrite</strong> any existing <strong>products,
+                                groups, features and tags</strong> that have matching names with data from the imported file.
+                            </p>
+                            <input type="file" id="importFile" accept=".bak" />
+                            <button type="button" class="btn btn-danger pull-right" ng-click="import()">Import</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Export</div>
+                        <div class="panel-body">
+                            <p>
+                                Use the export button to download an export of all the data contained within Augurk as
+                                a file. This file could be used to import the same data into another instance of Augurk.
+                            </p>
+                            <p>
+                                <strong>Note:</strong> This includes <strong>products, groups, features and tags.</strong>
+                            </p>
+                            <button type="button" class="btn btn-primary pull-right" ng-click="export()">Export</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
         <div class="panel-heading">Integration</div>
         <div class="panel-body">
             <div style="margin-top: -12px; margin-bottom: 12px;">
