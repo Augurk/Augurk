@@ -17,11 +17,11 @@ Foo->Bar: Hello
 Using the syntax of js-sequence-diagrams we can also create more complex diagrams, such as this one:
 
 ```sequence
-Title: Here is a title
-A->B: Normal line
-B-->C: Dashed line
-C->>D: Open arrow
-D-->>A: Dashed open arrow
+“Augurk-CLI”->Augurk: Check Version
+Augurk-->“Augurk-CLI”: 2.8.0
+“Augurk-CLI”->Augurk: Upload Features
+Augurk-> Analyzer: Check for dependencies
+Augurk-->“Augurk-CLI”: HTTP201 (Created)
 ```
 
 Scenario: Using labels
