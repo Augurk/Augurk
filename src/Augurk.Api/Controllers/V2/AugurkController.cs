@@ -111,7 +111,7 @@ namespace Augurk.Api.Controllers.V2
                 string filename = provider.FormData.GetValues("filename").First();
                 var file = provider.FileData.First();
 
-                // Determine the appropriate import method to use
+                // Setup an import using RavenDb's Smuggler API or the DatabaseDumper API depending on whether the embedded database is being used
                 SmugglerDatabaseApiBase importer;
                 RavenConnectionStringOptions connectionStringOptions;
                 if (Database.DocumentStore is EmbeddableDocumentStore embeddableDocumentStore)
@@ -128,7 +128,6 @@ namespace Augurk.Api.Controllers.V2
                     };
                 }
 
-                // Setup an import using RavenDb's Smuggler API
                 var importOptions = new SmugglerImportOptions<RavenConnectionStringOptions>()
                 {
                     FromFile = file.LocalFileName,
