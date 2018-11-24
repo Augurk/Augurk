@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
+using VueCliMiddleware;
 
 namespace Augurk
 {
@@ -51,6 +52,12 @@ namespace Augurk
 
             // Add our own managers
             services.AddManagers();
+
+            // Add the serving of static files for our SPA (based on VueJS)
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,6 +72,10 @@ namespace Augurk
                 app.UseHsts();
             }
 
+            // Enable use of static files
+            app.UseStaticFiles();
+            app.UseSpaStaticFiles();
+
             app.UseHttpsRedirection();
             app.UseMvc();
             app.UseFileServer();
@@ -78,6 +89,20 @@ namespace Augurk
                 foreach (var description in provider.ApiVersionDescriptions)
                 {
                     options.SwaggerEndpoint($"/doc/api/{description.GroupName}", description.GroupName.ToUpperInvariant());
+                }
+            });
+
+            // Enable SPA features
+            app.UseSpa(spa =>
+            {
+                // For production we'll simply serve files from ClientApp
+                spa.Options.SourcePath = "ClientApp";
+
+                // When running in development
+                if (env.IsDevelopment())
+                {
+                    // Enable the use of the VueCLI
+                    spa.UseVueCli("serve");
                 }
             });
         }
