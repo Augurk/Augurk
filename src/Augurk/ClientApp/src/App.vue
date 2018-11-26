@@ -1,39 +1,61 @@
 <template>
   <v-app>
-    <v-toolbar app>
-      <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
-      </v-toolbar-title>
+    <v-toolbar app :dark="darkmode" extended flat color="primary" extension-height="250">
       <v-spacer></v-spacer>
-      <v-btn
-        flat
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>open_in_new</v-icon>
+      <v-btn icon @click="darkmode = !darkmode">
+        <v-icon>highlight</v-icon>
       </v-btn>
+      <v-btn icon>
+        <v-icon>settings</v-icon>
+      </v-btn>
+      <v-layout slot="extension" row>
+        <v-flex xs6>
+          <v-img :src="require('./assets/logo.png')" contain position="center right" height="200"></v-img>
+        </v-flex>
+        <v-flex xs6>
+          <v-layout column justify-space-between fill-height>
+            <v-spacer></v-spacer>
+            <v-toolbar-title class="headline">
+              <span>{{instanceName}}</span>
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+         </v-layout>
+        </v-flex>
+      </v-layout>
     </v-toolbar>
 
     <v-content>
-      <HelloWorld/>
     </v-content>
+
+    <v-footer app>
+      <v-layout justify-center row wrap>
+        <v-flex primary lighten-2 py-3 text-xs-center xs12>
+          &copy;2018 — <strong>Augurk</strong>
+        </v-flex>
+      </v-layout>
+    </v-footer>
   </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
-
 export default {
   name: 'App',
   components: {
-    HelloWorld
   },
-  data () {
+  data() {
     return {
-      //
-    }
-  }
-}
+      darkmode: false,
+    };
+  },
+  computed: {
+    instanceName() {
+      return this.$store.state.instanceName;
+    },
+  },
+  async mounted() {
+    const result = await fetch('/api/v2/customization');
+    const customization = await result.json();
+    this.$store.dispatch('setInstanceName', customization.instanceName);
+  },
+};
 </script>
