@@ -49,13 +49,11 @@ export default {
   },
   computed: {
     instanceName() {
-      return this.$store.state.instanceName;
+      return this.$store.state.customization.instanceName;
     },
   },
-  async mounted() {
-    const result = await fetch('/api/v2/customization');
-    const customization = await result.json();
-    this.$store.dispatch('setInstanceName', customization.instanceName);
+  mounted() {
+    this.$store.dispatch('loadCustomization');
   },
 };
 </script>

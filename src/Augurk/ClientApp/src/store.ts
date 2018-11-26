@@ -6,16 +6,18 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
-    instanceName: '',
+    customization: {},
   },
   mutations: {
-    setInstanceName(state, instanceName) {
-      state.instanceName = instanceName;
+    setCustomization(state, customization) {
+      state.customization = customization;
     },
   },
   actions: {
-    setInstanceName(context, instanceName) {
-      context.commit('setInstanceName', instanceName);
+    async loadCustomization(context) {
+      const result = await fetch('/api/v2/customization');
+      const customization = await result.json();
+      context.commit('setCustomization', customization);
     },
   },
 });
