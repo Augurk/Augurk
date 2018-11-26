@@ -7,10 +7,14 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     customization: {},
+    products: [],
   },
   mutations: {
     setCustomization(state, customization) {
       state.customization = customization;
+    },
+    setProducts(state, products) {
+      state.products = products;
     },
   },
   actions: {
@@ -18,6 +22,11 @@ export default new Vuex.Store({
       const result = await fetch('/api/v2/customization');
       const customization = await result.json();
       context.commit('setCustomization', customization);
+    },
+    async loadProducts(context) {
+      const result = await fetch('/api/v2/products');
+      const products = await result.json();
+      context.commit('setProducts', products);
     },
   },
 });
