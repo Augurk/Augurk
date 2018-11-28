@@ -22,6 +22,7 @@ namespace Augurk.Api.Controllers
     /// <summary>
     /// ApiController for retrieving the currently installed Augurk version.
     /// </summary>
+    [ApiVersionNeutral]
     [Route("api/version")]
     public class VersionController : Controller
     {

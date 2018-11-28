@@ -26,7 +26,8 @@ namespace Augurk.Api.Controllers.V2
     /// <summary>
     /// ApiController for publishing analysis results.
     /// </summary>
-    [Route("api/v2/products/{productName}/versions/{version}/analysis")]
+    [ApiVersion("2.0")]
+    [Route("api/v{apiVersion:apiVersion}/products/{productName}/versions/{productVersion}/analysis")]
     public class AnalysisController : Controller
     {
         private readonly IAnalysisReportManager _analysisReportManager;

@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Augurk.Api.Controllers
 {
+    [ApiVersion("1.0")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class TagController : Controller
     {

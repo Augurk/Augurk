@@ -28,7 +28,8 @@ namespace Augurk.Api.Controllers.V2
     /// <summary>
     /// ApiController for retrieving the available features.
     /// </summary>
-    [Route("api/v2/products/{productName}/groups/{groupName}/features")]
+    [ApiVersion("2.0")]
+    [Route("api/v{apiVersion:apiVersion}/products/{productName}/groups/{groupName}/features")]
     public class FeatureV2Controller : Controller
     {
         private readonly IFeatureManager _featureManager;

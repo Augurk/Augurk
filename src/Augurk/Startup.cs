@@ -35,6 +35,7 @@ namespace Augurk
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddApiVersioning(options => options.AssumeDefaultVersionWhenUnspecified = true);
             services.AddRavenDb();
             services.AddManagers();
         }

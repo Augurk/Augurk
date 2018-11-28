@@ -26,7 +26,8 @@ namespace Augurk.Api.Controllers.V2
     /// <summary>
     /// ApiController for retrieving the available groups of related features within a product.
     /// </summary>
-    [Route("api/v2/products/{productName}/groups")]
+    [ApiVersion("2.0")]
+    [Route("api/v{apiVersion:apiVersion}/products/{productName}/groups")]
     public class GroupsController : Controller
     {
         private readonly IFeatureManager _featureManager;

@@ -25,7 +25,8 @@ namespace Augurk.Api.Controllers.V2
     /// <summary>
     /// ApiController for retrieving the available products.
     /// </summary>
-    [Route("api/v2/products")]
+    [ApiVersion("2.0")]
+    [Route("api/v{apiVersion:apiVersion}/products")]
     public class ProductsController : Controller
     {
         private readonly IProductManager _productsManager;
