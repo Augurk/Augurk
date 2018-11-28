@@ -25,6 +25,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Augurk.Api.Controllers
 {
+    [ApiVersion("1.0")]
     public class FeatureController : Controller
     {
         private const string UNKNOWN_VERSION = "0.0.0";

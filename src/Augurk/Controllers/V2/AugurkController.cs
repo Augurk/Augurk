@@ -25,7 +25,8 @@ namespace Augurk.Api.Controllers.V2
     /// <summary>
     /// ApiController for retrieving and persisting Augurk settings.
     /// </summary>
-    [Route("api/v2")]
+    [ApiVersion("2.0")]
+    [Route("api/v{version:apiVersion}")]
     [ApiExplorerSettings(IgnoreApi = true)]
     public class AugurkController : Controller
     {

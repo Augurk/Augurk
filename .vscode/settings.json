@@ -8,4 +8,5 @@
         "**/bin": true,
         "**/obj": true
     },
+    "terminal.integrated.cwd": "src/Augurk"
 }
