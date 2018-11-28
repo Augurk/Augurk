@@ -30,7 +30,7 @@ namespace Augurk.Api.Controllers.V2
     /// </summary>
     [ApiVersion("2.0")]
     [Route("api/v{apiVersion:apiVersion}/products/{productName}/groups/{groupName}/features")]
-    public class FeatureV2Controller : Controller
+    public class FeatureController : Controller
     {
         private readonly FeatureManager _featureManager;
         private readonly Analyzer _analyzer;
@@ -38,7 +38,7 @@ namespace Augurk.Api.Controllers.V2
         /// <summary>
         /// Initializes a new instance of the <see cref="FeatureV2Controller"/>.
         /// </summary>
-        public FeatureV2Controller(FeatureManager featureManager, AnalysisReportManager analysisReportManager)
+        public FeatureController(FeatureManager featureManager, AnalysisReportManager analysisReportManager)
         {
             _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
             _analyzer = new Analyzer(_featureManager, analysisReportManager);
