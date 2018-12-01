@@ -3,44 +3,26 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/vsts/pipelines/apps/windows/dot-net
 
-pool:
-  vmImage: 'VS2017-Win2016'
+# Build ASP.NET Core project using Azure Pipelines
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core?view=vsts
 
+pool:
+  vmImage: 'Ubuntu 16.04'
+  
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@0
-
-- task: GitVersion@3
+- script: |
+    dotnet build --configuration $(buildConfiguration)
+    dotnet test Augurk.Test --configuration $(buildConfiguration) --logger trx
+    dotnet publish --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+- task: PublishTestResults@2
   inputs:
-    updateAssemblyInfo: true
-    updateAssemblyInfoFilename: src/Augurk/Properties/AssemblyVersion.cs
-
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
-
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    msbuildArgs: /p:DeployOnBuild=true;PublishProfile=Properties/PublishProfiles/DeploymentPackage.pubxml
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    codeCoverageEnabled: True
-    otherConsoleOptions: '/platform:X64'
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'
 
 - task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: $(Build.SourcesDirectory)/deploy/Augurk.WebDeploy.zip
-    artifactName: webdeploy
 
 - task: CopyFiles@2
   inputs:
