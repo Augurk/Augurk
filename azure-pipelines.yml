@@ -13,11 +13,13 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: GitVersion@4
+
 - script: |
     dotnet restore
-    dotnet build --configuration $(buildConfiguration)
+    dotnet build --configuration $(buildConfiguration) /p:Version=$(GITVERSION_INFORMATIONALVERSION)
     dotnet test Augurk.Test --configuration $(buildConfiguration) --logger trx
-    dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+    dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY /p:Version=$(GITVERSION_INFORMATIONALVERSION)
   workingDirectory: 'src'
 - task: PublishTestResults@2
   inputs:
