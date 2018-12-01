@@ -17,7 +17,7 @@ steps:
     dotnet restore
     dotnet build --configuration $(buildConfiguration)
     dotnet test Augurk.Test --configuration $(buildConfiguration) --logger trx
-    dotnet publish --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
+    dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY
   workingDirectory: 'src'
 - task: PublishTestResults@2
   inputs:
