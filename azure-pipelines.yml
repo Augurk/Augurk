@@ -24,9 +24,9 @@ steps:
 
 - script: |
     dotnet restore
-    dotnet build --configuration $(buildConfiguration) /p:Version=$(GITVERSION_INFORMATIONALVERSION)
+    dotnet build --configuration $(buildConfiguration) /p:Version=$GITVERSION_INFORMATIONALVERSION
     dotnet test Augurk.Test --configuration $(buildConfiguration) --logger trx
-    dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY /p:Version=$(GITVERSION_INFORMATIONALVERSION)
+    dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY /p:Version=$GITVERSION_INFORMATIONALVERSION
   workingDirectory: 'src'
 - task: PublishTestResults@2
   inputs:
