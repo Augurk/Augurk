@@ -21,6 +21,7 @@ steps:
 - script: |
     dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
     dotnet-gitversion /output buildserver
+  displayName: 'Version'
 
 - script: |
     dotnet restore
@@ -33,7 +34,7 @@ steps:
   displayName: 'Tests'
   inputs:
     command: test
-    projects: '**/*Tests/*.csproj'
+    projects: '**/*Test/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
 - script: | 
