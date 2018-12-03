@@ -14,13 +14,17 @@
  limitations under the License.
 */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Indexes;
+using Raven.Client.Documents.Operations.Configuration;
+using Raven.Client.ServerWide;
 using Raven.Embedded;
+using static Raven.Client.Documents.Operations.Configuration.StudioConfiguration;
 
 namespace Augurk
 {
@@ -36,7 +40,16 @@ namespace Augurk
         {
             // Create the necessary options
             var serverOptions = new ServerOptions { DataDirectory = Path.Combine(Environment.CurrentDirectory, "data") };
-            var databaseOptions = new DatabaseOptions("FeatureStore")
+            var databaseRecord = new DatabaseRecord
+            {
+                DatabaseName = "FeatureStore",
+                Studio = new StudioConfiguration
+                {
+                    Environment = environment.IsDevelopment() ? StudioEnvironment.Development : StudioEnvironment.Production
+                },
+            };
+
+            var databaseOptions = new DatabaseOptions(databaseRecord)
             {
                 Conventions = new DocumentConventions
                 {
