@@ -24,7 +24,7 @@ export default new Vuex.Store({
       context.commit('setCustomization', customization);
     },
     async loadProducts(context) {
-      const result = await fetch('/api/v2/products');
+      const result = await fetch('/api/v3/products');
       const products = await result.json();
       context.commit('setProducts', products);
     },

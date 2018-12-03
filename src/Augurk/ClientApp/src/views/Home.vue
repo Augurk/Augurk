@@ -12,7 +12,7 @@
     <v-container grid-list-md>
       <v-layout row wrap>
         <v-flex v-for="product in products" :key="product" xs12 md3>
-          <Product :product="product" />
+          <ProductCard :product="product" />
         </v-flex>
       </v-layout>
     </v-container>
@@ -21,11 +21,11 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Product from '../components/Product.vue';
+import ProductCard from '../components/ProductCard.vue';
 
 @Component({
   components: {
-    Product,
+    ProductCard,
   },
   computed: {
     products() {
