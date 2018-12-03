@@ -6,7 +6,8 @@
         "**/CVS": true,
         "**/.DS_Store": true,
         "**/bin": true,
-        "**/obj": true
+        "**/obj": true,
+        "**/node_modules": true
     },
     "terminal.integrated.cwd": "src/Augurk"
 }
