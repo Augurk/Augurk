@@ -28,7 +28,7 @@ steps:
     dotnet test Augurk.Test --configuration $(buildConfiguration) --logger trx
     dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY /p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION
   workingDirectory: 'src'
-  failOnStdErr: true
+  failOnStderr: true
 - task: PublishTestResults@2
   inputs:
     testRunner: VSTest
