@@ -78,7 +78,6 @@ namespace Augurk
 
             app.UseHttpsRedirection();
             app.UseMvc();
-            app.UseFileServer();
 
             // Add Swagger support at the appropriate endpoints
             app.UseSwagger(options => options.RouteTemplate = "doc/api/{documentName}");
