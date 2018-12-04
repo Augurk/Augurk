@@ -31,7 +31,7 @@
     <v-footer app>
       <v-layout justify-center row wrap>
         <v-flex primary lighten-2 py-3 text-xs-center xs12>
-          &copy;2018 — <strong>Augurk</strong>
+          &copy;2018 — <strong>Augurk {{augurkVersion}}</strong>
         </v-flex>
       </v-layout>
     </v-footer>
@@ -52,8 +52,12 @@ export default {
     instanceName() {
       return this.$store.state.customization.instanceName;
     },
+    augurkVersion() {
+      return this.$store.state.augurkVersion;
+    },
   },
   mounted() {
+    this.$store.dispatch('loadAugurkVersion');
     this.$store.dispatch('loadCustomization');
   },
 };

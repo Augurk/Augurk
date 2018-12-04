@@ -6,6 +6,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   state: {
+    augurkVersion: '',
     customization: {},
     products: [],
   },
@@ -15,6 +16,9 @@ export default new Vuex.Store({
     },
     setProducts(state, products) {
       state.products = products;
+    },
+    setAugurkVersion(state, version) {
+      state.augurkVersion = version;
     },
   },
   actions: {
@@ -27,6 +31,11 @@ export default new Vuex.Store({
       const result = await fetch('/api/v3/products');
       const products = await result.json();
       context.commit('setProducts', products);
+    },
+    async loadAugurkVersion(context) {
+      const result = await fetch('/api/version');
+      const version = await result.text();
+      context.commit('setAugurkVersion', version);
     },
   },
 });

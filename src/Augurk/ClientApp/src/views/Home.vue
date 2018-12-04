@@ -1,17 +1,17 @@
 <template>
   <div>
-    <v-container>
+    <v-container pb-0>
       <v-layout row>
-        <v-text-field solo>
+        <v-text-field solo placeholder="Search">
           <v-btn icon slot="append">
             <v-icon>search</v-icon>
           </v-btn>
         </v-text-field>
       </v-layout>
     </v-container>
-    <v-container grid-list-md>
+    <v-container pt-0 grid-list-sm>
       <v-layout row wrap>
-        <v-flex v-for="product in products" :key="product" xs12 md3>
+        <v-flex v-for="product in products" :key="product.name" xs12 md3>
           <ProductCard :product="product" />
         </v-flex>
       </v-layout>
