@@ -1,14 +1,21 @@
 <template>
   <v-app>
-    <v-toolbar app :dark="darkmode" extended flat color="primary" extension-height="250">
+    <v-toolbar app :dark="darkmode" extended flat color="primary" :extension-height="onHomePage ? 250 : 1">
+      <v-toolbar-side-icon v-show="!onHomePage" to="/">
+        <v-img :src="require('./assets/logo.png')"></v-img>
+      </v-toolbar-side-icon>
+      <v-toolbar-title v-show="!onHomePage">
+        {{instanceName}}
+      </v-toolbar-title>
+      <v-breadcrumbs :items="items"></v-breadcrumbs>
       <v-spacer></v-spacer>
-      <v-btn icon @click="darkmode = !darkmode">
+      <v-btn icon @click="onHomePage = !onHomePage">
         <v-icon>highlight</v-icon>
       </v-btn>
       <v-btn icon>
         <v-icon>settings</v-icon>
       </v-btn>
-      <v-layout slot="extension" row>
+      <v-layout slot="extension" row v-show="onHomePage">
         <v-flex xs6>
           <v-img :src="require('./assets/logo.png')" contain position="center right" height="200"></v-img>
         </v-flex>
@@ -46,6 +53,7 @@ export default {
   data() {
     return {
       darkmode: false,
+      items: [],
     };
   },
   computed: {
@@ -54,6 +62,9 @@ export default {
     },
     augurkVersion() {
       return this.$store.state.augurkVersion;
+    },
+    onHomePage() {
+      return this.$route.name === 'home';
     },
   },
   mounted() {

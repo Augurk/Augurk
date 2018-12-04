@@ -20,6 +20,9 @@ export default new Vuex.Store({
     setAugurkVersion(state, version) {
       state.augurkVersion = version;
     },
+    addProduct(state, product) {
+      state.products.push(product);
+    },
   },
   actions: {
     async loadCustomization(context) {
@@ -36,6 +39,14 @@ export default new Vuex.Store({
       const result = await fetch('/api/version');
       const version = await result.text();
       context.commit('setAugurkVersion', version);
+    },
+    async ensureProductLoaded(context, productName) {
+      let product = context.state.products.find((p) => p.name === productName);
+      if (!product) {
+        const result = await fetch('/api/v3/products/' + productName);
+        product = await result.json();
+        context.commit('addProduct', product);
+      }
     },
   },
 });

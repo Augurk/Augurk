@@ -52,5 +52,22 @@ namespace Augurk.Api.Controllers.V3
 
             return result;
         }
+
+        [HttpGet]
+        [Route("{productName}")]
+        public async Task<ActionResult<Product>> GetProduct(string productName)
+        {
+            var productDescription = await _productManager.GetProductDescriptionAsync(productName);
+            if (productDescription == null)
+            {
+                return NotFound();
+            }
+
+            return new Product
+            {
+                Name = productName,
+                Description = productDescription
+            };
+        }
     }
 }
