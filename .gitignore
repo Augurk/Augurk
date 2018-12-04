@@ -220,7 +220,6 @@ _Pvt_Extensions
 **/data
 
 # RavenDB stuff
-**/FeatureStore
 **/CompiledIndexCache
 **/Lucene.Net.dll
 
