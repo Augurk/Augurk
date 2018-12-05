@@ -36,7 +36,7 @@ namespace Augurk
         {
             // Create the necessary options
             var serverOptions = new ServerOptions { DataDirectory = Path.Combine(Environment.CurrentDirectory, "data") };
-            var databaseOptions = new DatabaseOptions("FeatureStore")
+            var databaseOptions = new DatabaseOptions("AugurkStore")
             {
                 Conventions = new DocumentConventions
                 {
