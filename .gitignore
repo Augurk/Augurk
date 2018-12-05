@@ -216,11 +216,10 @@ FakesAssemblies/
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
 
-# App_Data folder
-**/App_Data
+# Data folder
+**/data
 
 # RavenDB stuff
-**/FeatureStore
 **/CompiledIndexCache
 **/Lucene.Net.dll
 
@@ -235,4 +234,4 @@ _Pvt_Extensions
 *.feature.cs
 
 # LibMan libraries
-src/Augurk/libs
+src/Augurk/wwwroot/libs
