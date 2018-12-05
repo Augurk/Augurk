@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-[assembly: InternalsVisibleTo("Augurk.Test")]
-
 namespace Augurk
 {
     public class Program
