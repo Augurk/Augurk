@@ -18,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 DataDirectory = Path.Combine(Environment.CurrentDirectory, "data")
             };
 
-            var databaseOptions = new DatabaseOptions("FeatureStore")
+            var databaseOptions = new DatabaseOptions("AugurkStore")
             {
                 Conventions = new DocumentConventions
                 {
