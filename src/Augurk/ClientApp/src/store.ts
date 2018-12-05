@@ -3,11 +3,22 @@ import Vuex from 'vuex';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+export interface RootState {
+  augurkVersion: string;
+  customization?: {
+    instanceName: string;
+  };
+  products: Array<{
+    name: string;
+    description: string;
+  }>;
+}
+
+export default new Vuex.Store<RootState>({
   strict: process.env.NODE_ENV !== 'production',
   state: {
     augurkVersion: '',
-    customization: {},
+    customization: undefined,
     products: [],
   },
   mutations: {

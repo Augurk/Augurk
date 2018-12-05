@@ -24,19 +24,22 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import VueMarkdown from 'vue-markdown';
+import { Store } from 'vuex';
+import { RootState } from '../store';
 
 @Component({
   components: {
-      VueMarkdown
+      VueMarkdown,
   },
   data() {
     return {
-        showDescription: true
-    }
+        showDescription: true,
+    };
   },
   computed: {
       product() {
-          const product = this.$store.state.products.find((p) => p.name === this.$route.params.name);
+          const store = this.$store as Store<RootState>;
+          const product = store.state.products.find((p) => p.name === this.$route.params.name);
           return product;
       },
   },

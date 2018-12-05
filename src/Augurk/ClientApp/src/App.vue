@@ -58,7 +58,7 @@ export default {
   },
   computed: {
     instanceName() {
-      return this.$store.state.customization.instanceName;
+      return this.$store.state.customization ? this.$store.state.customization.instanceName : '';
     },
     augurkVersion() {
       return this.$store.state.augurkVersion;
