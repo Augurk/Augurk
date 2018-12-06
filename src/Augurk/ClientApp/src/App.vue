@@ -45,8 +45,13 @@
   </v-app>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+import VueMarkdown from 'vue-markdown';
+import { Store } from 'vuex';
+import { RootState } from './store';
+
+@Component({
   name: 'App',
   components: {
   },
@@ -58,6 +63,7 @@ export default {
   },
   computed: {
     instanceName() {
+      const store = this.$store as Store<RootState>;
       return this.$store.state.customization ? this.$store.state.customization.instanceName : '';
     },
     augurkVersion() {
@@ -71,5 +77,6 @@ export default {
     this.$store.dispatch('loadAugurkVersion');
     this.$store.dispatch('loadCustomization');
   },
-};
+})
+export default class App extends Vue {}
 </script>
