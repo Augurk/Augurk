@@ -27,14 +27,14 @@ import ProductCard from '../components/ProductCard.vue';
   components: {
     ProductCard,
   },
-  computed: {
-    products() {
-      return this.$store.state.products;
-    },
-  },
-  mounted() {
-    this.$store.dispatch('loadProducts');
-  },
 })
-export default class Home extends Vue {}
+export default class Home extends Vue {
+  private get products() {
+    return this.$store.state.products;
+  }
+
+  private mounted() {
+    this.$store.dispatch('loadProducts');
+  }
+}
 </script>

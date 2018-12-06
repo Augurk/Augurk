@@ -9,7 +9,7 @@
       </v-toolbar-title>
       <v-breadcrumbs :items="items"></v-breadcrumbs>
       <v-spacer></v-spacer>
-      <v-btn icon @click="onHomePage = !onHomePage">
+      <v-btn icon @click="darkmode = !darkmode">
         <v-icon>highlight</v-icon>
       </v-btn>
       <v-btn icon>
@@ -47,36 +47,27 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import VueMarkdown from 'vue-markdown';
-import { Store } from 'vuex';
-import { RootState } from './store';
 
-@Component({
-  name: 'App',
-  components: {
-  },
-  data() {
-    return {
-      darkmode: false,
-      items: [],
-    };
-  },
-  computed: {
-    instanceName() {
-      const store = this.$store as Store<RootState>;
-      return this.$store.state.customization ? this.$store.state.customization.instanceName : '';
-    },
-    augurkVersion() {
-      return this.$store.state.augurkVersion;
-    },
-    onHomePage() {
-      return this.$route.name === 'home';
-    },
-  },
-  mounted() {
+@Component
+export default class App extends Vue {
+  private darkmode = false;
+  private items = [];
+
+  private get instanceName() {
+    return this.$store.state.customization ? this.$store.state.customization.instanceName : '';
+  }
+
+  private get augurkVersion() {
+    return this.$store.state.augurkVersion;
+  }
+
+  private get onHomePage() {
+    return this.$route.name === 'home';
+  }
+
+  private mounted() {
     this.$store.dispatch('loadAugurkVersion');
     this.$store.dispatch('loadCustomization');
-  },
-})
-export default class App extends Vue {}
+  }
+}
 </script>

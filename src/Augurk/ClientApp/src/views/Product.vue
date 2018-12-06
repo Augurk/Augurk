@@ -23,31 +23,23 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import VueMarkdown from 'vue-markdown';
 import { Store } from 'vuex';
 import { RootState } from '../store';
 
-@Component({
-  components: {
-      VueMarkdown,
-  },
-  data() {
-    return {
-        showDescription: true,
-    };
-  },
-  computed: {
-      product() {
-          const store = this.$store as Store<RootState>;
-          const product = store.state.products.find((p) => p.name === this.$route.params.name);
-          return product;
-      },
-  },
-  mounted() {
-      this.$store.dispatch('ensureProductLoaded', this.$route.params.name);
-  },
-})
-export default class Product extends Vue {}
+@Component
+export default class Product extends Vue {
+    private showDescription = true;
+
+    private get product() {
+        const store = this.$store as Store<RootState>;
+        const product = store.state.products.find((p) => p.name === this.$route.params.name);
+        return product;
+    }
+
+    private mounted() {
+        this.$store.dispatch('ensureProductLoaded', this.$route.params.name);
+    }
+}
 </script>
 
 <style scoped>
