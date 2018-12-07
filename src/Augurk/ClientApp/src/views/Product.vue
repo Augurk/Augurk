@@ -23,18 +23,18 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import products from '../store/products';
+import { ProductsModule } from '../store/products';
 
 @Component
 export default class Product extends Vue {
     private showDescription = true;
 
     private get product() {
-        return products.getProductByName(this.$route.params.name);
+        return ProductsModule.productByName(this.$route.params.name);
     }
 
     private mounted() {
-        products.dispatchEnsureProductLoaded(this.$route.params.name);
+        ProductsModule.ensureProductLoaded(this.$route.params.name);
     }
 }
 </script>

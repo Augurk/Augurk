@@ -22,7 +22,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import ProductCard from '../components/ProductCard.vue';
-import products from '../store/products';
+import { ProductsModule } from '../store/products';
 
 @Component({
   components: {
@@ -31,11 +31,11 @@ import products from '../store/products';
 })
 export default class Home extends Vue {
   private get products() {
-    return products.state.products;
+    return ProductsModule.productList;
   }
 
   private mounted() {
-    products.dispatchLoadProducts();
+    ProductsModule.loadProducts();
   }
 }
 </script>

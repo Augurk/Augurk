@@ -1,18 +1,15 @@
 import Vue from 'vue';
-import Vuex, { Store } from 'vuex';
-import { getStoreBuilder } from 'vuex-typex';
+import Vuex from 'vuex';
 import { GlobalState } from './global';
 import { ProductsState } from './products';
 
-import './global';
-import './products';
+Vue.use(Vuex);
 
 export interface RootState {
     global: GlobalState;
     products: ProductsState;
 }
 
-Vue.use(Vuex);
-
-const store: Store<RootState> = getStoreBuilder<RootState>().vuexStore();
-export default store;
+export default new Vuex.Store<RootState>({
+    strict: process.env !== 'production',
+});

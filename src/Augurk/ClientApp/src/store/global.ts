@@ -1,58 +1,42 @@
-import { getStoreBuilder } from 'vuex-typex';
-import { RootState } from './index';
+import {Module, VuexModule, Mutation, Action, getModule} from 'vuex-module-decorators';
+import store from '@/store';
 
 export interface GlobalState {
     augurkVersion: string;
-    customization?: Customization;
+    customization: Customization | null;
 }
 
 export interface Customization {
     instanceName: string;
 }
 
-const initialIGlobalState: GlobalState = {
-    augurkVersion: '',
-    customization: undefined,
-};
+@Module({ dynamic: true, store, name: 'global'})
+class Global extends VuexModule implements GlobalState {
+    public augurkVersion: string = '';
+    public customization: Customization | null = null;
 
-// Mutations
-function setCustomization(state: GlobalState, payload: Customization) {
-    state.customization = payload;
+    @Mutation
+    public setCustomization(customization: Customization) {
+        this.customization = customization;
+    }
+
+    @Mutation
+    public setAugurkVersion(augurkVersion: string) {
+        this.augurkVersion = augurkVersion;
+    }
+
+    @Action
+    public async initialize() {
+        // Get the version of Augurk from the backend
+        const versionResult = await fetch('/api/version');
+        const version = await versionResult.text();
+        this.context.commit('setAugurkVersion', version);
+
+        // Next load any customizations that have been set
+        const customizationResult = await fetch('/api/v2/customization');
+        const customization = await customizationResult.json();
+        this.context.commit('setCustomization', customization);
+    }
 }
 
-function setAugurkVersion(state: GlobalState, payload: string) {
-    state.augurkVersion = payload;
-}
-
-// Actions
-async function initialize() {
-    // Get the version of Augurk from the backend
-    const versionResult = await fetch('/api/version');
-    const version = await versionResult.text();
-    global.commitSetAugurkVersion(version);
-
-    // Next load any customizations that have been set
-    const customizationResult = await fetch('/api/v2/customization');
-    const customization = await customizationResult.json();
-    global.commitSetCustomization(customization);
-}
-
-const p = getStoreBuilder<RootState>().module('global', initialIGlobalState);
-
-// state
-const stateGetter = p.state();
-
-// exported "global" module interface
-const global = {
-    // state
-    get state() { return stateGetter(); },
-
-    // mutations
-    commitSetCustomization: p.commit(setCustomization),
-    commitSetAugurkVersion: p.commit(setAugurkVersion),
-
-    // actions
-    dispatchInitialize: p.dispatch(initialize),
-};
-
-export default global;
+export const GlobalModule = getModule(Global);

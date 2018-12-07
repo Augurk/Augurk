@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import global from './store/global';
+import { GlobalModule } from './store/global';
 
 @Component
 export default class App extends Vue {
@@ -55,11 +55,11 @@ export default class App extends Vue {
   private items = [];
 
   private get instanceName() {
-    return global.state.customization ? global.state.customization.instanceName : '';
+    return GlobalModule.customization ? GlobalModule.customization.instanceName : '';
   }
 
   private get augurkVersion() {
-    return global.state.augurkVersion;
+    return GlobalModule.augurkVersion;
   }
 
   private get onHomePage() {
@@ -67,7 +67,7 @@ export default class App extends Vue {
   }
 
   private mounted() {
-    global.dispatchInitialize();
+    GlobalModule.initialize();
   }
 }
 </script>
