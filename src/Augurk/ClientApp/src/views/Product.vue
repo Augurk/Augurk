@@ -23,21 +23,18 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { Store } from 'vuex';
-import { RootState } from '../store';
+import products from '../store/products';
 
 @Component
 export default class Product extends Vue {
     private showDescription = true;
 
     private get product() {
-        const store = this.$store as Store<RootState>;
-        const product = store.state.products.find((p) => p.name === this.$route.params.name);
-        return product;
+        return products.getProductByName(this.$route.params.name);
     }
 
     private mounted() {
-        this.$store.dispatch('ensureProductLoaded', this.$route.params.name);
+        products.dispatchEnsureProductLoaded(this.$route.params.name);
     }
 }
 </script>
