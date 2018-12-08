@@ -1,14 +1,26 @@
 <template>
-    <div>
-        <h1>Hello Feature {{feature}} from product {{product.name}}</h1>
-    </div>
+    <v-container fluid>
+        <v-layout row wrap>
+            <v-flex xs3>
+                <ProductNavigation :product="product" />
+            </v-flex>
+            <v-flex xs9>
+                <h1>Hello from feature {{feature}}</h1>
+            </v-flex>
+        </v-layout>
+    </v-container>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import { ProductsModule } from '../store/products';
+import ProductNavigation from '../components/ProductNavigation.vue';
 
-@Component
+@Component({
+    components: {
+        ProductNavigation,
+    },
+})
 export default class Feature extends Vue {
     private showDescription = true;
 
