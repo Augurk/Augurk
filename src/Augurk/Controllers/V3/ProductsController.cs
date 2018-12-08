@@ -29,10 +29,12 @@ namespace Augurk.Api.Controllers.V3
     public class ProductsController : Controller
     {
         private readonly ProductManager _productManager;
+        private readonly FeatureManager _featureManager;
 
-        public ProductsController(ProductManager productManager)
+        public ProductsController(ProductManager productManager, FeatureManager featureManager)
         {
             _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
+            _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
         }
 
         [HttpGet]
@@ -55,7 +57,7 @@ namespace Augurk.Api.Controllers.V3
 
         [HttpGet]
         [Route("{productName}")]
-        public async Task<ActionResult<Product>> GetProduct(string productName)
+        public async Task<ActionResult<ProductDetails>> GetProductDetails(string productName)
         {
             var productDescription = await _productManager.GetProductDescriptionAsync(productName);
             if (productDescription == null)
@@ -63,10 +65,13 @@ namespace Augurk.Api.Controllers.V3
                 return NotFound();
             }
 
-            return new Product
+            var groups = await _featureManager.GetGroupedFeatureDescriptionsAsync(productName);
+
+            return new ProductDetails
             {
                 Name = productName,
-                Description = productDescription
+                Description = productDescription,
+                Groups = groups
             };
         }
     }

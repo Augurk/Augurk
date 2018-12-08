@@ -3,6 +3,7 @@ import store from '@/store';
 
 export interface ProductsState {
     productList: Product[];
+    selectedProduct: ProductDetails | null;
 }
 
 export interface Product {
@@ -10,9 +11,18 @@ export interface Product {
     description: string;
 }
 
+export interface ProductDetails extends Product {
+    groups: Group[];
+}
+
+export interface Group {
+    name: string;
+}
+
 @Module({ dynamic: true, store, name: 'products'})
 class Products extends VuexModule implements ProductsState {
     public productList: Product[] = [];
+    public selectedProduct: ProductDetails | null = null;
 
     public get productByName() {
         return (productName: string) => this.productList.find((p) => p.name === productName);
@@ -24,8 +34,8 @@ class Products extends VuexModule implements ProductsState {
     }
 
     @Mutation
-    public addProduct(payload: Product) {
-        this.productList.push(payload);
+    public setSelectedPrdocut(payload: ProductDetails) {
+        this.selectedProduct = payload;
     }
 
     @Action
@@ -36,15 +46,10 @@ class Products extends VuexModule implements ProductsState {
     }
 
     @Action
-    public async ensureProductLoaded(productName: string) {
-        let product = this.productList.find((p) => p.name === productName);
-        if (!product) {
-            const result = await fetch('/api/v3/products/' + productName);
-            product = await result.json();
-            if (product) {
-                this.context.commit('addProduct', product);
-            }
-        }
+    public async loadProductDetails(productName: string) {
+        const result = await fetch('/api/v3/products/' + productName);
+        const productDetails = await result.json();
+        this.context.commit('setSelectedPrdocut', productDetails);
     }
 }
 
