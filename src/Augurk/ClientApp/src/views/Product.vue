@@ -12,7 +12,7 @@
                                 <v-list-tile slot="activator">
                                     <v-list-tile-title>{{ group.name }}</v-list-tile-title>
                                 </v-list-tile>
-                                <v-list-tile v-for="feature in group.features" :key="feature.name">
+                                <v-list-tile v-for="feature in group.features" :key="feature.name" :to="product.name + '/feature/' + feature.title">
                                     <v-list-tile-title v-text="feature.title"></v-list-tile-title>
                                 </v-list-tile>
                             </v-list-group>
