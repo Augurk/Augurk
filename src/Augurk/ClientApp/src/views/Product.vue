@@ -2,9 +2,12 @@
     <v-container fluid>
         <v-layout row wrap>
             <v-flex xs3>
-                <v-card class="d-inline-block elevation-12">
-                    <v-navigation-drawer floating stateless value="true">
+                <v-card class="d-inline-block elevation-12" width="350">
+                    <v-navigation-drawer floating stateless value="true" width="350">
                         <v-list expand>
+                            <v-list-tile>
+                                <v-list-tile-title>{{ product.name }}</v-list-tile-title>
+                            </v-list-tile>
                             <v-list-group no-action v-for="group in product.groups" :key="group.name" value="true">
                                 <v-list-tile slot="activator">
                                     <v-list-tile-title>{{ group.name }}</v-list-tile-title>
