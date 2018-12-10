@@ -9,9 +9,20 @@
                     <v-list-tile slot="activator">
                         <v-list-tile-title>{{ group.name }}</v-list-tile-title>
                     </v-list-tile>
-                    <v-list-tile v-for="feature in group.features" :key="feature.name" :to="'/product/' + product.name + '/feature/' + feature.title">
-                        <v-list-tile-title v-text="feature.title"></v-list-tile-title>
-                    </v-list-tile>
+                    <template v-for="feature in group.features">
+                        <v-list-tile v-if="!feature.childFeatures" :key="feature.title" :to="'/product/' + product.name + '/feature/' + feature.title">
+                            <v-list-tile-title v-text="feature.title"></v-list-tile-title>
+                        </v-list-tile>
+                        <v-list-group v-else :key="feature.title" value="true">
+                            <v-list-tile slot="activator" :to="'/product/' + product.name + '/feature/' + feature.title">
+                                <v-list-tile-title>{{ feature.title }}</v-list-tile-title>
+                            </v-list-tile>
+                            <v-list-tile v-for="childFeature in feature.childFeatures" :key="childFeature.title"
+                                         :to="'/product/' + product.name + '/feature/' + childFeature.title">
+                                <v-list-tile-title>{{ childFeature.title }}</v-list-tile-title>
+                            </v-list-tile>
+                        </v-list-group>
+                    </template>
                 </v-list-group>
             </v-list>
         </v-navigation-drawer>
