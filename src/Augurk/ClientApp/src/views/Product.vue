@@ -5,7 +5,7 @@
                 <ProductNavigation :product="product" />
             </v-flex>
             <v-flex xs9>
-                <v-card class="md6">
+                <v-card flat class="md6">
                     <v-card-title primary-title>
                         <div>
                             <div class="headline">{{product.name}}</div>
