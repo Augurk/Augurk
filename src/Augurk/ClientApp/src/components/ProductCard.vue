@@ -1,5 +1,5 @@
 <template>
-    <v-card ripple :to="'product/' + product.name" slot-scope="{}" height="250px" class="align-center">
+    <v-card ripple :to="'products/' + product.name" slot-scope="{}" height="250px" class="align-center">
         <v-card-title primary-title>
             <div class="overflow-hidden">
                 <h1 v-if="!product.description">{{product.name}}</h1>

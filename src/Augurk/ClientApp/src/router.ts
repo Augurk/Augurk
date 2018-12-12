@@ -14,13 +14,15 @@ export default new Router({
       component: Home,
     },
     {
-      path: '/product/:name',
+      path: '/products/:name',
       name: 'product',
+      props: true,
       component: () => import(/* webpackChunkName: "product" */ './views/Product.vue'),
     },
     {
-      path: '/product/:productName/feature/:featureName',
+      path: '/products/:productName/groups/:groupName/features/:featureName',
       name: 'feature',
+      props: true,
       component: () => import(/* webpackChunkName: "feature" */ './views/Feature.vue'),
     },
   ],

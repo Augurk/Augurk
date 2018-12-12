@@ -8,7 +8,7 @@
                 <v-card flat class="md6">
                     <v-card-title primary-title>
                         <div>
-                            <div class="headline">{{product.name}}</div>
+                            <div class="headline">{{name}}</div>
                         </div>
                     </v-card-title>
                     <v-slide-y-transition>
@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import { ProductsModule } from '../store/products';
 import ProductNavigation from '../components/ProductNavigation.vue';
 
@@ -39,14 +39,16 @@ import ProductNavigation from '../components/ProductNavigation.vue';
     },
 })
 export default class Product extends Vue {
+    @Prop(String) public name!: string;
+
     private showDescription = true;
 
     private get product() {
         return ProductsModule.selectedProduct;
     }
 
-    private mounted() {
-        ProductsModule.loadProductDetails(this.$route.params.name);
+    private created() {
+        ProductsModule.loadProductDetails(this.name);
     }
 }
 </script>
