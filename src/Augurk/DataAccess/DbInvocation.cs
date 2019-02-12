@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2018, Augurk
+ Copyright 2018-2019, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
