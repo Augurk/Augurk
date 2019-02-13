@@ -24,7 +24,7 @@ namespace Augurk.Api.Managers
     /// <summary>
     /// Provides methods to persist and retrieve customization settings from storage.
     /// </summary>
-    public class CustomizationManager
+    public class CustomizationManager : ICustomizationManager
     {
         private const string KEY = "urn:Augurk:Customization";
         private readonly IDocumentStoreProvider _storeProvider;
