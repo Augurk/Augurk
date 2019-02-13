@@ -24,7 +24,7 @@ namespace Augurk.Api.Managers
     /// <summary>
     /// Provides methods to persist and retrieve configuration from storage.
     /// </summary>
-    public class ConfigurationManager
+    public class ConfigurationManager : IConfigurationManager
     {
         private const string KEY = "urn:Augurk:Configuration";
         private readonly IDocumentStoreProvider _storeProvider;
