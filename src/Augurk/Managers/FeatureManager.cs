@@ -27,6 +27,7 @@ using Group = Augurk.Entities.Group;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Queries;
 using Raven.Client.Documents.Operations;
+using Microsoft.Extensions.Logging;
 
 namespace Augurk.Api.Managers
 {
@@ -35,18 +36,20 @@ namespace Augurk.Api.Managers
     /// </summary>
     public class FeatureManager
     {
-        private readonly IDocumentStore _documentStore;
+        private readonly IDocumentStoreProvider _storeProvider;
         private readonly ConfigurationManager _configurationManager;
+        private readonly ILogger<FeatureManager> _logger;
 
         /// <summary>
         /// Gets or sets the JsonSerializerSettings that should be used when (de)serializing.
         /// </summary>
         internal static JsonSerializerSettings JsonSerializerSettings { get; set; }
 
-        public FeatureManager(IDocumentStoreProvider storeProvider, ConfigurationManager configurationManager)
+        public FeatureManager(IDocumentStoreProvider storeProvider, ConfigurationManager configurationManager, ILogger<FeatureManager> logger)
         {
-            _documentStore = storeProvider?.Store ?? throw new ArgumentNullException(nameof(storeProvider));
+            _storeProvider = storeProvider ?? throw new ArgumentNullException(nameof(storeProvider));
             _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -58,7 +61,7 @@ namespace Augurk.Api.Managers
         /// <returns>Returns a range of available versions.</returns>
         public async Task<IEnumerable<string>> GetFeatureAvailableVersions(string productName, string groupName, string title)
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 var versions = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
                                             .Where(feature => feature.Product == productName && feature.Group == groupName && feature.Title == title)
@@ -82,7 +85,7 @@ namespace Augurk.Api.Managers
         /// </returns>
         public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string title, string version)
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));
 
@@ -113,7 +116,7 @@ namespace Augurk.Api.Managers
             Dictionary<string, List<FeatureDescription>> featureDescriptions = new Dictionary<string, List<FeatureDescription>>();
             Dictionary<string, Group> groups = new Dictionary<string, Group>();
 
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 var data = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
                                         .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase))
@@ -181,7 +184,7 @@ namespace Augurk.Api.Managers
         /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
         public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByBranchAndTagAsync(string branchName, string tag)
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 var titles = await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
                                         .Where(feature => feature.Product.Equals(branchName, StringComparison.OrdinalIgnoreCase)
@@ -205,7 +208,7 @@ namespace Augurk.Api.Managers
         /// <returns>An enumerable collection of <see cref="FeatureDescription"/> instances.</returns>
         public async Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByProductAndGroupAsync(string productName, string groupName)
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 var titles = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
                                         .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
@@ -230,7 +233,7 @@ namespace Augurk.Api.Managers
         /// <returns>An enumerable collection of <see cref="DbFeature"/> instances.</returns>
         public async Task<IEnumerable<DbFeature>> GetDbFeaturesByProductAndVersionAsync(string productName, string version)
         {
-            using(var session = _documentStore.OpenAsyncSession())
+            using(var session = _storeProvider.Store.OpenAsyncSession())
             {
                 var featureQuery =  session.Query<DbFeature, Features_ByTitleProductAndGroup>()
                                             .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
@@ -246,7 +249,7 @@ namespace Augurk.Api.Managers
         /// <param name="features">A collection of <see cref="DbFeature"/> instances that should be persisted.</param>
         public async Task PersistDbFeatures(IEnumerable<DbFeature> features)
         {
-            using(var session = _documentStore.OpenAsyncSession())
+            using(var session = _storeProvider.Store.OpenAsyncSession())
             {
                 foreach(var feature in features)
                 {
@@ -270,6 +273,9 @@ namespace Augurk.Api.Managers
 
         public async Task<DbFeature> InsertOrUpdateFeatureAsync(Feature feature, string productName, string groupName, string version)
         {
+            _logger.LogInformation("Persisting feature {FeatureTitle} version {Version} for product {ProductName} and group {GroupName}",
+                feature.Title, version, productName, groupName);
+
             var processor = new FeatureProcessor();
             string parentTitle = processor.DetermineParent(feature);
 
@@ -277,7 +283,7 @@ namespace Augurk.Api.Managers
 
             var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
 
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 // Using the store method when the feature already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
@@ -292,7 +298,7 @@ namespace Augurk.Api.Managers
 
         public async Task PersistFeatureTestResultAsync(FeatureTestResult testResult, string productName, string groupName, string version)
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, testResult.FeatureTitle, version));
 
@@ -318,7 +324,7 @@ namespace Augurk.Api.Managers
         /// <param name="groupName">The group of which the features should be deleted.</param>
         public async Task DeleteFeaturesAsync(string productName, string groupName)
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 await session.Advanced.DocumentStore.Operations.SendAsync(
                     new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
@@ -334,7 +340,7 @@ namespace Augurk.Api.Managers
         /// <param name="version">The version of the features to delete.</param>
         public async Task DeleteFeaturesAsync(string productName, string groupName, string version)
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 await session.Advanced.DocumentStore.Operations.SendAsync(
                     new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
@@ -350,7 +356,7 @@ namespace Augurk.Api.Managers
         /// <param name="title">The feature that should be deleted.</param>
         public async Task DeleteFeatureAsync(string productName, string groupName, string title)
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 await session.Advanced.DocumentStore.Operations.SendAsync(
                     new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
@@ -367,7 +373,7 @@ namespace Augurk.Api.Managers
         /// <param name="version">The version of the feature that should be deleted.</param>
         public async Task DeleteFeatureAsync(string productName, string groupName, string title, string version)
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 // The delete method only marks the entity with the provided id for deletion, as such it is not asynchronous
                 session.Delete(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));

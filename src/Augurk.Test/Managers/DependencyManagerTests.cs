@@ -14,214 +14,285 @@
  limitations under the License.
 */
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Augurk.Api;
 using Augurk.Api.Managers;
 using System.Threading.Tasks;
 using System.Linq;
-using Raven.TestDriver;
-using Raven.Client.Documents;
-using System;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit;
+using NSubstitute;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
+using Raven.TestDriver;
+using Shouldly;
 
 namespace Augurk.Test.Managers
 {
     /// <summary>
     /// Summary description for DependencyManagerTests
     /// </summary>
-    [TestClass]
-    public class DependencyManagerTests : TestBase
+    public class DependencyManagerTests : RavenTestDriver
     {
+        /// <summary>
+        /// Called before the document store is being initialized.
+        /// </summary>
+        /// <param name="documentStore">A <see cref="IDocumentStore" /> instance to configure.</param>
+        protected override void PreInitialize(IDocumentStore documentStore)
+        {
+            documentStore.Conventions.IdentityPartsSeparator = "-";
+        }
+
         /// <summary>
         /// Verifies whether feature graphs can be discovered when two different features are available.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public async Task VerifyFeatureGraphsCanBeDiscovered()
         {
-            var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
-            var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
-
-            await ServiceProvider.GetService<FeatureManager>().PersistDbFeatures(new[] { callingFeature, calledFeature });
-
-            var invocations = new DbInvocation[]
+            using (var store = GetDocumentStore())
             {
-                new DbInvocation()
+                // Arrange
+                var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
+                var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
+
+                using (var session = store.OpenSession())
                 {
-                    Signature = "SomeClass.Foo()",
-                    InvokedSignatures = new []
-                    {
-                        "SomeClass.Foo(System.String)",
-                        "SomeOtherClass.Bar()"
-                    }
-                },
-                new DbInvocation()
-                {
-                    Signature = "SomeOtherClass.Bar()",
-                    InvokedSignatures = new []
-                    {
-                        "SomeOtherClass.JuiceBar()"
-                    }
+                    session.Store(callingFeature);
+                    session.Store(calledFeature);
+                    session.SaveChanges();
                 }
-            };
 
-            await ServiceProvider.GetService<AnalysisReportManager>().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
+                var invocations = new DbInvocation[]
+                {
+                    new DbInvocation()
+                    {
+                        Signature = "SomeClass.Foo()",
+                        InvokedSignatures = new []
+                        {
+                            "SomeClass.Foo(System.String)",
+                            "SomeOtherClass.Bar()"
+                        }
+                    },
+                    new DbInvocation()
+                    {
+                        Signature = "SomeOtherClass.Bar()",
+                        InvokedSignatures = new []
+                        {
+                            "SomeOtherClass.JuiceBar()"
+                        }
+                    }
+                };
 
-            var target = ServiceProvider.GetService<DependencyManager>();
+                using (var session = store.OpenSession())
+                {
+                    session.Store(invocations[0]);
+                    session.Store(invocations[1]);
+                    session.SaveChanges();
+                }
 
-            var graphs = (await target.GetTopLevelFeatureGraphsAsync()).ToList();
+                // Act
+                var target = new DependencyManager(CreateDocumentStoreProvider(store));
+                var graphs = (await target.GetTopLevelFeatureGraphsAsync()).ToList();
 
-            Assert.AreEqual(1, graphs.Count, $"There are {graphs.Count} graphs, instead of just one.");
-            Assert.AreEqual("CallingFeature", graphs[0].FeatureName);
-            Assert.AreEqual(1, graphs[0].DependsOn.Count);
-            Assert.AreEqual("CalledFeature", graphs[0].DependsOn[0].FeatureName);
+                // Assert
+                graphs.Count.ShouldBe(1);
+                graphs[0].FeatureName.ShouldBe("CallingFeature");
+                graphs[0].DependsOn.Count.ShouldBe(1);
+                graphs[0].DependsOn[0].FeatureName.ShouldBe("CalledFeature");
+            }
         }
 
         /// <summary>
         /// Verifies whether feature graphs can be discovered even when there are features without signatures.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public async Task VerifyFeatureGraphsDiscoveryIsResistantToFeaturesWithoutSignatures()
         {
-            var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
-            var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
-            var unlinkedFeature = CreateDbFeature("UnlinkedFeature");
-
-            await ServiceProvider.GetService<FeatureManager>().PersistDbFeatures(new[] { callingFeature, calledFeature, unlinkedFeature });
-
-            var invocations = new DbInvocation[]
+            using (var store = GetDocumentStore())
             {
-                new DbInvocation()
+                // Arrange
+                var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
+                var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
+                var unlinkedFeature = CreateDbFeature("UnlinkedFeature");
+
+                using (var session = store.OpenSession())
                 {
-                    Signature = "SomeClass.Foo()",
-                    InvokedSignatures = new []
-                    {
-                        "SomeClass.Foo(System.String)",
-                        "SomeOtherClass.Bar()"
-                    }
-                },
-                new DbInvocation()
-                {
-                    Signature = "SomeOtherClass.Bar()",
-                    InvokedSignatures = new []
-                    {
-                        "SomeOtherClass.JuiceBar()"
-                    }
+                    session.Store(callingFeature);
+                    session.Store(calledFeature);
+                    session.Store(unlinkedFeature);
+                    session.SaveChanges();
                 }
-            };
 
-            await ServiceProvider.GetService<AnalysisReportManager>().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
+                var invocations = new DbInvocation[]
+                {
+                    new DbInvocation()
+                    {
+                        Signature = "SomeClass.Foo()",
+                        InvokedSignatures = new []
+                        {
+                            "SomeClass.Foo(System.String)",
+                            "SomeOtherClass.Bar()"
+                        }
+                    },
+                    new DbInvocation()
+                    {
+                        Signature = "SomeOtherClass.Bar()",
+                        InvokedSignatures = new []
+                        {
+                            "SomeOtherClass.JuiceBar()"
+                        }
+                    }
+                };
 
+                using (var session = store.OpenSession())
+                {
+                    session.Store(invocations[0]);
+                    session.Store(invocations[1]);
+                    session.SaveChanges();
+                }
 
-            var target = ServiceProvider.GetService<DependencyManager>();
+                // Act
+                var target = new DependencyManager(CreateDocumentStoreProvider(store));
+                var graphs = (await target.GetTopLevelFeatureGraphsAsync()).ToList();
 
-            var graphs = (await target.GetTopLevelFeatureGraphsAsync()).ToList();
-
-            Assert.AreEqual(2, graphs.Count, $"There are {graphs.Count} graphs, instead of the two that were expected.");
-            Assert.IsTrue(graphs.Any(f => f.FeatureName == "CallingFeature"));
-            Assert.IsTrue(graphs.Any(f => f.FeatureName == "UnlinkedFeature"));
+                // Assert
+                graphs.Count.ShouldBe(2);
+                graphs.Any(f => f.FeatureName == "CallingFeature").ShouldBeTrue();
+                graphs.Any(f => f.FeatureName == "UnlinkedFeature").ShouldBeTrue();
+            }
         }
 
         /// <summary>
         /// Verifies whether a lower level feature graph can be retrieved directly.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public async Task VerifyAMidTreeFeatureGraphCanBeRetrieved()
         {
-            var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
-            var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
-            var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
-
-            await ServiceProvider.GetService<FeatureManager>().PersistDbFeatures(new[] { callingFeature, calledFeature, anotherCalledFeature });
-
-            var invocations = new DbInvocation[]
+            using (var store = GetDocumentStore())
             {
-                new DbInvocation()
+                // Arrange
+                var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
+                var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
+                var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
+
+                using (var session = store.OpenSession())
                 {
-                    Signature = "SomeClass.Foo()",
-                    InvokedSignatures = new []
-                    {
-                        "SomeClass.Foo(System.String)",
-                        "SomeOtherClass.Bar()"
-                    }
-                },
-                new DbInvocation()
-                {
-                    Signature = "SomeOtherClass.Bar()",
-                    InvokedSignatures = new []
-                    {
-                        "SomeOtherClass.JuiceBar()"
-                    }
+                    session.Store(callingFeature);
+                    session.Store(calledFeature);
+                    session.Store(anotherCalledFeature);
+                    session.SaveChanges();
                 }
-            };
 
-            await ServiceProvider.GetService<AnalysisReportManager>().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
+                var invocations = new DbInvocation[]
+                {
+                    new DbInvocation()
+                    {
+                        Signature = "SomeClass.Foo()",
+                        InvokedSignatures = new []
+                        {
+                            "SomeClass.Foo(System.String)",
+                            "SomeOtherClass.Bar()"
+                        }
+                    },
+                    new DbInvocation()
+                    {
+                        Signature = "SomeOtherClass.Bar()",
+                        InvokedSignatures = new []
+                        {
+                            "SomeOtherClass.JuiceBar()"
+                        }
+                    }
+                };
 
+                using (var session = store.OpenSession())
+                {
+                    session.Store(invocations[0]);
+                    session.Store(invocations[1]);
+                    session.SaveChanges();
+                }
 
-            var target = ServiceProvider.GetService<DependencyManager>();
+                // Act
+                var target = new DependencyManager(CreateDocumentStoreProvider(store));
+                var graph = await target.GetFeatureGraphAsync("TestProduct", "CalledFeature", "0.0.0");
 
-            var graph = await target.GetFeatureGraphAsync("TestProduct", "CalledFeature", "0.0.0");
-
-            Assert.AreEqual("CalledFeature", graph.FeatureName);
-            Assert.AreEqual(1, graph.DependsOn.Count);
-            Assert.AreEqual("AnotherCalledFeature", graph.DependsOn[0].FeatureName);
-            Assert.AreEqual(1, graph.Dependants.Count);
-            Assert.AreEqual("CallingFeature", graph.Dependants[0].FeatureName);
+                // Assert
+                graph.FeatureName.ShouldBe("CalledFeature");
+                graph.DependsOn.Count.ShouldBe(1);
+                graph.DependsOn[0].FeatureName.ShouldBe("AnotherCalledFeature");
+                graph.Dependants.Count.ShouldBe(1);
+                graph.Dependants[0].FeatureName.ShouldBe("CallingFeature");
+            }
         }
 
         /// <summary>
         /// Verifies whether a feature graph can be retrieved directly, even when it's code has some recursion going on.
         /// </summary>
-        [TestMethod]
+        [Fact]
         public async Task VerifyAFeatureGraphCanBeRetrievedWhenItsCodeHasRecursion()
         {
-            var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
-            var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
-            var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
-
-            await ServiceProvider.GetService<FeatureManager>().PersistDbFeatures(new[] { callingFeature, calledFeature, anotherCalledFeature });
-
-            var invocations = new DbInvocation[]
+            using (var store = GetDocumentStore())
             {
-                new DbInvocation()
+                // Arrange
+                var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
+                var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
+                var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
+
+                using (var session = store.OpenSession())
                 {
-                    Signature = "SomeClass.Foo()",
-                    InvokedSignatures = new []
-                    {
-                        "SomeClass.Foo(System.String)",
-                        "SomeOtherClass.Bar()"
-                    }
-                },
-                new DbInvocation()
-                {
-                    Signature = "SomeOtherClass.Bar()",
-                    InvokedSignatures = new []
-                    {
-                        "SomeOtherClass.JuiceBar()"
-                    }
-                },
-                new DbInvocation()
-                {
-                    Signature = "SomeOtherClass.JuiceBar()",
-                    InvokedSignatures = new []
-                    {
-                        "SomeOtherClass.Bar()"
-                    }
+                    session.Store(callingFeature);
+                    session.Store(calledFeature);
+                    session.Store(anotherCalledFeature);
+                    session.SaveChanges();
                 }
-            };
 
-            await ServiceProvider.GetService<AnalysisReportManager>().PersistDbInvocationsAsync("TestProduct", "0.0.0", invocations);
+                var invocations = new DbInvocation[]
+                {
+                    new DbInvocation()
+                    {
+                        Signature = "SomeClass.Foo()",
+                        InvokedSignatures = new []
+                        {
+                            "SomeClass.Foo(System.String)",
+                            "SomeOtherClass.Bar()"
+                        }
+                    },
+                    new DbInvocation()
+                    {
+                        Signature = "SomeOtherClass.Bar()",
+                        InvokedSignatures = new []
+                        {
+                            "SomeOtherClass.JuiceBar()"
+                        }
+                    },
+                    new DbInvocation()
+                    {
+                        Signature = "SomeOtherClass.JuiceBar()",
+                        InvokedSignatures = new []
+                        {
+                            "SomeOtherClass.Bar()"
+                        }
+                    }
+                };
 
+                using (var session = store.OpenSession())
+                {
+                    session.Store(invocations[0]);
+                    session.Store(invocations[1]);
+                    session.Store(invocations[2]);
+                    session.SaveChanges();
+                }
 
-            var target = ServiceProvider.GetService<DependencyManager>();
+                // Act
+                var target = new DependencyManager(CreateDocumentStoreProvider(store));
+                var graph = await target.GetFeatureGraphAsync("TestProduct", "CalledFeature", "0.0.0");
 
-            var graph = await target.GetFeatureGraphAsync("TestProduct", "CalledFeature", "0.0.0");
-
-            Assert.AreEqual("CalledFeature", graph.FeatureName);
-            Assert.AreEqual(1, graph.DependsOn.Count);
-            Assert.AreEqual("AnotherCalledFeature", graph.DependsOn[0].FeatureName);
-            Assert.AreEqual(2, graph.Dependants.Count);
-            Assert.AreEqual("CallingFeature", graph.Dependants[0].FeatureName);
-            Assert.AreEqual("AnotherCalledFeature", graph.Dependants[1].FeatureName);
+                // Assert
+                graph.FeatureName.ShouldBe("CalledFeature");
+                graph.DependsOn.Count.ShouldBe(1);
+                graph.DependsOn[0].FeatureName.ShouldBe("AnotherCalledFeature");
+                graph.Dependants.Count.ShouldBe(2);
+                graph.Dependants[0].FeatureName.ShouldBe("CallingFeature");
+                graph.Dependants[1].FeatureName.ShouldBe("AnotherCalledFeature");
+            }
         }
 
         private static DbFeature CreateDbFeature(string featureName, params string[] directInvocationSignatures)
@@ -240,6 +311,13 @@ namespace Augurk.Test.Managers
             }
 
             return result;
+        }
+
+        private IDocumentStoreProvider CreateDocumentStoreProvider(IDocumentStore documentStore)
+        {
+            var documentStoreProvider = Substitute.For<IDocumentStoreProvider>();
+            documentStoreProvider.Store.Returns(documentStore);
+            return documentStoreProvider;
         }
     }
 }

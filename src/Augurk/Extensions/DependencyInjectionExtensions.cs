@@ -15,6 +15,7 @@
 */
 using Augurk;
 using Augurk.Api.Managers;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -29,9 +30,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">An <see cref="IServiceCollection" /> to add the services to.</param>
         public static void AddRavenDb(this IServiceCollection services)
         {
-            services.AddSingleton<IDocumentStoreProvider, DocumentStoreProvider>();
+            // NOTE: Using TryAddSingleton here to allow integration tests to plug in a different IDocumentStoreProvider
+            services.TryAddSingleton<IDocumentStoreProvider, DocumentStoreProvider>();
         }
 
+        /// <summary>
+        /// Registers all the necessary managers needed by the Augurk application.
+        /// </summary>
+        /// <param name="services">An <see cref="IServiceCollection" /> to add the services to.</param>
         public static void AddManagers(this IServiceCollection services)
         {
             services.AddSingleton<ConfigurationManager>();

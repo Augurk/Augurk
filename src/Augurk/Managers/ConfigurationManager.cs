@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+using System;
 using System.Threading.Tasks;
 using Augurk.Entities;
 using Raven.Client.Documents;
@@ -26,11 +27,11 @@ namespace Augurk.Api.Managers
     public class ConfigurationManager
     {
         private const string KEY = "urn:Augurk:Configuration";
-        private readonly IDocumentStore _documentStore;
+        private readonly IDocumentStoreProvider _storeProvider;
 
         public ConfigurationManager(IDocumentStoreProvider documentStoreProvider)
         {
-            _documentStore = documentStoreProvider.Store;
+            _storeProvider = documentStoreProvider ?? throw new ArgumentNullException(nameof(documentStoreProvider));
         }
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace Augurk.Api.Managers
         {
             Configuration configuration = null;
 
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 configuration = await session.LoadAsync<Configuration>(KEY);
             }
@@ -61,7 +62,7 @@ namespace Augurk.Api.Managers
         /// <param name="configuration">A <see cref="Configuration"/> instance containing the configuration that should be persisted.</param>
         public async Task PersistConfigurationAsync(Configuration configuration)
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 // Using the store method when the configuration already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(configuration, KEY);

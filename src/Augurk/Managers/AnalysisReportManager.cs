@@ -33,7 +33,7 @@ namespace Augurk.Api.Managers
     /// </summary>
     public class AnalysisReportManager
     {
-        private readonly IDocumentStore _documentStore;
+        private readonly IDocumentStoreProvider _storeProvider;
         private readonly ConfigurationManager _configurationManager;
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Augurk.Api.Managers
 
         public AnalysisReportManager(IDocumentStoreProvider storeProvider, ConfigurationManager configurationManager)
         {
-            _documentStore = storeProvider?.Store ?? throw new ArgumentNullException(nameof(storeProvider));
+            _storeProvider = storeProvider ?? throw new ArgumentNullException(nameof(storeProvider));
             _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
         }
 
@@ -57,7 +57,7 @@ namespace Augurk.Api.Managers
         {
             var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
 
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 // Store will override the existing report if it already exists
                 await session.StoreAsync(report, $"{productName}/{version}/{report.AnalyzedProject}");
@@ -77,7 +77,7 @@ namespace Augurk.Api.Managers
         /// <returns>A range of <see cref="AnalysisReport"/> instances stored for the provided product and version.</returns>
         public IEnumerable<AnalysisReport> GetAnalysisReportsByProductAndVersionAsync(string productName, string version)
         {
-            using(var session = _documentStore.OpenSession())
+            using(var session = _storeProvider.Store.OpenSession())
             {
                 return session.Query<AnalysisReports_ByProductAndVersion.Entry, AnalysisReports_ByProductAndVersion>()
                            .Where(report => report.Product == productName && report.Version == version)
@@ -96,7 +96,7 @@ namespace Augurk.Api.Managers
         {
             var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
 
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 foreach(var invocation in invocations)
                 {
@@ -118,7 +118,7 @@ namespace Augurk.Api.Managers
         /// <param name="version">Version of the product to delete the invocations for.</param>
         public async Task DeleteDbInvocationsAsync(string productName, string version)
         {
-            await _documentStore.Operations.Send(
+            await _storeProvider.Store.Operations.Send(
                 new DeleteByQueryOperation(new IndexQuery { Query = $"Product:{productName} AND Version:{version}" }))
                 .WaitForCompletionAsync();
         }

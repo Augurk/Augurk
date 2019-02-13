@@ -15,6 +15,7 @@
 */
 using Augurk.Entities;
 using Raven.Client.Documents;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,11 +27,11 @@ namespace Augurk.Api.Managers
     /// </summary>
     public class DependencyManager
     {
-        private readonly IDocumentStore _documentStore;
+        private readonly IDocumentStoreProvider _storeProvider;
 
         public DependencyManager(IDocumentStoreProvider storeProvider)
         {
-            _documentStore = storeProvider.Store;
+            _storeProvider = storeProvider ?? throw new ArgumentNullException(nameof(storeProvider));
         }
         
         /// <summary>
@@ -43,7 +44,7 @@ namespace Augurk.Api.Managers
         /// </returns>
         public async Task<IEnumerable<FeatureGraph>> GetTopLevelFeatureGraphsAsync()
         {
-            using (var session = _documentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 var features = await session.Query<DbFeature>().ToListAsync();
                 var invocations = await session.Query<DbInvocation>().ToListAsync();
