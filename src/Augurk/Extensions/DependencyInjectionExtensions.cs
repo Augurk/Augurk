@@ -40,14 +40,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">An <see cref="IServiceCollection" /> to add the services to.</param>
         public static void AddManagers(this IServiceCollection services)
         {
-            services.AddSingleton<ConfigurationManager>();
-            services.AddSingleton<CustomizationManager>();
+            services.AddSingleton<IConfigurationManager, ConfigurationManager>();
+            services.AddSingleton<ICustomizationManager, CustomizationManager>();
 
-            services.AddSingleton<ProductManager>();
-            services.AddSingleton<FeatureManager>();
+            services.AddSingleton<IProductManager, ProductManager>();
+            services.AddSingleton<IFeatureManager, FeatureManager>();
 
-            services.AddSingleton<AnalysisReportManager>();
-            services.AddSingleton<DependencyManager>();
+            services.AddSingleton<IAnalysisReportManager, AnalysisReportManager>();
+            services.AddSingleton<IDependencyManager, DependencyManager>();
         }
     }
 }

@@ -28,10 +28,10 @@ namespace Augurk.Api
     /// </summary>
     public class Analyzer
     {
-        private readonly FeatureManager _featureManager;
-        private readonly AnalysisReportManager _analysisReportManager;
+        private readonly IFeatureManager _featureManager;
+        private readonly IAnalysisReportManager _analysisReportManager;
 
-        public Analyzer(FeatureManager featureManager, AnalysisReportManager analysisReportManager)
+        public Analyzer(IFeatureManager featureManager, IAnalysisReportManager analysisReportManager)
         {
             _featureManager = featureManager;
             _analysisReportManager = analysisReportManager;

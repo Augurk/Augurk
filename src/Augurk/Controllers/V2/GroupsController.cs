@@ -29,9 +29,9 @@ namespace Augurk.Api.Controllers.V2
     [Route("api/v2/products/{productName}/groups")]
     public class GroupsController : Controller
     {
-        private readonly FeatureManager _featureManager;
+        private readonly IFeatureManager _featureManager;
 
-        public GroupsController(FeatureManager featureManager)
+        public GroupsController(IFeatureManager featureManager)
         {
             _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
         }

@@ -77,6 +77,12 @@ namespace Augurk.Api.Managers
         Task<IEnumerable<DbFeature>> GetDbFeaturesByProductAndVersionAsync(string productName, string version);
 
         /// <summary>
+        /// Gets all the stored features from the database.
+        /// </summary>
+        /// <returns>A range of <see cref="DbFeature" /> instances representing the features available in the database.</returns>
+        Task<IEnumerable<DbFeature>> GetAllDbFeatures();
+
+        /// <summary>
         /// Persists the provided <see cref="DbFeature"/> instances.
         /// </summary>
         /// <param name="features">A collection of <see cref="DbFeature"/> instances that should be persisted.</param>

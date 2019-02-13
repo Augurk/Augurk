@@ -37,7 +37,7 @@ namespace Augurk.Api.Managers
     public class FeatureManager : IFeatureManager
     {
         private readonly IDocumentStoreProvider _storeProvider;
-        private readonly ConfigurationManager _configurationManager;
+        private readonly IConfigurationManager _configurationManager;
         private readonly ILogger<FeatureManager> _logger;
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Augurk.Api.Managers
         /// </summary>
         internal static JsonSerializerSettings JsonSerializerSettings { get; set; }
 
-        public FeatureManager(IDocumentStoreProvider storeProvider, ConfigurationManager configurationManager, ILogger<FeatureManager> logger)
+        public FeatureManager(IDocumentStoreProvider storeProvider, IConfigurationManager configurationManager, ILogger<FeatureManager> logger)
         {
             _storeProvider = storeProvider ?? throw new ArgumentNullException(nameof(storeProvider));
             _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
@@ -240,6 +240,20 @@ namespace Augurk.Api.Managers
                                                            && feature.Version.Equals(version, StringComparison.OrdinalIgnoreCase));
 
                 return await featureQuery.ToListAsync();
+            }
+        }
+
+        /// <summary>
+        /// Persists the provided <see cref="DbFeature"/> instances.
+        /// </summary>
+        /// <param name="features">A collection of <see cref="DbFeature"/> instances that should be persisted.</param>
+        public async Task<IEnumerable<DbFeature>> GetAllDbFeatures()
+        {
+            using (var session = _storeProvider.Store.OpenAsyncSession())
+            {
+                var result = await session.Query<DbFeature>().ToListAsync();
+                _logger.LogInformation("Retrieved {FeatureCount} features", result.Count);
+                return result;
             }
         }
 

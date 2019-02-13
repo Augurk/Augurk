@@ -25,6 +25,7 @@ using Raven.Client.Documents.Queries;
 using Raven.Client.Documents.Operations;
 using Raven.Client.Documents;
 using System;
+using Microsoft.Extensions.Logging;
 
 namespace Augurk.Api.Managers
 {
@@ -34,17 +35,19 @@ namespace Augurk.Api.Managers
     public class AnalysisReportManager : IAnalysisReportManager
     {
         private readonly IDocumentStoreProvider _storeProvider;
-        private readonly ConfigurationManager _configurationManager;
+        private readonly IConfigurationManager _configurationManager;
+        private readonly ILogger<AnalysisReportManager> _logger;
 
         /// <summary>
         /// Gets or sets the JsonSerializerSettings that should be used when (de)serializing.
         /// </summary>
         internal static JsonSerializerSettings JsonSerializerSettings { get; set; }
 
-        public AnalysisReportManager(IDocumentStoreProvider storeProvider, ConfigurationManager configurationManager)
+        public AnalysisReportManager(IDocumentStoreProvider storeProvider, IConfigurationManager configurationManager, ILogger<AnalysisReportManager> logger)
         {
             _storeProvider = storeProvider ?? throw new ArgumentNullException(nameof(storeProvider));
             _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -83,6 +86,20 @@ namespace Augurk.Api.Managers
                            .Where(report => report.Product == productName && report.Version == version)
                            .OfType<AnalysisReport>()
                            .ToList();
+            }
+        }
+
+        /// <summary>
+        /// Gets all the invocations stored in the database.
+        /// </summary>
+        /// <returns>Returns a range of <see cref="DbInvocation" /> instances representing the invocations stored in the database.</returns>
+        public async Task<IEnumerable<DbInvocation>> GetAllDbInvocations()
+        {
+            using (var session = _storeProvider.Store.OpenAsyncSession())
+            {
+                var result = await session.Query<DbInvocation>().ToListAsync();
+                _logger.LogInformation("Retrieved {InvocationCount} invocations", result.Count);
+                return result;
             }
         }
 

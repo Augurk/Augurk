@@ -29,10 +29,10 @@ namespace Augurk.Api.Controllers.V2
     [ApiExplorerSettings(IgnoreApi = true)]
     public class AugurkController : Controller
     {
-        private readonly CustomizationManager _customizationManager;
-        private readonly ConfigurationManager _configurationManager;
+        private readonly ICustomizationManager _customizationManager;
+        private readonly IConfigurationManager _configurationManager;
 
-        public AugurkController(CustomizationManager customizationManager, ConfigurationManager configurationManager)
+        public AugurkController(ICustomizationManager customizationManager, IConfigurationManager configurationManager)
         {
             _customizationManager = customizationManager ?? throw new ArgumentNullException(nameof(customizationManager));
             _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));

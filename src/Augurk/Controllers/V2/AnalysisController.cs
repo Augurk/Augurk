@@ -29,13 +29,13 @@ namespace Augurk.Api.Controllers.V2
     [Route("api/v2/products/{productName}/versions/{version}/analysis")]
     public class AnalysisController : Controller
     {
-        private readonly AnalysisReportManager _analysisReportManager;
+        private readonly IAnalysisReportManager _analysisReportManager;
         private readonly Analyzer _analyzer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnalysisController"/>.
         /// </summary>
-        public AnalysisController(AnalysisReportManager analysisReportManager, FeatureManager featureManager)
+        public AnalysisController(IAnalysisReportManager analysisReportManager, IFeatureManager featureManager)
         {
             _analysisReportManager = analysisReportManager ?? throw new ArgumentNullException(nameof(analysisReportManager));
             _analyzer = new Analyzer(featureManager, _analysisReportManager);

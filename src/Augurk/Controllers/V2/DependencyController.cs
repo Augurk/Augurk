@@ -25,9 +25,9 @@ namespace Augurk.Api.Controllers.V2
     [Route("api/v2/dependencies")]
     public class DependencyController : Controller
     {
-        private readonly DependencyManager _dependencyManager;
+        private readonly IDependencyManager _dependencyManager;
 
-        public DependencyController(DependencyManager dependencyManager)
+        public DependencyController(IDependencyManager dependencyManager)
         {
             _dependencyManager = dependencyManager ?? throw new ArgumentNullException(nameof(dependencyManager));
         }

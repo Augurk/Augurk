@@ -24,9 +24,9 @@ namespace Augurk.Api.Controllers
 {
     public class BranchController : Controller
     {
-        private readonly ProductManager _productManager;
+        private readonly IProductManager _productManager;
 
-        public BranchController(ProductManager productManager)
+        public BranchController(IProductManager productManager)
         {
             _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
         }

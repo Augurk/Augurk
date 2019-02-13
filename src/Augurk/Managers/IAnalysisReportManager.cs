@@ -38,6 +38,12 @@ namespace Augurk.Api.Managers
         IEnumerable<AnalysisReport> GetAnalysisReportsByProductAndVersionAsync(string productName, string version);
 
         /// <summary>
+        /// Gets all the invocations stored in the database.
+        /// </summary>
+        /// <returns>Returns a range of <see cref="DbInvocation" /> instances representing the invocations stored in the database.</returns>
+        Task<IEnumerable<DbInvocation>> GetAllDbInvocations();
+
+        /// <summary>
         /// Persists the provided range of <paramref name="invocations"/> for the provided <paramref name="productName">product</paramref> and <paramref name="version"/>.
         /// </summary>
         /// <param name="productName">Name of the product to store the invocations for.</param>

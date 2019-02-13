@@ -28,10 +28,10 @@ namespace Augurk.Api.Controllers
     public class FeatureController : Controller
     {
         private const string UNKNOWN_VERSION = "0.0.0";
-        private readonly FeatureManager _featureManager;
-        private readonly ProductManager _productManager;
+        private readonly IFeatureManager _featureManager;
+        private readonly IProductManager _productManager;
 
-        public FeatureController(FeatureManager featureManager, ProductManager productManager)
+        public FeatureController(IFeatureManager featureManager, IProductManager productManager)
         {
             _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
             _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));

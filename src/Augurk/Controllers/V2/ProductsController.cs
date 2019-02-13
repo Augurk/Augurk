@@ -28,9 +28,9 @@ namespace Augurk.Api.Controllers.V2
     [Route("api/v2/products")]
     public class ProductsController : Controller
     {
-        private readonly ProductManager _productsManager;
+        private readonly IProductManager _productsManager;
 
-        public ProductsController(ProductManager productManager)
+        public ProductsController(IProductManager productManager)
         {
             _productsManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
         }

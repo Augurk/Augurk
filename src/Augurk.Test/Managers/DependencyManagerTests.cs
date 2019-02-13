@@ -18,12 +18,11 @@ using Augurk.Api;
 using Augurk.Api.Managers;
 using System.Threading.Tasks;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Xunit;
 using NSubstitute;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
-using Raven.TestDriver;
 using Shouldly;
 
 namespace Augurk.Test.Managers
@@ -31,16 +30,11 @@ namespace Augurk.Test.Managers
     /// <summary>
     /// Summary description for DependencyManagerTests
     /// </summary>
-    public class DependencyManagerTests : RavenTestDriver
+    public class DependencyManagerTests
     {
-        /// <summary>
-        /// Called before the document store is being initialized.
-        /// </summary>
-        /// <param name="documentStore">A <see cref="IDocumentStore" /> instance to configure.</param>
-        protected override void PreInitialize(IDocumentStore documentStore)
-        {
-            documentStore.Conventions.IdentityPartsSeparator = "-";
-        }
+        private readonly IFeatureManager _featureManager = Substitute.For<IFeatureManager>();
+        private readonly IAnalysisReportManager _analysisReportManager = Substitute.For<IAnalysisReportManager>();
+        private readonly ILogger<DependencyManager> _logger = Substitute.For<ILogger<DependencyManager>>();
 
         /// <summary>
         /// Verifies whether feature graphs can be discovered when two different features are available.
@@ -48,57 +42,40 @@ namespace Augurk.Test.Managers
         [Fact]
         public async Task VerifyFeatureGraphsCanBeDiscovered()
         {
-            using (var store = GetDocumentStore())
+            // Arrange
+            var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
+            var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
+            _featureManager.GetAllDbFeatures().Returns(new[] { callingFeature, calledFeature });
+            _analysisReportManager.GetAllDbInvocations().Returns(new DbInvocation[]
             {
-                // Arrange
-                var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
-                var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
-
-                using (var session = store.OpenSession())
+                new DbInvocation()
                 {
-                    session.Store(callingFeature);
-                    session.Store(calledFeature);
-                    session.SaveChanges();
-                }
-
-                var invocations = new DbInvocation[]
-                {
-                    new DbInvocation()
+                    Signature = "SomeClass.Foo()",
+                    InvokedSignatures = new []
                     {
-                        Signature = "SomeClass.Foo()",
-                        InvokedSignatures = new []
-                        {
-                            "SomeClass.Foo(System.String)",
-                            "SomeOtherClass.Bar()"
-                        }
-                    },
-                    new DbInvocation()
-                    {
-                        Signature = "SomeOtherClass.Bar()",
-                        InvokedSignatures = new []
-                        {
-                            "SomeOtherClass.JuiceBar()"
-                        }
+                        "SomeClass.Foo(System.String)",
+                        "SomeOtherClass.Bar()"
                     }
-                };
-
-                using (var session = store.OpenSession())
+                },
+                new DbInvocation()
                 {
-                    session.Store(invocations[0]);
-                    session.Store(invocations[1]);
-                    session.SaveChanges();
+                    Signature = "SomeOtherClass.Bar()",
+                    InvokedSignatures = new []
+                    {
+                        "SomeOtherClass.JuiceBar()"
+                    }
                 }
+            });
 
-                // Act
-                var target = new DependencyManager(CreateDocumentStoreProvider(store));
-                var graphs = (await target.GetTopLevelFeatureGraphsAsync()).ToList();
+            // Act
+            var target = new DependencyManager(_featureManager, _analysisReportManager, _logger);
+            var graphs = (await target.GetTopLevelFeatureGraphsAsync()).ToList();
 
-                // Assert
-                graphs.Count.ShouldBe(1);
-                graphs[0].FeatureName.ShouldBe("CallingFeature");
-                graphs[0].DependsOn.Count.ShouldBe(1);
-                graphs[0].DependsOn[0].FeatureName.ShouldBe("CalledFeature");
-            }
+            // Assert
+            graphs.Count.ShouldBe(1);
+            graphs[0].FeatureName.ShouldBe("CallingFeature");
+            graphs[0].DependsOn.Count.ShouldBe(1);
+            graphs[0].DependsOn[0].FeatureName.ShouldBe("CalledFeature");
         }
 
         /// <summary>
@@ -107,58 +84,40 @@ namespace Augurk.Test.Managers
         [Fact]
         public async Task VerifyFeatureGraphsDiscoveryIsResistantToFeaturesWithoutSignatures()
         {
-            using (var store = GetDocumentStore())
+            // Arrange
+            var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
+            var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
+            var unlinkedFeature = CreateDbFeature("UnlinkedFeature");
+            _featureManager.GetAllDbFeatures().Returns(new [] { callingFeature, calledFeature, unlinkedFeature });
+            _analysisReportManager.GetAllDbInvocations().Returns(new DbInvocation[]
             {
-                // Arrange
-                var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
-                var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
-                var unlinkedFeature = CreateDbFeature("UnlinkedFeature");
-
-                using (var session = store.OpenSession())
+                new DbInvocation()
                 {
-                    session.Store(callingFeature);
-                    session.Store(calledFeature);
-                    session.Store(unlinkedFeature);
-                    session.SaveChanges();
-                }
-
-                var invocations = new DbInvocation[]
-                {
-                    new DbInvocation()
+                    Signature = "SomeClass.Foo()",
+                    InvokedSignatures = new []
                     {
-                        Signature = "SomeClass.Foo()",
-                        InvokedSignatures = new []
-                        {
-                            "SomeClass.Foo(System.String)",
-                            "SomeOtherClass.Bar()"
-                        }
-                    },
-                    new DbInvocation()
-                    {
-                        Signature = "SomeOtherClass.Bar()",
-                        InvokedSignatures = new []
-                        {
-                            "SomeOtherClass.JuiceBar()"
-                        }
+                        "SomeClass.Foo(System.String)",
+                        "SomeOtherClass.Bar()"
                     }
-                };
-
-                using (var session = store.OpenSession())
+                },
+                new DbInvocation()
                 {
-                    session.Store(invocations[0]);
-                    session.Store(invocations[1]);
-                    session.SaveChanges();
+                    Signature = "SomeOtherClass.Bar()",
+                    InvokedSignatures = new []
+                    {
+                        "SomeOtherClass.JuiceBar()"
+                    }
                 }
+            });
 
-                // Act
-                var target = new DependencyManager(CreateDocumentStoreProvider(store));
-                var graphs = (await target.GetTopLevelFeatureGraphsAsync()).ToList();
+            // Act
+            var target = new DependencyManager(_featureManager, _analysisReportManager, _logger);
+            var graphs = (await target.GetTopLevelFeatureGraphsAsync()).ToList();
 
-                // Assert
-                graphs.Count.ShouldBe(2);
-                graphs.Any(f => f.FeatureName == "CallingFeature").ShouldBeTrue();
-                graphs.Any(f => f.FeatureName == "UnlinkedFeature").ShouldBeTrue();
-            }
+            // Assert
+            graphs.Count.ShouldBe(2);
+            graphs.Any(f => f.FeatureName == "CallingFeature").ShouldBeTrue();
+            graphs.Any(f => f.FeatureName == "UnlinkedFeature").ShouldBeTrue();
         }
 
         /// <summary>
@@ -167,60 +126,42 @@ namespace Augurk.Test.Managers
         [Fact]
         public async Task VerifyAMidTreeFeatureGraphCanBeRetrieved()
         {
-            using (var store = GetDocumentStore())
+            // Arrange
+            var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
+            var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
+            var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
+            _featureManager.GetAllDbFeatures().Returns(new [] { callingFeature, calledFeature, anotherCalledFeature });
+            _analysisReportManager.GetAllDbInvocations().Returns(new DbInvocation[]
             {
-                // Arrange
-                var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
-                var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
-                var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
-
-                using (var session = store.OpenSession())
+                new DbInvocation()
                 {
-                    session.Store(callingFeature);
-                    session.Store(calledFeature);
-                    session.Store(anotherCalledFeature);
-                    session.SaveChanges();
-                }
-
-                var invocations = new DbInvocation[]
-                {
-                    new DbInvocation()
+                    Signature = "SomeClass.Foo()",
+                    InvokedSignatures = new []
                     {
-                        Signature = "SomeClass.Foo()",
-                        InvokedSignatures = new []
-                        {
-                            "SomeClass.Foo(System.String)",
-                            "SomeOtherClass.Bar()"
-                        }
-                    },
-                    new DbInvocation()
-                    {
-                        Signature = "SomeOtherClass.Bar()",
-                        InvokedSignatures = new []
-                        {
-                            "SomeOtherClass.JuiceBar()"
-                        }
+                        "SomeClass.Foo(System.String)",
+                        "SomeOtherClass.Bar()"
                     }
-                };
-
-                using (var session = store.OpenSession())
+                },
+                new DbInvocation()
                 {
-                    session.Store(invocations[0]);
-                    session.Store(invocations[1]);
-                    session.SaveChanges();
+                    Signature = "SomeOtherClass.Bar()",
+                    InvokedSignatures = new []
+                    {
+                        "SomeOtherClass.JuiceBar()"
+                    }
                 }
+            });
 
-                // Act
-                var target = new DependencyManager(CreateDocumentStoreProvider(store));
-                var graph = await target.GetFeatureGraphAsync("TestProduct", "CalledFeature", "0.0.0");
+            // Act
+            var target = new DependencyManager(_featureManager, _analysisReportManager, _logger);
+            var graph = await target.GetFeatureGraphAsync("TestProduct", "CalledFeature", "0.0.0");
 
-                // Assert
-                graph.FeatureName.ShouldBe("CalledFeature");
-                graph.DependsOn.Count.ShouldBe(1);
-                graph.DependsOn[0].FeatureName.ShouldBe("AnotherCalledFeature");
-                graph.Dependants.Count.ShouldBe(1);
-                graph.Dependants[0].FeatureName.ShouldBe("CallingFeature");
-            }
+            // Assert
+            graph.FeatureName.ShouldBe("CalledFeature");
+            graph.DependsOn.Count.ShouldBe(1);
+            graph.DependsOn[0].FeatureName.ShouldBe("AnotherCalledFeature");
+            graph.Dependants.Count.ShouldBe(1);
+            graph.Dependants[0].FeatureName.ShouldBe("CallingFeature");
         }
 
         /// <summary>
@@ -229,70 +170,51 @@ namespace Augurk.Test.Managers
         [Fact]
         public async Task VerifyAFeatureGraphCanBeRetrievedWhenItsCodeHasRecursion()
         {
-            using (var store = GetDocumentStore())
+            // Arrange
+            var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
+            var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
+            var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
+            _featureManager.GetAllDbFeatures().Returns(new  [] { callingFeature, calledFeature, anotherCalledFeature });
+            _analysisReportManager.GetAllDbInvocations().Returns(new DbInvocation[]
             {
-                // Arrange
-                var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
-                var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
-                var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
-
-                using (var session = store.OpenSession())
+                new DbInvocation()
                 {
-                    session.Store(callingFeature);
-                    session.Store(calledFeature);
-                    session.Store(anotherCalledFeature);
-                    session.SaveChanges();
-                }
-
-                var invocations = new DbInvocation[]
-                {
-                    new DbInvocation()
+                    Signature = "SomeClass.Foo()",
+                    InvokedSignatures = new []
                     {
-                        Signature = "SomeClass.Foo()",
-                        InvokedSignatures = new []
-                        {
-                            "SomeClass.Foo(System.String)",
-                            "SomeOtherClass.Bar()"
-                        }
-                    },
-                    new DbInvocation()
-                    {
-                        Signature = "SomeOtherClass.Bar()",
-                        InvokedSignatures = new []
-                        {
-                            "SomeOtherClass.JuiceBar()"
-                        }
-                    },
-                    new DbInvocation()
-                    {
-                        Signature = "SomeOtherClass.JuiceBar()",
-                        InvokedSignatures = new []
-                        {
-                            "SomeOtherClass.Bar()"
-                        }
+                        "SomeClass.Foo(System.String)",
+                        "SomeOtherClass.Bar()"
                     }
-                };
-
-                using (var session = store.OpenSession())
+                },
+                new DbInvocation()
                 {
-                    session.Store(invocations[0]);
-                    session.Store(invocations[1]);
-                    session.Store(invocations[2]);
-                    session.SaveChanges();
+                    Signature = "SomeOtherClass.Bar()",
+                    InvokedSignatures = new []
+                    {
+                        "SomeOtherClass.JuiceBar()"
+                    }
+                },
+                new DbInvocation()
+                {
+                    Signature = "SomeOtherClass.JuiceBar()",
+                    InvokedSignatures = new []
+                    {
+                        "SomeOtherClass.Bar()"
+                    }
                 }
+            });
 
-                // Act
-                var target = new DependencyManager(CreateDocumentStoreProvider(store));
-                var graph = await target.GetFeatureGraphAsync("TestProduct", "CalledFeature", "0.0.0");
+            // Act
+            var target = new DependencyManager(_featureManager, _analysisReportManager, _logger);
+            var graph = await target.GetFeatureGraphAsync("TestProduct", "CalledFeature", "0.0.0");
 
-                // Assert
-                graph.FeatureName.ShouldBe("CalledFeature");
-                graph.DependsOn.Count.ShouldBe(1);
-                graph.DependsOn[0].FeatureName.ShouldBe("AnotherCalledFeature");
-                graph.Dependants.Count.ShouldBe(2);
-                graph.Dependants[0].FeatureName.ShouldBe("CallingFeature");
-                graph.Dependants[1].FeatureName.ShouldBe("AnotherCalledFeature");
-            }
+            // Assert
+            graph.FeatureName.ShouldBe("CalledFeature");
+            graph.DependsOn.Count.ShouldBe(1);
+            graph.DependsOn[0].FeatureName.ShouldBe("AnotherCalledFeature");
+            graph.Dependants.Count.ShouldBe(2);
+            graph.Dependants[0].FeatureName.ShouldBe("CallingFeature");
+            graph.Dependants[1].FeatureName.ShouldBe("AnotherCalledFeature");
         }
 
         private static DbFeature CreateDbFeature(string featureName, params string[] directInvocationSignatures)
@@ -311,13 +233,6 @@ namespace Augurk.Test.Managers
             }
 
             return result;
-        }
-
-        private IDocumentStoreProvider CreateDocumentStoreProvider(IDocumentStore documentStore)
-        {
-            var documentStoreProvider = Substitute.For<IDocumentStoreProvider>();
-            documentStoreProvider.Store.Returns(documentStore);
-            return documentStoreProvider;
         }
     }
 }

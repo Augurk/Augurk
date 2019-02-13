@@ -26,10 +26,10 @@ namespace Augurk.Api.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class TagController : Controller
     {
-        private readonly ProductManager _productManager;
-        private readonly FeatureManager _featureManager;
+        private readonly IProductManager _productManager;
+        private readonly IFeatureManager _featureManager;
 
-        public TagController(ProductManager productManager, FeatureManager featureManager)
+        public TagController(IProductManager productManager, IFeatureManager featureManager)
         {
             _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
             _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));

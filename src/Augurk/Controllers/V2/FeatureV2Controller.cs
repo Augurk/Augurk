@@ -31,13 +31,13 @@ namespace Augurk.Api.Controllers.V2
     [Route("api/v2/products/{productName}/groups/{groupName}/features")]
     public class FeatureV2Controller : Controller
     {
-        private readonly FeatureManager _featureManager;
+        private readonly IFeatureManager _featureManager;
         private readonly Analyzer _analyzer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeatureV2Controller"/>.
         /// </summary>
-        public FeatureV2Controller(FeatureManager featureManager, AnalysisReportManager analysisReportManager)
+        public FeatureV2Controller(IFeatureManager featureManager, IAnalysisReportManager analysisReportManager)
         {
             _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
             _analyzer = new Analyzer(_featureManager, analysisReportManager);
