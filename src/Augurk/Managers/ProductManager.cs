@@ -29,7 +29,7 @@ namespace Augurk.Api.Managers
     /// <summary>
     /// Provides methods for retrieving products from storage.
     /// </summary>
-    public class ProductManager
+    public class ProductManager : IProductManager
     {
         private readonly IDocumentStoreProvider _storeProvider;
         private readonly ILogger<ProductManager> _logger;
