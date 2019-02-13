@@ -25,7 +25,7 @@ namespace Augurk.Api.Managers
     /// <summary>
     /// Provides methods to query featuredependencies from Augurk.
     /// </summary>
-    public class DependencyManager
+    public class DependencyManager : IDependencyManager
     {
         private readonly IDocumentStoreProvider _storeProvider;
 
