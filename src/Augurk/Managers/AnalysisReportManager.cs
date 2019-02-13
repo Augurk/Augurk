@@ -31,7 +31,7 @@ namespace Augurk.Api.Managers
     /// <summary>
     /// Provides methods to persist and retrieve analysis reports from storage.
     /// </summary>
-    public class AnalysisReportManager
+    public class AnalysisReportManager : IAnalysisReportManager
     {
         private readonly IDocumentStoreProvider _storeProvider;
         private readonly ConfigurationManager _configurationManager;
