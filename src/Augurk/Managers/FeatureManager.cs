@@ -34,7 +34,7 @@ namespace Augurk.Api.Managers
     /// <summary>
     /// Provides methods to persist and retrieve features from storage.
     /// </summary>
-    public class FeatureManager
+    public class FeatureManager : IFeatureManager
     {
         private readonly IDocumentStoreProvider _storeProvider;
         private readonly ConfigurationManager _configurationManager;
