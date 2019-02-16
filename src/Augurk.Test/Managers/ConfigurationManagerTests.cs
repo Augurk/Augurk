@@ -64,7 +64,7 @@ namespace Augurk.Test.Managers
         /// Tests that the ConfigurationManager creates a default configuration if no configuration exists.
         /// </summary>
         [Fact]
-        public async Task CreatesDefaultConfigurationIfNonExists()
+        public async Task CreatesDefaultConfigurationIfNoneExists()
         {
             // Arrange
             var store = GetDocumentStore();
