@@ -1,3 +1,18 @@
+/*
+ Copyright 2019, Augurk
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and 
+ limitations under the License.
+*/
 using System.Threading.Tasks;
 using Augurk.Api.Managers;
 using Augurk.Entities;
@@ -12,19 +27,8 @@ namespace Augurk.Test.Managers
     /// <summary>
     /// Contains unit tests for the <see cref="ConfigurationManager" /> class.
     /// </summary>
-    public class ConfigurationManagerTests : RavenTestDriver
+    public class ConfigurationManagerTests : RavenTestBase
     {
-        private readonly IDocumentStoreProvider documentStoreProvider = Substitute.For<IDocumentStoreProvider>();
-
-        /// <summary>
-        /// Called before the document store is being initialized.
-        /// </summary>
-        /// <param name="documentStore">A <see cref="IDocumentStore" /> instance to configure.</param>
-        protected override void PreInitialize(IDocumentStore documentStore)
-        {
-            documentStore.Conventions.IdentityPartsSeparator = "-";
-        }
-
         /// <summary>
         /// Tests that the ConfigurationManaager retrieves an existing configuration.
         /// </summary>
@@ -32,9 +36,7 @@ namespace Augurk.Test.Managers
         public async Task GetsExistingConfiguration()
         {
             // Arrange
-            var store = GetDocumentStore();
-            documentStoreProvider.Store.Returns(store);
-
+            var documentStoreProvider = GetDocumentStoreProvider();
             var expectedConfiguration = new Configuration()
             {
                 ExpirationEnabled = true,
@@ -43,7 +45,7 @@ namespace Augurk.Test.Managers
                 ExpirationRegex = @"\d"
             };
 
-            using (var session = store.OpenSession())
+            using (var session = documentStoreProvider.Store.OpenSession())
             {
                 session.Store(expectedConfiguration, "urn:Augurk:Configuration");
                 session.SaveChanges();
@@ -67,8 +69,7 @@ namespace Augurk.Test.Managers
         public async Task CreatesDefaultConfigurationIfNoneExists()
         {
             // Arrange
-            var store = GetDocumentStore();
-            documentStoreProvider.Store.Returns(store);
+            var documentStoreProvider = GetDocumentStoreProvider();
 
             // Act
             var sut = new ConfigurationManager(documentStoreProvider);
@@ -88,9 +89,7 @@ namespace Augurk.Test.Managers
         public async Task CanPersistConfiguration()
         {
             // Arrange
-            var store = GetDocumentStore();
-            documentStoreProvider.Store.Returns(store);
-
+            var documentStoreProvider = GetDocumentStoreProvider();
             var newConfiguration = new Configuration
             {
                 ExpirationEnabled = true,
@@ -104,7 +103,7 @@ namespace Augurk.Test.Managers
             await sut.PersistConfigurationAsync(newConfiguration);
 
             // Assert
-            using (var session = store.OpenSession())
+            using (var session = documentStoreProvider.Store.OpenSession())
             {
                 var configuration = session.Load<Configuration>("urn:Augurk:Configuration");
                 configuration.ExpirationEnabled.ShouldBeTrue();

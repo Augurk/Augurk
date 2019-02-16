@@ -38,11 +38,6 @@ namespace Augurk.Api.Managers
         private readonly IConfigurationManager _configurationManager;
         private readonly ILogger<AnalysisReportManager> _logger;
 
-        /// <summary>
-        /// Gets or sets the JsonSerializerSettings that should be used when (de)serializing.
-        /// </summary>
-        internal static JsonSerializerSettings JsonSerializerSettings { get; set; }
-
         public AnalysisReportManager(IDocumentStoreProvider storeProvider, IConfigurationManager configurationManager, ILogger<AnalysisReportManager> logger)
         {
             _storeProvider = storeProvider ?? throw new ArgumentNullException(nameof(storeProvider));
@@ -66,7 +61,7 @@ namespace Augurk.Api.Managers
                 await session.StoreAsync(report, $"{productName}/{version}/{report.AnalyzedProject}");
 
                 session.SetExpirationIfEnabled(report, version, configuration);
-                session.Advanced.GetMetadataFor(report)["Product"] = new JValue(productName);
+                session.Advanced.GetMetadataFor(report)["Product"] = productName;
 
                 await session.SaveChangesAsync();
             }

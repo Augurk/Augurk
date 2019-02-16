@@ -19,6 +19,7 @@ using System;
 using System.Text.RegularExpressions;
 using Raven.Client.Documents.Session;
 using Newtonsoft.Json.Linq;
+using Raven.Client;
 
 namespace Augurk
 {
@@ -30,8 +31,8 @@ namespace Augurk
                     Regex.IsMatch(version, configuration.ExpirationRegex))
             {
                 // Set the expiration in the metadata
-                session.Advanced.GetMetadataFor(document)["Raven-Expiration-Date"] =
-                    new JValue(DateTime.UtcNow.Date.AddDays(configuration.ExpirationDays));
+                session.Advanced.GetMetadataFor(document)[Constants.Documents.Metadata.Expires] =
+                    DateTime.UtcNow.Date.AddDays(configuration.ExpirationDays);
             }
         }
 
