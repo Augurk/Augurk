@@ -28,7 +28,7 @@ using Shouldly;
 namespace Augurk.Test.Managers
 {
     /// <summary>
-    /// Summary description for DependencyManagerTests
+    /// Contains unit tests for the <see cref="DependencyManager" /> class.
     /// </summary>
     public class DependencyManagerTests
     {
