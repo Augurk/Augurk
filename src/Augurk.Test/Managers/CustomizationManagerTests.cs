@@ -42,10 +42,10 @@ namespace Augurk.Test.Managers
                 InstanceName = "MyCustomInstance"
             };
 
-            using (var session = documentStoreProvider.Store.OpenSession())
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                session.Store(expectedConfiguration, "urn:Augurk:Customization");
-                session.SaveChanges();
+                await session.StoreAsync(expectedConfiguration, "urn:Augurk:Customization");
+                await session.SaveChangesAsync();
             }
 
             // Act
@@ -91,9 +91,9 @@ namespace Augurk.Test.Managers
             await sut.PersistCustomizationSettingsAsync(newCustomization);
 
             // Assert
-            using (var session = documentStoreProvider.Store.OpenSession())
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                var configuration = session.Load<Customization>("urn:Augurk:Customization");
+                var configuration = await session.LoadAsync<Customization>("urn:Augurk:Customization");
                 configuration.InstanceName.ShouldBe("MyCustomInstance");
             }
         }

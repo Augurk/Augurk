@@ -45,10 +45,10 @@ namespace Augurk.Test.Managers
                 ExpirationRegex = @"\d"
             };
 
-            using (var session = documentStoreProvider.Store.OpenSession())
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                session.Store(expectedConfiguration, "urn:Augurk:Configuration");
-                session.SaveChanges();
+                await session.StoreAsync(expectedConfiguration, "urn:Augurk:Configuration");
+                await session.SaveChangesAsync();
             }
 
             // Act
@@ -103,9 +103,9 @@ namespace Augurk.Test.Managers
             await sut.PersistConfigurationAsync(newConfiguration);
 
             // Assert
-            using (var session = documentStoreProvider.Store.OpenSession())
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                var configuration = session.Load<Configuration>("urn:Augurk:Configuration");
+                var configuration = await session.LoadAsync<Configuration>("urn:Augurk:Configuration");
                 configuration.ExpirationEnabled.ShouldBeTrue();
                 configuration.ExpirationDays.ShouldBe(10);
                 configuration.DependenciesEnabled.ShouldBeTrue();
