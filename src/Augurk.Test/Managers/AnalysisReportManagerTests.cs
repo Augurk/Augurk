@@ -25,6 +25,7 @@ using Xunit;
 using Raven.Client;
 using Augurk.Api.Indeces.Analysis;
 using System.Linq;
+using Augurk.Api;
 
 namespace Augurk.Test.Managers
 {
@@ -56,9 +57,9 @@ namespace Augurk.Test.Managers
             await sut.InsertOrUpdateAnalysisReportAsync("MyProduct", "0.0.0", expectedReport);
 
             // Assert
-            using (var session = documentStoreProvider.Store.OpenSession())
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                var actualReport = session.Load<AnalysisReport>("MyProduct/0.0.0/MyProject");
+                var actualReport = await session.LoadAsync<AnalysisReport>("MyProduct/0.0.0/MyProject");
                 actualReport.ShouldNotBeNull();
                 actualReport.Timestamp.ShouldBe(expectedReport.Timestamp);
                 actualReport.Version.ShouldBe("0.0.0");
@@ -73,7 +74,7 @@ namespace Augurk.Test.Managers
         /// if that is configured.
         /// </summary>
         [Fact]
-        public async Task SetsExpirationIfConfigured()
+        public async Task SetsExpirationOnAnalysisReportsIfConfigured()
         {
             // Arrange
             var documentStoreProvider = GetDocumentStoreProvider();
@@ -94,9 +95,9 @@ namespace Augurk.Test.Managers
             await sut.InsertOrUpdateAnalysisReportAsync("MyProduct", "0.0.0", expectedReport);
 
             // Assert
-            using (var session = documentStoreProvider.Store.OpenSession())
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                var actualReport = session.Load<AnalysisReport>("MyProduct/0.0.0/MyProject");
+                var actualReport = await session.LoadAsync<AnalysisReport>("MyProduct/0.0.0/MyProject");
                 actualReport.ShouldNotBeNull();
 
                 var actualMetadata = session.Advanced.GetMetadataFor(actualReport);
@@ -149,6 +150,155 @@ namespace Augurk.Test.Managers
             var actualReport2 = reports.Last();
             actualReport2.Version.ShouldBe("0.0.0");
             actualReport2.AnalyzedProject.ShouldBe("Project2");
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="AnalysisReportManager" /> class can retrieve all <see cref="DbInvocation" /> instances
+        /// from the database.
+        /// </summary>
+        [Fact]
+        public async Task GetsAllDbInvocations()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreAsync(new DbInvocation { Signature = "Foo()" });
+                await session.StoreAsync(new DbInvocation { Signature = "Bar()" });
+                await session.SaveChangesAsync();
+            }
+
+            // Act
+            var sut = new AnalysisReportManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.GetAllDbInvocations();
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(2);
+
+            var invocation1 = result.FirstOrDefault();
+            invocation1.ShouldNotBeNull();
+            invocation1.Signature.ShouldBe("Foo()");
+
+            var invocation2 = result.LastOrDefault();
+            invocation2.ShouldNotBeNull();
+            invocation2.Signature.ShouldBe("Bar()");
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="AnalysisReportManager" /> can properly persist <see cref="DbInvocation" />
+        /// instances to the database.
+        /// </summary>
+        [Fact]
+        public async Task PersistsDbInvocations()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            var expectedInvocation1 = new DbInvocation { Signature = "Foo()" };
+            var expectedInvocation2 = new DbInvocation { Signature = "Bar()" };
+
+            // Act
+            var sut = new AnalysisReportManager(documentStoreProvider, configurationManager, logger);
+            await sut.PersistDbInvocationsAsync("Product1", "0.0.0", new [] { expectedInvocation1, expectedInvocation2 });
+
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var actualInvocation1 = await session.LoadAsync<DbInvocation>("Product1/0.0.0/Foo()");
+                actualInvocation1.ShouldNotBeNull();
+                actualInvocation1.Signature.ShouldBe("Foo()");
+
+                var actualInvocation1Metadata = session.Advanced.GetMetadataFor(actualInvocation1);
+                actualInvocation1Metadata["Product"].ShouldBe("Product1");
+                actualInvocation1Metadata["Version"].ShouldBe("0.0.0");
+
+                var actualInvocation2 = await session.LoadAsync<DbInvocation>("Product1/0.0.0/Bar()");
+                actualInvocation2.ShouldNotBeNull();
+                actualInvocation2.Signature.ShouldBe("Bar()");
+
+                var actualInvocation2Metadata = session.Advanced.GetMetadataFor(actualInvocation2);
+                actualInvocation1Metadata["Product"].ShouldBe("Product1");
+                actualInvocation1Metadata["Version"].ShouldBe("0.0.0");
+            }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="AnalysisReportManager" /> class sets an expiration on <see cref="DbInvocation" />
+        /// instances beings aved to the database if expiration is configured.
+        /// </summary>
+        [Fact]
+        public async Task SetsExpirationOnDbInvocationsIfConfigured()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            var expectedInvocation = new DbInvocation { Signature = "Foo()" };
+            configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration
+            {
+                 ExpirationEnabled = true,
+                 ExpirationDays = 1,
+                 ExpirationRegex = @"\d\.\d\.\d"
+            });
+
+            // Act
+            var sut = new AnalysisReportManager(documentStoreProvider, configurationManager, logger);
+            await sut.PersistDbInvocationsAsync("Product1", "0.0.0", new [] { expectedInvocation });
+
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var actualInvocation = await session.LoadAsync<DbInvocation>("Product1/0.0.0/Foo()");
+                actualInvocation.ShouldNotBeNull();
+
+                var actualInvocationMetadata = session.Advanced.GetMetadataFor(actualInvocation);
+                actualInvocationMetadata[Constants.Documents.Metadata.Expires].ShouldNotBeNull();
+            }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="AnalysisReportManager" /> deletes <see cref="DbInvocation" /> instances
+        /// from the database.
+        /// </summary>
+        [Fact]
+        public async Task DeletesDbInvocations()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            await documentStoreProvider.Store.ExecuteIndexAsync(new Invocation_ByProductAndVersion());
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var invocation1 = new DbInvocation { Signature = "Foo()" };
+                await session.StoreAsync(invocation1, $"Product1/0.0.0/{invocation1.Signature}");
+
+                var invocation1Metadata = session.Advanced.GetMetadataFor(invocation1);
+                invocation1Metadata["Product"] = "Product1";
+                invocation1Metadata["Version"] = "0.0.0";
+
+                var invocation2 = new DbInvocation { Signature = "Bar()" };
+                await session.StoreAsync(invocation2, $"Product2/0.0.0/{invocation2.Signature}");
+
+                var invocation2Metadata = session.Advanced.GetMetadataFor(invocation2);
+                invocation2Metadata["Product"] = "Product2";
+                invocation2Metadata["Version"] = "0.0.0";
+
+                await session.SaveChangesAsync();
+            }
+
+            WaitForIndexing(documentStoreProvider.Store);
+
+            // Act
+            var sut = new AnalysisReportManager(documentStoreProvider, configurationManager, logger);
+            await sut.DeleteDbInvocationsAsync("Product1", "0.0.0");
+
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var actualInvocation1 = await session.LoadAsync<DbInvocation>("Product1/0.0.0/Foo()");
+                actualInvocation1.ShouldBeNull();
+
+                var actualInvocation2 = await session.LoadAsync<DbInvocation>("Product2/0.0.0/Bar()");
+                actualInvocation2.ShouldNotBeNull();
+                actualInvocation2.Signature.ShouldBe("Bar()");
+            }
         }
     }
 }

@@ -115,8 +115,8 @@ namespace Augurk.Api.Managers
                     await session.StoreAsync(invocation, $"{productName}/{version}/{invocation.Signature}");
                     session.SetExpirationIfEnabled(invocation, version, configuration);
                     var metadata = session.Advanced.GetMetadataFor(invocation);
-                    metadata["Product"] = new JValue(productName);
-                    metadata["Version"] = new JValue(version);
+                    metadata["Product"] = productName;
+                    metadata["Version"] = version;
                 }
 
                 await session.SaveChangesAsync();
@@ -131,7 +131,8 @@ namespace Augurk.Api.Managers
         public async Task DeleteDbInvocationsAsync(string productName, string version)
         {
             await _storeProvider.Store.Operations.Send(
-                new DeleteByQueryOperation(new IndexQuery { Query = $"Product:{productName} AND Version:{version}" }))
+                new DeleteByQueryOperation<Invocation_ByProductAndVersion.Entry, Invocation_ByProductAndVersion>(
+                    x => x.Product == productName && x.Version == version))
                 .WaitForCompletionAsync();
         }
     }
