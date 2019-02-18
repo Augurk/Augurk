@@ -107,7 +107,7 @@ namespace Augurk.Api.Managers
         }
 
         /// <summary>
-        /// Gets groups containing the descriptions for all features for the specified branch.
+        /// Gets groups containing the descriptions for all features for the specified product.
         /// </summary>
         /// <param name="productName">The name of the product for which the feature descriptions should be retrieved.</param>
         /// <returns>An enumerable collection of <see cref="Entities.Group"/> instances.</returns>
