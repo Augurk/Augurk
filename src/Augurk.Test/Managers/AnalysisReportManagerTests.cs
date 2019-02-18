@@ -114,7 +114,7 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = GetDocumentStoreProvider();
-            documentStoreProvider.Store.ExecuteIndex(new AnalysisReports_ByProductAndVersion());
+            await documentStoreProvider.Store.ExecuteIndexAsync(new AnalysisReports_ByProductAndVersion());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {

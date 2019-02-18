@@ -104,9 +104,10 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.Operations.SendAsync(
+                await session.Advanced.DocumentStore.Operations.Send(
                     new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
-                        x.Product == productName));
+                        x.Product == productName))
+                    .WaitForCompletionAsync();
             }
         }
 
@@ -119,9 +120,10 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.Operations.SendAsync(
+                await session.Advanced.DocumentStore.Operations.Send(
                     new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
-                        x.Product == productName && x.Version == version));
+                        x.Product == productName && x.Version == version))
+                    .WaitForCompletionAsync();
             }
         }
 
