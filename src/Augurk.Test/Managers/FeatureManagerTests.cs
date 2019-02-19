@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Augurk.Api;
@@ -5,6 +6,7 @@ using Augurk.Api.Indeces;
 using Augurk.Api.Managers;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using Raven.Client.Documents.Session;
 using Shouldly;
 using Xunit;
 
@@ -28,13 +30,10 @@ namespace Augurk.Test.Managers
             var documentStoreProvider = GetDocumentStoreProvider();
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            var featureV1 = GenerateDbFeature("MyProduct", "MyGroup", "MyFirstFeature", "1.0.0");
-            var featureV2 = GenerateDbFeature("MyProduct", "MyGroup", "MyFirstFeature", "2.0.0");
-
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                await session.StoreAsync(featureV1);
-                await session.StoreAsync(featureV2);
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "1.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "2.0.0");
                 await session.SaveChangesAsync();
             }
 
@@ -57,11 +56,9 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = GetDocumentStoreProvider();
-            var expectedFeatue = GenerateDbFeature("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
-
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                await session.StoreAsync(expectedFeatue, expectedFeatue.GetIdentifier());
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
                 await session.SaveChangesAsync();
             }
 
@@ -83,15 +80,11 @@ namespace Augurk.Test.Managers
             var documentStoreProvider = GetDocumentStoreProvider();
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            var feature1 = GenerateDbFeature("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
-            var feature2 = GenerateDbFeature("MyProduct", "Group1", "MySecondFeature", "0.0.0");
-            var feature3 = GenerateDbFeature("MyProduct", "Group2", "MyOtherFeature", "0.0.0");
-
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                await session.StoreAsync(feature1, feature1.GetIdentifier());
-                await session.StoreAsync(feature2, feature2.GetIdentifier());
-                await session.StoreAsync(feature3, feature3.GetIdentifier());
+                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MySecondFeature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "Group2", "MyOtherFeature", "0.0.0");
                 await session.SaveChangesAsync();
             }
 
@@ -115,15 +108,125 @@ namespace Augurk.Test.Managers
             secondGroup.Features.FirstOrDefault()?.Title.ShouldBe("MyOtherFeature");
         }
 
-        private static DbFeature GenerateDbFeature(string product, string group, string title, string version)
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can get feature descriptions based on a branch and a tag.
+        /// </summary>
+        [Fact]
+        public async Task CanGetFeatureDescriptionsByBranchAndTagAsync()
         {
-            return new DbFeature
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByProductAndBranch());
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                Product = product,
-                Group = group,
-                Title = title,
-                Version = version
-            };
+                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0", "tag1");
+                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MySecondFeature", "0.0.0", "tag1", "tag2");
+                await session.StoreDbFeatureAsync("MyProduct", "Group2", "MyOtherFeature", "0.0.0", "tag3");
+                await session.SaveChangesAsync();
+            }
+
+            WaitForIndexing(documentStoreProvider.Store);
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.GetFeatureDescriptionsByBranchAndTagAsync("MyProduct", "tag1");
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(2);
+            result.FirstOrDefault()?.Title.ShouldBe("MyFirstFeature");
+            result.LastOrDefault()?.Title.ShouldBe("MySecondFeature");
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can get feature descriptions based on a product and group.
+        /// </summary>
+        [Fact]
+        public async Task CanGetFeatureDescriptionsByProductAndGroupAsync()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "Group2", "MySecondFeature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyOtherProduct", "Group1", "MyThirdFeature", "0.0.0");
+                await session.SaveChangesAsync();
+            }
+
+            WaitForIndexing(documentStoreProvider.Store);
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.GetFeatureDescriptionsByProductAndGroupAsync("MyProduct", "Group1");
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(1);
+            result.FirstOrDefault()?.Title.ShouldBe("MyFirstFeature");
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can get features based on a product and version.
+        /// </summary>
+        [Fact]
+        public async Task CanGetDbFeaturesByProductAndVersionAsync()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "1.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MySecondFeature", "1.0.0");
+                await session.SaveChangesAsync();
+            }
+
+            WaitForIndexing(documentStoreProvider.Store);
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.GetDbFeaturesByProductAndVersionAsync("MyProduct", "1.0.0");
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(2);
+
+            result.FirstOrDefault()?.Title.ShouldBe("MyFirstFeature");
+            result.FirstOrDefault()?.Version.ShouldBe("1.0.0");
+
+            result.LastOrDefault()?.Title.ShouldBe("MySecondFeature");
+            result.LastOrDefault()?.Version.ShouldBe("1.0.0");
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can get all features from the database.
+        /// </summary>
+        [Fact]
+        public async Task CanGetAllDbFeatures()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyOtherProduct", "MyOtherGroup", "MySecondFeature", "0.0.0");
+                await session.SaveChangesAsync();
+            }
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.GetAllDbFeatures();
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.FirstOrDefault().Title.ShouldBe("MyFirstFeature");
+            result.LastOrDefault().Title.ShouldBe("MySecondFeature");
         }
     }
 }
