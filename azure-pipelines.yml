@@ -26,13 +26,35 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: restore
+    workingDirectory: 'src'
   displayName: dotnet restore
 
-- script: |
-    dotnet build --configuration $(buildConfiguration) /p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION
-    dotnet test Augurk.Test --configuration $(buildConfiguration) --logger trx
-    dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY /p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION
-  workingDirectory: 'src'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: build
+    workingDirectory: 'src'
+    configuration: $(buildConfiguration)
+    arguments: '/p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION'
+  displayName: dotnet build
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: test
+    workingDirectory: 'src'
+    configuration: $(buildConfiguration)
+  displayName: dotnet test
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: publish
+    projects: Augurk
+    configuration: $(buildConfiguration)
+    nobuild: true
+
+# - script: |
+#     dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY /p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION
+#   workingDirectory: 'src'
+
 - task: PublishTestResults@2
   inputs:
     testRunner: VSTest
