@@ -21,9 +21,14 @@ steps:
 - script: |
     dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
     dotnet-gitversion /output buildserver
+  displayName: Set version
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: restore
+  displayName: dotnet restore
 
 - script: |
-    dotnet restore
     dotnet build --configuration $(buildConfiguration) /p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION
     dotnet test Augurk.Test --configuration $(buildConfiguration) --logger trx
     dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY /p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION
