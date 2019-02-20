@@ -4,12 +4,16 @@ using System.Threading.Tasks;
 using Augurk.Api;
 using Augurk.Api.Indeces;
 using Augurk.Api.Managers;
+using Augurk.Entities;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
+using Raven.Client;
 using Shouldly;
 using Xunit;
+using Augurk.Entities.Test;
+using System;
 
 namespace Augurk.Test.Managers
 {
@@ -88,6 +92,8 @@ namespace Augurk.Test.Managers
                 await session.StoreDbFeatureAsync("MyProduct", "Group2", "MyOtherFeature", "0.0.0");
                 await session.SaveChangesAsync();
             }
+
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Act
             var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
@@ -260,6 +266,217 @@ namespace Augurk.Test.Managers
                 actualFeature2.ShouldNotBeNull();
                 actualFeature2.GetIdentifier().ShouldBe(expectedFeature2.GetIdentifier());
             }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can insert a new feature.
+        /// </summary>
+        [Fact]
+        public async Task CanInsertNewFeature()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            var feature = new Feature
+            {
+                Title = "My Feature",
+                Description = "As a math idiot",
+            };
+            
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
+
+            // Assert
+            result.Product.ShouldBe("MyProduct");
+            result.Group.ShouldBe("MyGroup");
+            result.Title.ShouldBe("My Feature");
+            result.Version.ShouldBe("0.0.0");
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var dbFeature = session.LoadAsync<DbFeature>(result.GetIdentifier());
+                dbFeature.ShouldNotBeNull();
+            }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class sets the expiration on a feature if that is configured.
+        /// </summary>
+        [Fact]
+        public async Task SetsExpirationIfEnabledWhenInsertingNewFeature()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            var feature = new Feature
+            {
+                Title = "My Feature",
+                Description = "As a math idiot",
+            };
+
+            configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration
+            {
+                ExpirationEnabled = true,
+                ExpirationDays = 1,
+                ExpirationRegex = @"\d\.\d\.\d"
+            });
+            
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
+
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var dbFeature = await session.LoadAsync<DbFeature>(result.GetIdentifier());
+                dbFeature.ShouldNotBeNull();
+
+                var dbFeatureMetadata = session.Advanced.GetMetadataFor(dbFeature);
+                dbFeatureMetadata[Constants.Documents.Metadata.Expires].ShouldNotBeNull();
+            }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can update an existing feature.
+        /// </summary>
+        [Fact]
+        public async Task CanUpdateExistingFeature()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            var feature = new Feature
+            {
+                Title = "My Feature",
+                Description = "As a math idiot",
+                Tags = new List<string> { "tag1", "tag2" }
+            };
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Feature", "0.0.0", "tag1");
+                await session.SaveChangesAsync();
+            }
+            
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
+
+            // Assert
+            result.Product.ShouldBe("MyProduct");
+            result.Group.ShouldBe("MyGroup");
+            result.Title.ShouldBe("My Feature");
+            result.Version.ShouldBe("0.0.0");
+            result.Tags.ShouldBe(new string[] { "tag1", "tag2" });
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var dbFeature = session.LoadAsync<DbFeature>(result.GetIdentifier());
+                dbFeature.ShouldNotBeNull();
+            }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class sets the expiration on a feature if that is configured.
+        /// </summary>
+        [Fact]
+        public async Task SetsExpirationIfEnabledWhenUpdatingExistingFeature()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            var feature = new Feature
+            {
+                Title = "My Feature",
+                Description = "As a math idiot",
+                Tags = new List<string> { "tag1", "tag2" }
+            };
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Feature", "0.0.0", "tag1");
+                await session.SaveChangesAsync();
+            }
+
+            configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration
+            {
+                ExpirationEnabled = true,
+                ExpirationDays = 1,
+                ExpirationRegex = @"\d\.\d\.\d"
+            });
+            
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
+
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var dbFeature = await session.LoadAsync<DbFeature>(result.GetIdentifier());
+                dbFeature.ShouldNotBeNull();
+
+                var dbFeatureMetadata = session.Advanced.GetMetadataFor(dbFeature);
+                dbFeatureMetadata[Constants.Documents.Metadata.Expires].ShouldNotBeNull();
+            }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can persist test results.
+        /// </summary>
+        [Fact]
+        public async Task CanPersistTestResults()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            var expectedTestResults = new FeatureTestResult
+            {
+                FeatureTitle = "My Feature",
+                Result = TestResult.Passed,
+                TestExecutionDate = DateTime.Now
+            };
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Feature", "0.0.0");
+                await session.SaveChangesAsync();
+            }
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            await sut.PersistFeatureTestResultAsync(expectedTestResults, "MyProduct", "MyGroup", "0.0.0");
+
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier("MyProduct", "MyGroup", "My Feature", "0.0.0"));
+                dbFeature.ShouldNotBeNull();
+                dbFeature.TestResult.ShouldNotBeNull();
+                dbFeature.TestResult.Result.ShouldBe(TestResult.Passed);
+                dbFeature.TestResult.TestExecutionDate.ShouldBe(expectedTestResults.TestExecutionDate);
+            }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class throws an exception when attempting to store test results
+        /// for a feature that hasn't been previously stored.
+        /// </summary>
+        [Fact]
+        public async Task ThrowsWhenStoringTestResultsForNonExistingFeature()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            var expectedTestResults = new FeatureTestResult
+            {
+                FeatureTitle = "My Feature",
+                Result = TestResult.Passed,
+                TestExecutionDate = DateTime.Now
+            };
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var exception = await Should.ThrowAsync<Exception>(sut.PersistFeatureTestResultAsync(expectedTestResults, "MyProduct", "MyGroup", "0.0.0"));
+
+            // Assert
+            exception.Message.ShouldContain(expectedTestResults.FeatureTitle);
+            exception.Message.ShouldContain("MyProduct");
+            exception.Message.ShouldContain("MyGroup");
         }
     }
 }
