@@ -6,6 +6,7 @@ using Augurk.Api.Indeces;
 using Augurk.Api.Managers;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Shouldly;
 using Xunit;
@@ -227,6 +228,38 @@ namespace Augurk.Test.Managers
             result.ShouldNotBeNull();
             result.FirstOrDefault().Title.ShouldBe("MyFirstFeature");
             result.LastOrDefault().Title.ShouldBe("MySecondFeature");
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can persist a range of <see cref="DbFeature" /> instances.
+        /// </summary>
+        [Fact]
+        public async Task CanPersistDbFeatures()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            var expectedFeature1 = TestExtensions.GenerateDbFeature("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
+            var expectedFeature2 = TestExtensions.GenerateDbFeature("MyProduct", "MyGroup", "MySecondFeature", "0.0.0");
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            await sut.PersistDbFeatures(new[] { expectedFeature1, expectedFeature2 });
+
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var actualFeatures = await session.Query<DbFeature>().ToListAsync();
+                actualFeatures.ShouldNotBeNull();
+                actualFeatures.Count.ShouldBe(2);
+
+                var actualFeature1 = actualFeatures.FirstOrDefault();
+                actualFeature1.ShouldNotBeNull();
+                actualFeature1.GetIdentifier().ShouldBe(expectedFeature1.GetIdentifier());
+
+                var actualFeature2 = actualFeatures.LastOrDefault();
+                actualFeature2.ShouldNotBeNull();
+                actualFeature2.GetIdentifier().ShouldBe(expectedFeature2.GetIdentifier());
+            }
         }
     }
 }

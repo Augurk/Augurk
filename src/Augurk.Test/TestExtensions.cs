@@ -21,6 +21,21 @@ namespace Augurk.Test
         /// <param name="tags">Optional additional tags for the feature.</param>
         public static Task StoreDbFeatureAsync(this IAsyncDocumentSession session, string product, string group, string title, string version, params string[] tags)
         {
+            var feature = GenerateDbFeature(product, group, title, version, tags);
+            return session.StoreAsync(feature, feature.GetIdentifier());
+        }
+
+        /// <summary>
+        /// Generates a <see cref="DbFeature" /> instance.
+        /// </summary>
+        /// <param name="product">Name of the product containing the feature.</param>
+        /// <param name="group">Name of the group containing the feature.</param>
+        /// <param name="title">Title of the feature.</param>
+        /// <param name="version">Version of the feature.</param>
+        /// <param name="tags">Optional additional tags for the feature.</param>
+        /// <returns>A <see cref="DbFeature" /> instance with the provided values set.</returns>
+        public static DbFeature GenerateDbFeature(string product, string group, string title, string version, params string[] tags)
+        {
             var feature = new DbFeature
             {
                 Product = product,
@@ -31,7 +46,7 @@ namespace Augurk.Test
 
             feature.Tags = new List<string>(tags);
 
-            return session.StoreAsync(feature, feature.GetIdentifier());
+            return feature;
         }
     }
 }
