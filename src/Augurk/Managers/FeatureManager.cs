@@ -340,9 +340,10 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.Operations.SendAsync(
+                await session.Advanced.DocumentStore.Operations.Send(
                     new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
-                        x.Product == productName && x.Group == groupName));
+                        x.Product == productName && x.Group == groupName))
+                    .WaitForCompletionAsync();
             }
         }
 
@@ -356,9 +357,10 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.Operations.SendAsync(
+                await session.Advanced.DocumentStore.Operations.Send(
                     new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
-                        x.Product == productName && x.Group == groupName && x.Version == version));
+                        x.Product == productName && x.Group == groupName && x.Version == version))
+                    .WaitForCompletionAsync();
             }
         }
 
@@ -372,9 +374,10 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.Operations.SendAsync(
+                await session.Advanced.DocumentStore.Operations.Send(
                     new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
-                        x.Product == productName && x.Group == groupName && x.Title == title));
+                        x.Product == productName && x.Group == groupName && x.Title == title))
+                    .WaitForCompletionAsync();
             }
         }
 

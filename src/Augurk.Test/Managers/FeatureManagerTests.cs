@@ -478,5 +478,153 @@ namespace Augurk.Test.Managers
             exception.Message.ShouldContain("MyProduct");
             exception.Message.ShouldContain("MyGroup");
         }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can delete features based on a product and group.
+        /// </summary>
+        [Fact]
+        public async Task CanDeleteFeaturesByProductAndGroup()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "MyOtherGroup", "My Second Feature", "0.0.0");
+                await session.SaveChangesAsync();
+            }
+
+            WaitForIndexing(documentStoreProvider.Store);
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            await sut.DeleteFeaturesAsync("MyProduct", "MyGroup");
+            
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var features = await session.Query<DbFeature>().ToListAsync();
+                features.ShouldNotBeNull();
+                features.Count.ShouldBe(1);
+                
+                var remainingFeature = features.FirstOrDefault();
+                remainingFeature.ShouldNotBeNull();
+                remainingFeature.Title.ShouldBe("My Second Feature");
+            }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can delete features based on a product, group and version.
+        /// </summary>
+        [Fact]
+        public async Task CanDeleteFeaturesByProductGroupAndVersion()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "1.0.0");
+                await session.SaveChangesAsync();
+            }
+
+            WaitForIndexing(documentStoreProvider.Store);
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            await sut.DeleteFeaturesAsync("MyProduct", "MyGroup", "0.0.0");
+            
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var features = await session.Query<DbFeature>().ToListAsync();
+                features.ShouldNotBeNull();
+                features.Count.ShouldBe(1);
+                
+                var remainingFeature = features.FirstOrDefault();
+                remainingFeature.ShouldNotBeNull();
+                remainingFeature.Version.ShouldBe("1.0.0");
+            }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can delete a feature based on a product, group and title.
+        /// </summary>
+        [Fact]
+        public async Task CanDeleteFeatureByProductGroupAndTitle()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "1.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Second Feature", "0.0.0");
+                await session.SaveChangesAsync();
+            }
+
+            WaitForIndexing(documentStoreProvider.Store);
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            await sut.DeleteFeatureAsync("MyProduct", "MyGroup", "My First Feature");
+            
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var features = await session.Query<DbFeature>().ToListAsync();
+                features.ShouldNotBeNull();
+                features.Count.ShouldBe(1);
+                
+                var remainingFeature = features.FirstOrDefault();
+                remainingFeature.ShouldNotBeNull();
+                remainingFeature.Title.ShouldBe("My Second Feature");
+            }
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can delete a feature based on a product, group, title and version.
+        /// </summary>
+        [Fact]
+        public async Task CanDeleteFeatureByProductGroupTitleAndVersion()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "1.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Second Feature", "0.0.0");
+                await session.SaveChangesAsync();
+            }
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            await sut.DeleteFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+            
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var features = await session.Query<DbFeature>().ToListAsync();
+                features.ShouldNotBeNull();
+                features.Count.ShouldBe(2);
+                
+                var remainingFeature1 = features.FirstOrDefault();
+                remainingFeature1.ShouldNotBeNull();
+                remainingFeature1.Title.ShouldBe("My First Feature");
+                remainingFeature1.Version.ShouldBe("1.0.0");
+
+                var remainingFeature2 = features.LastOrDefault();
+                remainingFeature2.ShouldNotBeNull();
+                remainingFeature2.Title.ShouldBe("My Second Feature");
+                remainingFeature2.Version.ShouldBe("0.0.0");
+            }
+        }
     }
 }
