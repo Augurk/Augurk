@@ -31,7 +31,6 @@ namespace Augurk.Api.Indeces
                                   feature.Tags
                                          .Union(feature.Scenarios.SelectMany(scenario => scenario.Tags))
                                          .Distinct()
-                                         .Take(50)
                               select new
                                   {
                                       Tag = tag,

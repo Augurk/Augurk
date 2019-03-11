@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2017, Augurk
+ Copyright 2017-2019, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,17 +14,25 @@
  limitations under the License.
 */
 
+using System;
 using System.Threading.Tasks;
 using Augurk.Entities;
+using Raven.Client.Documents;
 
 namespace Augurk.Api.Managers
 {
     /// <summary>
     /// Provides methods to persist and retrieve customization settings from storage.
     /// </summary>
-    public class CustomizationManager
+    public class CustomizationManager : ICustomizationManager
     {
         private const string KEY = "urn:Augurk:Customization";
+        private readonly IDocumentStoreProvider _storeProvider;
+
+        public CustomizationManager(IDocumentStoreProvider storeProvider)
+        {
+            _storeProvider = storeProvider ?? throw new ArgumentNullException(nameof(storeProvider));
+        }
 
         /// <summary>
         /// Retrieves the customization settings; or, creates them if they do not exist.
@@ -34,7 +42,7 @@ namespace Augurk.Api.Managers
         {
             Customization customizationSettings = null;
 
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 customizationSettings = await session.LoadAsync<Customization>(KEY);
             }
@@ -54,7 +62,7 @@ namespace Augurk.Api.Managers
         /// <param name="customizationSettings">A <see cref="Customization"/> instance containing the settings that should be persisted.</param>
         public async Task PersistCustomizationSettingsAsync(Customization customizationSettings)
         {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 // Using the store method when the customization already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(customizationSettings, KEY);

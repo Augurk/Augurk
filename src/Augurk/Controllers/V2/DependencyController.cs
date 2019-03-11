@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2018, Augurk
+ Copyright 2018-2019, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 using Augurk.Api.Managers;
 using Augurk.Entities;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,7 +25,12 @@ namespace Augurk.Api.Controllers.V2
     [Route("api/v2/dependencies")]
     public class DependencyController : Controller
     {
-        private readonly DependencyManager _dependencyManager = new DependencyManager();
+        private readonly IDependencyManager _dependencyManager;
+
+        public DependencyController(IDependencyManager dependencyManager)
+        {
+            _dependencyManager = dependencyManager ?? throw new ArgumentNullException(nameof(dependencyManager));
+        }
 
         [Route("")]
         [HttpGet]

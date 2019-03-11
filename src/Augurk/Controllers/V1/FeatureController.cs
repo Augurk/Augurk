@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014-2015, Mark Taling
+ Copyright 2014-2019, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -28,7 +28,14 @@ namespace Augurk.Api.Controllers
     public class FeatureController : Controller
     {
         private const string UNKNOWN_VERSION = "0.0.0";
-        private readonly FeatureManager _featureManager = new FeatureManager();
+        private readonly IFeatureManager _featureManager;
+        private readonly IProductManager _productManager;
+
+        public FeatureController(IFeatureManager featureManager, IProductManager productManager)
+        {
+            _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
+            _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
+        }
 
         [Route("api/features/{branchName}")]
         [HttpGet]
@@ -90,7 +97,7 @@ namespace Augurk.Api.Controllers
         {
             // In V2 this has become part of the ProductsController (formerly: Branchcontroller).
             // In order to minimize the duplication of code, use the new controller.
-            await new ProductsController().DeleteProductAsync(branchName);
+            await _productManager.DeleteProductAsync(branchName);
         }
 
         [Route("api/features/{branchName}/{groupName}")]

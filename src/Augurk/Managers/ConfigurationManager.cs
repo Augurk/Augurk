@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2017, Augurk
+ Copyright 2017-2019, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,17 +14,25 @@
  limitations under the License.
 */
 
+using System;
 using System.Threading.Tasks;
 using Augurk.Entities;
+using Raven.Client.Documents;
 
 namespace Augurk.Api.Managers
 {
     /// <summary>
     /// Provides methods to persist and retrieve configuration from storage.
     /// </summary>
-    public class ConfigurationManager
+    public class ConfigurationManager : IConfigurationManager
     {
         private const string KEY = "urn:Augurk:Configuration";
+        private readonly IDocumentStoreProvider _storeProvider;
+
+        public ConfigurationManager(IDocumentStoreProvider documentStoreProvider)
+        {
+            _storeProvider = documentStoreProvider ?? throw new ArgumentNullException(nameof(documentStoreProvider));
+        }
 
         /// <summary>
         /// Retrieves the configuration; or, creates it if it does not exist.
@@ -34,7 +42,7 @@ namespace Augurk.Api.Managers
         {
             Configuration configuration = null;
 
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 configuration = await session.LoadAsync<Configuration>(KEY);
             }
@@ -54,7 +62,7 @@ namespace Augurk.Api.Managers
         /// <param name="configuration">A <see cref="Configuration"/> instance containing the configuration that should be persisted.</param>
         public async Task PersistConfigurationAsync(Configuration configuration)
         {
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 // Using the store method when the configuration already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(configuration, KEY);

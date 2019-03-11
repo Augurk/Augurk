@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2017-2018, Augurk
+ Copyright 2017-2019, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ using Augurk.Api.Managers;
 using System.Threading.Tasks;
 using Augurk.Entities;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace Augurk.Api.Controllers.V2
 {
@@ -28,8 +29,14 @@ namespace Augurk.Api.Controllers.V2
     [ApiExplorerSettings(IgnoreApi = true)]
     public class AugurkController : Controller
     {
-        private readonly CustomizationManager _customizationManager = new CustomizationManager();
-        private readonly ConfigurationManager _configurationManager = new ConfigurationManager();
+        private readonly ICustomizationManager _customizationManager;
+        private readonly IConfigurationManager _configurationManager;
+
+        public AugurkController(ICustomizationManager customizationManager, IConfigurationManager configurationManager)
+        {
+            _customizationManager = customizationManager ?? throw new ArgumentNullException(nameof(customizationManager));
+            _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
+        }
 
         /// <summary>
         /// Gets the customization settings.

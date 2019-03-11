@@ -8,4 +8,7 @@
         "**/bin": true,
         "**/obj": true
     },
+    "coverage-gutters.coverageFileNames": [
+        "coverage.info",
+    ]
 }

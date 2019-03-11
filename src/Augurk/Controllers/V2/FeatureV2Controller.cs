@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2017, Augurk
+ Copyright 2017-2019, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -31,15 +31,16 @@ namespace Augurk.Api.Controllers.V2
     [Route("api/v2/products/{productName}/groups/{groupName}/features")]
     public class FeatureV2Controller : Controller
     {
-        private readonly FeatureManager _featureManager = new FeatureManager();
+        private readonly IFeatureManager _featureManager;
         private readonly Analyzer _analyzer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FeatureV2Controller"/>.
         /// </summary>
-        public FeatureV2Controller()
+        public FeatureV2Controller(IFeatureManager featureManager, IAnalysisReportManager analysisReportManager)
         {
-            _analyzer = new Analyzer(_featureManager, new AnalysisReportManager());
+            _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
+            _analyzer = new Analyzer(_featureManager, analysisReportManager);
         }
 
         /// <summary>

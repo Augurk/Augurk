@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2014-2015, Mark Taling
+ Copyright 2014-2019, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Augurk.Api.Managers;
@@ -23,7 +24,12 @@ namespace Augurk.Api.Controllers
 {
     public class BranchController : Controller
     {
-        private readonly ProductManager _productManager = new ProductManager();
+        private readonly IProductManager _productManager;
+
+        public BranchController(IProductManager productManager)
+        {
+            _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
+        }
 
         [Route("api/branches")]
         [HttpGet]

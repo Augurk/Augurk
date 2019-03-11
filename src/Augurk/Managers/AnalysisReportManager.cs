@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2018, Augurk
+ Copyright 2018-2019, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -23,33 +23,26 @@ using Augurk.Api.Indeces.Analysis;
 using Newtonsoft.Json.Linq;
 using Raven.Client.Documents.Queries;
 using Raven.Client.Documents.Operations;
+using Raven.Client.Documents;
+using System;
+using Microsoft.Extensions.Logging;
 
 namespace Augurk.Api.Managers
 {
     /// <summary>
     /// Provides methods to persist and retrieve analysis reports from storage.
     /// </summary>
-    public class AnalysisReportManager
+    public class AnalysisReportManager : IAnalysisReportManager
     {
-        /// <summary>
-        /// Gets or sets the JsonSerializerSettings that should be used when (de)serializing.
-        /// </summary>
-        internal static JsonSerializerSettings JsonSerializerSettings { get; set; }
+        private readonly IDocumentStoreProvider _storeProvider;
+        private readonly IConfigurationManager _configurationManager;
+        private readonly ILogger<AnalysisReportManager> _logger;
 
-        /// <summary>
-        /// Gets or sets the configuration manager which should be used by this instance.
-        /// </summary>
-        private ConfigurationManager ConfigurationManager { get; set; }
-
-        public AnalysisReportManager()
-            : this(new ConfigurationManager())
+        public AnalysisReportManager(IDocumentStoreProvider storeProvider, IConfigurationManager configurationManager, ILogger<AnalysisReportManager> logger)
         {
-               
-        }
-
-        internal AnalysisReportManager(ConfigurationManager configurationManager)
-        {
-            ConfigurationManager = configurationManager;
+            _storeProvider = storeProvider ?? throw new ArgumentNullException(nameof(storeProvider));
+            _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>
@@ -60,15 +53,15 @@ namespace Augurk.Api.Managers
         /// <param name="report">An <see cref="AnalysisReport"/> to insert or update.</param>
         public async Task InsertOrUpdateAnalysisReportAsync(string productName, string version, AnalysisReport report)
         {
-            var configuration = await ConfigurationManager.GetOrCreateConfigurationAsync();
+            var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
 
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 // Store will override the existing report if it already exists
                 await session.StoreAsync(report, $"{productName}/{version}/{report.AnalyzedProject}");
 
                 session.SetExpirationIfEnabled(report, version, configuration);
-                session.Advanced.GetMetadataFor(report)["Product"] = new JValue(productName);
+                session.Advanced.GetMetadataFor(report)["Product"] = productName;
 
                 await session.SaveChangesAsync();
             }
@@ -82,12 +75,26 @@ namespace Augurk.Api.Managers
         /// <returns>A range of <see cref="AnalysisReport"/> instances stored for the provided product and version.</returns>
         public IEnumerable<AnalysisReport> GetAnalysisReportsByProductAndVersionAsync(string productName, string version)
         {
-            using(var session = Database.DocumentStore.OpenSession())
+            using(var session = _storeProvider.Store.OpenSession())
             {
                 return session.Query<AnalysisReports_ByProductAndVersion.Entry, AnalysisReports_ByProductAndVersion>()
                            .Where(report => report.Product == productName && report.Version == version)
                            .OfType<AnalysisReport>()
                            .ToList();
+            }
+        }
+
+        /// <summary>
+        /// Gets all the invocations stored in the database.
+        /// </summary>
+        /// <returns>Returns a range of <see cref="DbInvocation" /> instances representing the invocations stored in the database.</returns>
+        public async Task<IEnumerable<DbInvocation>> GetAllDbInvocations()
+        {
+            using (var session = _storeProvider.Store.OpenAsyncSession())
+            {
+                var result = await session.Query<DbInvocation>().ToListAsync();
+                _logger.LogInformation("Retrieved {InvocationCount} invocations", result.Count);
+                return result;
             }
         }
 
@@ -99,17 +106,17 @@ namespace Augurk.Api.Managers
         /// <param name="invocations">A range of <see cref="DbInvocation"/> instances representing the invocations to persist.</param>
         public async Task PersistDbInvocationsAsync(string productName, string version, IEnumerable<DbInvocation> invocations)
         {
-            var configuration = await ConfigurationManager.GetOrCreateConfigurationAsync();
+            var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
 
-            using (var session = Database.DocumentStore.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 foreach(var invocation in invocations)
                 {
                     await session.StoreAsync(invocation, $"{productName}/{version}/{invocation.Signature}");
                     session.SetExpirationIfEnabled(invocation, version, configuration);
                     var metadata = session.Advanced.GetMetadataFor(invocation);
-                    metadata["Product"] = new JValue(productName);
-                    metadata["Version"] = new JValue(version);
+                    metadata["Product"] = productName;
+                    metadata["Version"] = version;
                 }
 
                 await session.SaveChangesAsync();
@@ -123,8 +130,9 @@ namespace Augurk.Api.Managers
         /// <param name="version">Version of the product to delete the invocations for.</param>
         public async Task DeleteDbInvocationsAsync(string productName, string version)
         {
-            await Database.DocumentStore.Operations.Send(
-                new DeleteByQueryOperation(new IndexQuery { Query = $"Product:{productName} AND Version:{version}" }))
+            await _storeProvider.Store.Operations.Send(
+                new DeleteByQueryOperation<Invocation_ByProductAndVersion.Entry, Invocation_ByProductAndVersion>(
+                    x => x.Product == productName && x.Version == version))
                 .WaitForCompletionAsync();
         }
     }

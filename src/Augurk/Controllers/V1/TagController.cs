@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2015-2018, Augurk
+ Copyright 2015-2019, Augurk
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Augurk.Api.Managers;
@@ -25,8 +26,14 @@ namespace Augurk.Api.Controllers
     [ApiExplorerSettings(IgnoreApi = true)]
     public class TagController : Controller
     {
-        private readonly ProductManager _productManager = new ProductManager();
-        private readonly FeatureManager _featureManager = new FeatureManager();
+        private readonly IProductManager _productManager;
+        private readonly IFeatureManager _featureManager;
+
+        public TagController(IProductManager productManager, IFeatureManager featureManager)
+        {
+            _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
+            _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
+        }
 
         [Route("api/tags/{branchName}")]
         [HttpGet]

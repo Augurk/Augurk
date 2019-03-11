@@ -23,6 +23,12 @@ namespace Augurk.Entities
     /// </summary>
     public class Feature
     {
+        public Feature()
+        {
+            Tags = new List<string>();
+            Scenarios = new List<Scenario>();
+        }
+
         /// <summary>
         /// Gets or sets the title of the feature.
         /// </summary>

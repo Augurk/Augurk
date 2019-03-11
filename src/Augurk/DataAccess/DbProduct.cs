@@ -1,6 +1,6 @@
 ﻿/*
- Copyright 2018, Augurk
- 
+ Copyright 2017-2019, Augurk
+  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
@@ -17,20 +17,18 @@
 namespace Augurk.Api
 {
     /// <summary>
-    /// Describes an invication with al other invocations made from there
+    /// An implementation of a product designed specifically for storage in the database.
     /// </summary>
-    public class DbInvocation
+    public class DbProduct
     {
         /// <summary>
-        /// Gets or sets the signature of this invocation
+        /// Gets or sets the name of this product.
         /// </summary>
-        public string Signature { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets a flat list of all signatures invoked 
-        /// by this invocation; both directly and indirectly.
+        /// Gets or sets the description for this product in markdown syntax.
         /// </summary>
-        public string[] InvokedSignatures { get; set; }
-
+        public string DescriptionMarkdown { get; set; }
     }
 }
