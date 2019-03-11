@@ -51,6 +51,7 @@ steps:
     publishWebProjects: True
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     nobuild: true
+    zipAfterPublish: false
   displayName: dotnet publish
 
 # - script: |
