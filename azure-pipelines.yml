@@ -35,7 +35,7 @@ steps:
     command: build
     workingDirectory: 'src'
     configuration: $(buildConfiguration)
-    arguments: '/p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION'
+    arguments: '/p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
   displayName: dotnet build
 
 - task: DotNetCoreCLI@2
