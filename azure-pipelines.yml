@@ -26,6 +26,7 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: restore
+    projects: src/Augurk.sln
     workingDirectory: 'src'
   displayName: dotnet restore
 
