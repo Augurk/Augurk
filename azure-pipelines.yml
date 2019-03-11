@@ -48,18 +48,14 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: publish
-    projects: Augurk
-    configuration: $(buildConfiguration)
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     nobuild: true
+  displayName: dotnet publish
 
 # - script: |
 #     dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY /p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION
 #   workingDirectory: 'src'
-
-- task: PublishTestResults@2
-  inputs:
-    testRunner: VSTest
-    testResultsFiles: '**/*.trx'
 
 - task: PublishBuildArtifacts@1
 
