@@ -3,44 +3,61 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/vsts/pipelines/apps/windows/dot-net
 
-pool:
-  vmImage: 'VS2017-Win2016'
+# Build ASP.NET Core project using Azure Pipelines
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core?view=vsts
 
+pool:
+  vmImage: 'Ubuntu 16.04'
+  
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@0
-
-- task: GitVersion@4
+- task: DotNetCoreInstaller@0
+  displayName: 'Use .NET Core sdk 2.1.500'
   inputs:
-    updateAssemblyInfo: true
-    updateAssemblyInfoFilename: src/Augurk/Properties/AssemblyVersion.cs
+    version: 2.1.500
 
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+- script: |
+    dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
+    dotnet-gitversion /output buildserver
+  displayName: Set version
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
   inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    msbuildArgs: /p:DeployOnBuild=true;PublishProfile=Properties/PublishProfiles/DeploymentPackage.pubxml
+    command: restore
+    projects: src/Augurk.sln
+    workingDirectory: 'src'
+  displayName: dotnet restore
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    codeCoverageEnabled: True
-    otherConsoleOptions: '/platform:X64'
+    command: build
+    workingDirectory: 'src'
+    configuration: $(buildConfiguration)
+    arguments: '/p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
+  displayName: dotnet build
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: test
+    workingDirectory: 'src'
+    configuration: $(buildConfiguration)
+  displayName: dotnet test
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
+    zipAfterPublish: true
+  displayName: dotnet publish
+
+# - script: |
+#     dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY /p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION
+#   workingDirectory: 'src'
 
 - task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: $(Build.SourcesDirectory)/deploy/Augurk.WebDeploy.zip
-    artifactName: webdeploy
 
 - task: CopyFiles@2
   inputs:

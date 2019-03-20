@@ -21,7 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="1.0.163" />
     <PackageReference Include="NuGet.Versioning" Version="4.8.0" />
-    <PackageReference Include="RavenDB.Embedded" Version="4.1.2" />
+    <PackageReference Include="RavenDB.Embedded" Version="4.1.4" />
   </ItemGroup>
 
   <ItemGroup>

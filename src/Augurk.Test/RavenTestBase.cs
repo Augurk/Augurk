@@ -13,6 +13,10 @@
  See the License for the specific language governing permissions and 
  limitations under the License.
 */
+using System;
+using System.Reflection;
+using System.Runtime.Versioning;
+using Augurk.Api;
 using NSubstitute;
 using Raven.Client.Documents;
 using Raven.TestDriver;
@@ -24,6 +28,21 @@ namespace Augurk.Test
     /// </summary>
     public abstract class RavenTestBase : RavenTestDriver
     {
+        /// <summary>
+        /// Pre-configures the RavenDb in memory test server.
+        /// </summary>
+        static RavenTestBase()
+        {
+            string dotNetCoreVersion = EnvironmentUtils.GetNetCoreVersion();
+
+            RavenTestDriver.ConfigureServer(new TestServerOptions
+            {
+                FrameworkVersion = dotNetCoreVersion
+            });
+
+            System.Console.WriteLine($"Configured RavenDb in memory test driver to use version {dotNetCoreVersion} of .NET Core.");
+        }
+
         /// <summary>
         /// Called before the document store is being initialized.
         /// </summary>
