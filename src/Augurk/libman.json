@@ -101,6 +101,13 @@
         "dist/angular-bootstrap-toggle.min.js",
         "dist/angular-bootstrap-toggle.min.css"
       ]
+    },
+    {
+      "library": "raphael@2.2.7",
+      "destination": "libs/raphael",
+      "files": [
+        "raphael.min.js"
+      ]
     }
   ]
 }

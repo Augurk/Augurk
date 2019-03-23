@@ -128,6 +128,7 @@ namespace Augurk.Api.Managers
                                     .OrderBy(feature => feature.Tag)
                                     .Select(feature => feature.Tag)
                                     .Distinct()
+                                    .Take(512)
                                     .ToListAsync();
             }
         }
