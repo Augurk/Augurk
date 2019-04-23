@@ -14,9 +14,9 @@ variables:
 
 steps:
 - task: DotNetCoreInstaller@0
-  displayName: 'Use .NET Core sdk 2.1.500'
+  displayName: 'Use .NET Core sdk 2.1.505'
   inputs:
-    version: 2.1.500
+    version: 2.1.505
 
 - script: |
     dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
