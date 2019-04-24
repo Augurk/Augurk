@@ -15,7 +15,17 @@ COPY src/. ./
 WORKDIR /app
 RUN dotnet publish -c Release -o out
 
+# build unit test stage
+FROM build AS unit-tests
+WORKDIR /app/Augurk.Test
+ENTRYPOINT [ "dotnet", "test", "--logger:trx" ]
 
+# build integration test stage
+FROM build AS integration-tests
+WORKDIR /app/Augurk.IntegrationTest
+ENTRYPOINT [ "dotnet", "test", "--logger:trx" ]
+
+# build output image
 FROM mcr.microsoft.com/dotnet/core/aspnet:2.1 AS runtime
 WORKDIR /app
 COPY --from=build /app/Augurk/out ./
