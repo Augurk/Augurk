@@ -17,6 +17,7 @@
 using System;
 using System.Threading.Tasks;
 using Alba;
+using Augurk.Api;
 using Augurk.Entities;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -33,6 +34,21 @@ namespace Augurk.IntegrationTest
     public abstract class TestBase : RavenTestDriver
     {
         private readonly SystemUnderTestFixture _fixture;
+
+        /// <summary>
+        /// Pre-configures the RavenDb in memory test server.
+        /// </summary>
+        static TestBase()
+        {
+            string dotNetCoreVersion = EnvironmentUtils.GetNetCoreVersion();
+
+            RavenTestDriver.ConfigureServer(new TestServerOptions
+            {
+                FrameworkVersion = dotNetCoreVersion
+            });
+
+            Console.WriteLine($"Configured RavenDb in memory test driver to use version {dotNetCoreVersion} of .NET Core.");
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestBase" /> class.
