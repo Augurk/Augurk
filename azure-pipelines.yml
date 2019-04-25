@@ -94,7 +94,6 @@ jobs:
         command: Run an image
         imageName: '$(imageName):unit-tests'
         runInBackground: false
-        arguments: '--rm'
         volumes:
           '$(Build.ArtifactStagingDirectory):/app/Augurk.Test/TestResults'
     - task: Docker@1
@@ -109,7 +108,6 @@ jobs:
         command: Run an image
         imageName: '$(imageName):integration-tests'
         runInBackground: false
-        arguments: '--rm'
         volumes: 
           '$(Build.ArtifactStagingDirectory):/app/Augurk.IntegrationTest/TestResults'
     - task: PublishTestResults@2
