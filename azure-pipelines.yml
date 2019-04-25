@@ -74,7 +74,7 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-    - task: GitVersionNetCore@4
+    - task: GitVersionNetCore@5
       displayName: 'Determine version'
       inputs:
         updateAssemblyInfo: true
