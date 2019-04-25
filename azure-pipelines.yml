@@ -127,5 +127,5 @@ jobs:
       displayName: 'Build runtime image'
       inputs:
         command: Build an image
-        imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)'
+        imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(GitVersion.PreReleaseTagWithDash)'
         arguments: '--pull'
