@@ -133,3 +133,10 @@ jobs:
         command: Build an image
         imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(prerelease)'
         arguments: '--pull'
+    - task: Docker@1
+      displayName: 'Push runtime image'
+      inputs:
+        command: Push an image
+        imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(prerelease)'
+        containerregistrytype: Container Registry
+        dockerRegistryEndpoint: 'Docker Hub'
