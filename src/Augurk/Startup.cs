@@ -45,7 +45,9 @@ namespace Augurk
                         options.SubstituteApiVersionInUrl = true;
                     });
             
-            // Add the rest of the MVC stack (which we apparently need for now)
+            // Add the rest of the MVC stack so we can use API controllers
+            // Note: This will probably change in .NET Core 3.0 where we can more finely grained specify
+            //       the parts of ASP.NET Core that we want to use.
             services.AddMvc();
 
             // Setup API versioning
