@@ -83,7 +83,7 @@ jobs:
         dotnet-gitversion /output buildserver
       displayName: Set version
     - script: |
-        echo '##vso[task.setvariable variable=prerelease]-prerelease'
+        echo '##vso[task.setvariable variable=prerelease]-preview'
       displayName: Set prerelease tag
       condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
 
