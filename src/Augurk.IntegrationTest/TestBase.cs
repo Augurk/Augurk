@@ -17,6 +17,7 @@
 using System;
 using System.Threading.Tasks;
 using Alba;
+using Augurk.Api;
 using Augurk.Entities;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -33,6 +34,21 @@ namespace Augurk.IntegrationTest
     public abstract class TestBase : RavenTestDriver
     {
         private readonly SystemUnderTestFixture _fixture;
+
+        /// <summary>
+        /// Pre-configures the RavenDb in memory test server.
+        /// </summary>
+        static TestBase()
+        {
+            string dotNetCoreVersion = EnvironmentUtils.GetNetCoreVersion();
+
+            RavenTestDriver.ConfigureServer(new TestServerOptions
+            {
+                FrameworkVersion = dotNetCoreVersion
+            });
+
+            Console.WriteLine($"Configured RavenDb in memory test driver to use version {dotNetCoreVersion} of .NET Core.");
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TestBase" /> class.
@@ -52,23 +68,6 @@ namespace Augurk.IntegrationTest
         protected override void PreInitialize(IDocumentStore documentStore)
         {
             documentStore.Conventions.IdentityPartsSeparator = "-";
-        }
-
-        /// <summary>
-        /// Uploads the provided <paramref name="feature" /> through the API and stores it under the provided
-        /// <paramref name="productName" /> and <paramref name="groupName" />.
-        /// </summary>
-        /// <param name="feature">A <see cref="Feature" /> instance to upload.</param>
-        /// <param name="productName">Name of the product to upload the feature to.</param>
-        /// <param name="groupName">Name of the group to upload the feature to.</param>
-        protected async Task UploadFeature(Feature feature, string productName, string groupName)
-        {
-            await System.Scenario(_ =>
-            {
-                _.Post.Json(feature)
-                      .ToUrl(TestHelper.GenerateFeatureUrl(productName, groupName, feature.Title));
-                _.StatusCodeShouldBeOk();
-            });
         }
 
         /// <summary>

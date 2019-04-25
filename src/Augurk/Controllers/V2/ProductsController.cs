@@ -19,13 +19,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.IO;
+using System.Text;
 
 namespace Augurk.Api.Controllers.V2
 {
     /// <summary>
     /// ApiController for retrieving the available products.
     /// </summary>
-    [Route("api/v2/products")]
+    [ApiVersion("2.0")]
+    [Route("api/v{apiVersion:apiVersion}/products")]
     public class ProductsController : Controller
     {
         private readonly IProductManager _productsManager;
@@ -62,9 +65,13 @@ namespace Augurk.Api.Controllers.V2
         /// </summary>
         [Route("{productName}/description")]
         [HttpPut]
-        public async Task PutProductDescriptionAsync(string productName, [FromBody]string descriptionMarkdown)
+        public async Task PutProductDescriptionAsync(string productName)
         {
-            await _productsManager.InsertOrUpdateProductDescriptionAsync(productName, descriptionMarkdown);
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                string descriptionMarkdown = await reader.ReadToEndAsync();
+                await _productsManager.InsertOrUpdateProductDescriptionAsync(productName, descriptionMarkdown);
+            }
         }
 
         /// <summary>

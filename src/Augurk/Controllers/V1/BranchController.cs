@@ -22,6 +22,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Augurk.Api.Controllers
 {
+    [ApiVersion("1.0")]
+    [Route("api/branches")]
+    [Route("api/v{apiVersion:apiVersion}/branches")]
     public class BranchController : Controller
     {
         private readonly IProductManager _productManager;
@@ -31,7 +34,6 @@ namespace Augurk.Api.Controllers
             _productManager = productManager ?? throw new ArgumentNullException(nameof(productManager));
         }
 
-        [Route("api/branches")]
         [HttpGet]
         public async Task<IEnumerable<string>> GetAsync()
         {

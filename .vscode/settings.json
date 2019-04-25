@@ -10,5 +10,6 @@
     },
     "coverage-gutters.coverageFileNames": [
         "coverage.info",
-    ]
+    ],
+    "terminal.integrated.cwd": "src/Augurk"
 }

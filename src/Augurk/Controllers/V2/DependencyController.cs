@@ -22,7 +22,8 @@ using System.Threading.Tasks;
 
 namespace Augurk.Api.Controllers.V2
 {
-    [Route("api/v2/dependencies")]
+    [ApiVersion("2.0")]
+    [Route("api/v{apiVersion:apiVersion}/dependencies")]
     public class DependencyController : Controller
     {
         private readonly IDependencyManager _dependencyManager;
