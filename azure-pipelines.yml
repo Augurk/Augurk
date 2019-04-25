@@ -95,7 +95,7 @@ jobs:
         imageName: '$(imageName):unit-tests'
         runInBackground: false
         volumes:
-          '$(Build.ArtifactStagingDirectory):/app/Augurk.Test/TestResults'
+          '$(System.DefaultWorkingDirectory):/app/Augurk.Test/TestResults'
     - task: Docker@1
       displayName:  'Build integration test image'
       inputs:
@@ -109,7 +109,7 @@ jobs:
         imageName: '$(imageName):integration-tests'
         runInBackground: false
         volumes: 
-          '$(Build.ArtifactStagingDirectory):/app/Augurk.IntegrationTest/TestResults'
+          '$(System.DefaultWorkingDirectory):/app/Augurk.IntegrationTest/TestResults'
     - task: PublishTestResults@2
       displayName: 'Publish test results'
       inputs:
@@ -117,7 +117,7 @@ jobs:
         buildPlatform: 'Docker'
         testResultsFormat: VSTest
         testResultsFiles: '**/*.trx'
-        searchFolder: $)Build.ArtifactStagingDirectory)
+        failTaskOnFailedTests: true
     - task: Docker@1
       displayName: 'Build runtime image'
       inputs:
