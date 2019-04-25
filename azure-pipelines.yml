@@ -82,6 +82,10 @@ jobs:
         dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
         dotnet-gitversion /output buildserver
       displayName: Set version
+    - script: |
+        echo '##vso[task.setvariable variable=prerelease]-prerelease'
+      displayName: Set prerelease tag
+      condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
 
     - task: Docker@1
       displayName: 'Build unit test image'
@@ -127,5 +131,5 @@ jobs:
       displayName: 'Build runtime image'
       inputs:
         command: Build an image
-        imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(GitVersion.PreReleaseTagWithDash)'
+        imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(prerelease)'
         arguments: '--pull'
