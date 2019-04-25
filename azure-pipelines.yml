@@ -93,6 +93,7 @@ jobs:
       inputs:
         command: Run an image
         imageName: '$(imageName):unit-tests'
+        runInBackground: false
         arguments: '--rm'
         volumes:
           '$(Build.ArtifactStagingDirectory):/app/Augurk.Test/TestResults'
@@ -107,6 +108,7 @@ jobs:
       inputs:
         command: Run an image
         imageName: '$(imageName):integration-tests'
+        runInBackground: false
         arguments: '--rm'
         volumes: 
           '$(Build.ArtifactStagingDirectory):/app/Augurk.IntegrationTest/TestResults'
