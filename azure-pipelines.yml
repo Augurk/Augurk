@@ -82,6 +82,7 @@ jobs:
         dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
         dotnet-gitversion /output buildserver
       displayName: Set version
+
     - task: Docker@1
       displayName: 'Build unit test image'
       inputs:
@@ -94,8 +95,9 @@ jobs:
         command: Run an image
         imageName: '$(imageName):unit-tests'
         runInBackground: false
-        volumes:
-          '$(System.DefaultWorkingDirectory):/app/Augurk.Test/TestResults'
+        volumes: 
+          '$(Build.ArtifactStagingDirectory):/app/Augurk.Test/TestResults/'
+
     - task: Docker@1
       displayName:  'Build integration test image'
       inputs:
@@ -109,7 +111,8 @@ jobs:
         imageName: '$(imageName):integration-tests'
         runInBackground: false
         volumes: 
-          '$(System.DefaultWorkingDirectory):/app/Augurk.IntegrationTest/TestResults'
+          '$(Build.ArtifactStagingDirectory):/app/Augurk.IntegrationTest/TestResults/'
+
     - task: PublishTestResults@2
       displayName: 'Publish test results'
       inputs:
@@ -117,7 +120,9 @@ jobs:
         buildPlatform: 'Docker'
         testResultsFormat: VSTest
         testResultsFiles: '**/*.trx'
+        searchFolder: '$(Build.ArtifactStagingDirectory)'
         failTaskOnFailedTests: true
+
     - task: Docker@1
       displayName: 'Build runtime image'
       inputs:
