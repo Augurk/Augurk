@@ -74,10 +74,10 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-    - task: GitVersionNetCore@5
-      displayName: 'Determine version'
-      inputs:
-        updateAssemblyInfo: true
+    - script: |
+        dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
+        dotnet-gitversion /output buildserver
+      displayName: Set version
     - task: Docker@1
       displayName: 'Build unit test image'
       inputs:
