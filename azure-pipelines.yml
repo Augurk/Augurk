@@ -132,7 +132,7 @@ jobs:
       inputs:
         command: Build an image
         imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(prerelease)'
-        arguments: '--pull'
+        arguments: '--pull --build-arg Version=$(GitVersion.MajorMinorPatch) --build-arg InformationalVersion=$(GitVersion.InformationalVersion)'
     - task: Docker@1
       displayName: 'Push runtime image'
       inputs:

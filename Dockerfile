@@ -1,4 +1,6 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:2.1 AS build
+ARG Version
+ARG InformationalVersion
 WORKDIR /app
 
 # copy external library
@@ -13,7 +15,7 @@ RUN dotnet restore
 # copy everything else and build app
 COPY src/. ./
 WORKDIR /app
-RUN dotnet publish -c Release -o out
+RUN dotnet publish /p:Version=$Version /p:InformationalVersion=$InformationalVersion -c Release -o out
 
 # build unit test stage
 FROM build AS unit-tests
