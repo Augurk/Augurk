@@ -92,7 +92,7 @@ jobs:
       inputs:
         command: Build an image
         imageName: '$(imageName):unit-tests'
-        arguments: '--pull --target unit-tests'
+        arguments: '--pull --target unit-tests --build-arg Version=$(GitVersion.MajorMinorPatch) --build-arg InformationalVersion=$(GitVersion.InformationalVersion)'
     - task: Docker@1
       displayName: 'Run unit tests'
       inputs:
@@ -107,7 +107,7 @@ jobs:
       inputs:
         command: Build an image
         imageName: '$(imageName):integration-tests'
-        arguments: '--pull --target integration-tests'
+        arguments: '--pull --target integration-tests --build-arg Version=$(GitVersion.MajorMinorPatch) --build-arg InformationalVersion=$(GitVersion.InformationalVersion)'
     - task: Docker@1
       displayName: 'Run integration tests'
       inputs:
