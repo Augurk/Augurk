@@ -133,10 +133,18 @@ jobs:
         command: Build an image
         imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(prerelease)'
         arguments: '--pull --build-arg Version=$(GitVersion.MajorMinorPatch) --build-arg InformationalVersion=$(GitVersion.InformationalVersion)'
+        includeLatestTag: true
     - task: Docker@1
-      displayName: 'Push runtime image'
+      displayName: 'Push runtime image (tagged)'
       inputs:
         command: Push an image
         imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(prerelease)'
+        containerregistrytype: Container Registry
+        dockerRegistryEndpoint: 'Docker Hub'
+    - task: Docker@1
+      displayName: 'Push runtime image (latest)'
+      inputs:
+        command: Push an image
+        imageName: '$(imageName):latest'
         containerregistrytype: Container Registry
         dockerRegistryEndpoint: 'Docker Hub'
