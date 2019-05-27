@@ -74,6 +74,8 @@ namespace Augurk.IntegrationTest
                 _.StatusCodeShouldBeOk();
             });
 
+            await Task.Delay(1000);
+
             var result = await System.Scenario(_ =>
             {
                 _.GetProductDescription(productName);

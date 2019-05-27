@@ -71,7 +71,7 @@ namespace Augurk.IntegrationTest
             using (var content = new StreamContent(file))
             using (var formData = new MultipartFormDataContent())
             {
-                formData.Add(content, "importFile", fileName);
+                formData.Add(content, "file", fileName);
 
                 // Act
                 var client = this.System.Server.CreateClient();

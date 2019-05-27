@@ -105,14 +105,20 @@ namespace Augurk.Api.Controllers.V2
         /// </summary>
         [Route("import")]
         [HttpPost]
-        public async Task<ActionResult> Import(IFormFile importFile)
+        public async Task<ActionResult> Import(IFormFile file)
         {
+            // Make sure that we have an input file
+            if (file == null)
+            {
+                return BadRequest("No file to import specified.");
+            }
+
             // Store the uploaded file into a temporary location
             string filePath = Path.GetTempFileName();
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 // Copy file to temporary location
-                await importFile.CopyToAsync(stream);
+                await file.CopyToAsync(stream);
 
                 // Perform import
                 var importOptions = new DatabaseSmugglerImportOptions()
