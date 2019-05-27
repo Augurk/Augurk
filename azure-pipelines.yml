@@ -4,68 +4,147 @@
 # https://docs.microsoft.com/vsts/pipelines/apps/windows/dot-net
 
 # Build ASP.NET Core project using Azure Pipelines
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core?view=vsts
-
-pool:
-  vmImage: 'Ubuntu 16.04'
-  
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core?view=vsts  
 variables:
   buildConfiguration: 'Release'
 
-steps:
-- task: DotNetCoreInstaller@0
-  displayName: 'Use .NET Core sdk 2.1.506'
-  inputs:
-    version: 2.1.506
+jobs:
+- job: netcore
+  displayName: .NET Core Framework Dependent
+  pool:
+    vmImage: ubuntu-16.04
+  steps:
+  - task: DotNetCoreInstaller@0
+    displayName: 'Use .NET Core sdk 2.1.506'
+    inputs:
+      version: 2.1.506
 
-- script: |
-    dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
-    dotnet-gitversion /output buildserver
-  displayName: Set version
+  - script: |
+      dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
+      dotnet-gitversion /output buildserver
+    displayName: Set version
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: restore
-    projects: src/Augurk.sln
-    workingDirectory: 'src'
-  displayName: dotnet restore
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: restore
+      projects: src/Augurk.sln
+      workingDirectory: 'src'
+    displayName: dotnet restore
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: build
-    workingDirectory: 'src'
-    configuration: $(buildConfiguration)
-    arguments: '/p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
-  displayName: dotnet build
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: build
+      workingDirectory: 'src'
+      configuration: $(buildConfiguration)
+      arguments: '/p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
+    displayName: dotnet build
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: test
-    workingDirectory: 'src'
-    configuration: $(buildConfiguration)
-  displayName: dotnet test
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: test
+      workingDirectory: 'src'
+      configuration: $(buildConfiguration)
+    displayName: dotnet test
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: publish
-    publishWebProjects: True
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
-    zipAfterPublish: true
-  displayName: dotnet publish
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: publish
+      publishWebProjects: True
+      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
+      zipAfterPublish: true
+    displayName: dotnet publish
 
-# - script: |
-#     dotnet publish Augurk --configuration $(buildConfiguration) --output $BUILD_ARTIFACTSTAGINGDIRECTORY /p:Version=$GITVERSION_MAJORMINORPATCH /p:InformationalVersion=$GITVERSION_INFORMATIONALVERSION
-#   workingDirectory: 'src'
+  - task: PublishBuildArtifacts@1
 
-- task: PublishBuildArtifacts@1
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: $(Build.SourcesDirectory)/src/Augurk.Specifications
+      contents: "**/?(*.feature|*.md)"
+      targetFolder: $(Build.ArtifactStagingDirectory)/features
 
-- task: CopyFiles@2
-  inputs:
-    sourceFolder: $(Build.SourcesDirectory)/src/Augurk.Specifications
-    contents: "**/?(*.feature|*.md)"
-    targetFolder: $(Build.ArtifactStagingDirectory)/features
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathToPublish: $(Build.ArtifactStagingDirectory)/features
+      artifactName: features
 
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: $(Build.ArtifactStagingDirectory)/features
-    artifactName: features
+- job: docker
+  displayName: Docker Image
+  variables:
+    imageName: augurk/augurk
+  pool:
+    vmImage: ubuntu-16.04
+  steps:
+    - task: DotNetCoreInstaller@0
+      displayName: 'Use .NET Core sdk 2.1.506'
+      inputs:
+        version: 2.1.506
+    - script: |
+        dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
+        dotnet-gitversion /output buildserver
+      displayName: Set version
+    - script: |
+        echo '##vso[task.setvariable variable=prerelease]-preview'
+      displayName: Set prerelease tag
+      condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+    - task: Docker@1
+      displayName: 'Build unit test image'
+      inputs:
+        command: Build an image
+        imageName: '$(imageName):unit-tests'
+        arguments: '--pull --target unit-tests --build-arg Version=$(GitVersion.MajorMinorPatch) --build-arg InformationalVersion=$(GitVersion.InformationalVersion)'
+    - task: Docker@1
+      displayName: 'Run unit tests'
+      inputs:
+        command: Run an image
+        imageName: '$(imageName):unit-tests'
+        runInBackground: false
+        volumes: 
+          '$(Build.ArtifactStagingDirectory):/app/Augurk.Test/TestResults/'
+
+    - task: Docker@1
+      displayName:  'Build integration test image'
+      inputs:
+        command: Build an image
+        imageName: '$(imageName):integration-tests'
+        arguments: '--pull --target integration-tests --build-arg Version=$(GitVersion.MajorMinorPatch) --build-arg InformationalVersion=$(GitVersion.InformationalVersion)'
+    - task: Docker@1
+      displayName: 'Run integration tests'
+      inputs:
+        command: Run an image
+        imageName: '$(imageName):integration-tests'
+        runInBackground: false
+        volumes: 
+          '$(Build.ArtifactStagingDirectory):/app/Augurk.IntegrationTest/TestResults/'
+
+    - task: PublishTestResults@2
+      displayName: 'Publish test results'
+      inputs:
+        buildConfiguration: $(BuildConfiguration)
+        buildPlatform: 'Docker'
+        testResultsFormat: VSTest
+        testResultsFiles: '**/*.trx'
+        searchFolder: '$(Build.ArtifactStagingDirectory)'
+        failTaskOnFailedTests: true
+
+    - task: Docker@1
+      displayName: 'Build runtime image'
+      inputs:
+        command: Build an image
+        imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(prerelease)'
+        arguments: '--pull --build-arg Version=$(GitVersion.MajorMinorPatch) --build-arg InformationalVersion=$(GitVersion.InformationalVersion)'
+        includeLatestTag: true
+    - task: Docker@1
+      displayName: 'Push runtime image (tagged)'
+      inputs:
+        command: Push an image
+        imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(prerelease)'
+        containerregistrytype: Container Registry
+        dockerRegistryEndpoint: 'Docker Hub'
+    - task: Docker@1
+      displayName: 'Push runtime image (latest)'
+      inputs:
+        command: Push an image
+        imageName: '$(imageName):latest'
+        containerregistrytype: Container Registry
+        dockerRegistryEndpoint: 'Docker Hub'
