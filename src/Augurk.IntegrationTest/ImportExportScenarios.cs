@@ -78,6 +78,8 @@ namespace Augurk.IntegrationTest
                 var response = await client.PostAsync("/api/v2/import", formData);
                 response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
+                WaitForIndexing(Store);
+
                 var result = await System.Scenario(_ =>
                 {
                     _.GetProductDescription("Documentation");

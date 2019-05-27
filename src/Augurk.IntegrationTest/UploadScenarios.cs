@@ -45,6 +45,8 @@ namespace Augurk.IntegrationTest
                 _.PostFeature(expectedFeature, productName, groupName);
                 _.StatusCodeShouldBe(HttpStatusCode.Accepted);
             });
+
+            WaitForIndexing(Store);
             
             var result = await System.Scenario(_ =>
             {
@@ -74,7 +76,7 @@ namespace Augurk.IntegrationTest
                 _.StatusCodeShouldBeOk();
             });
 
-            await Task.Delay(1000);
+            WaitForIndexing(Store);
 
             var result = await System.Scenario(_ =>
             {
