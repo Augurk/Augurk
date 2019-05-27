@@ -131,12 +131,12 @@ namespace Augurk.Api.Managers
                                         .Take(1000)
                                         .ToListAsync();
 
-                foreach (var uniqueFeature in data.GroupBy(record => record.Title))
+                foreach (var uniqueFeature in data.GroupBy(record => ( group: record.Group, title: record.Title)))
                 {
                     var latestFeature = uniqueFeature.OrderByDescending(record => record.Version, new SemanticVersionComparer()).First();
                     var featureDescription = new FeatureDescription()
                     {
-                        Title = uniqueFeature.Key,
+                        Title = uniqueFeature.Key.title,
                         LatestVersion = latestFeature.Version,
                     };
 
