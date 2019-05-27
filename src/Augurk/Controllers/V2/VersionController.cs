@@ -15,9 +15,11 @@ namespace Augurk.Api.Controllers.V2
         [HttpGet]
         public ActionResult GetVersion()
         {
+            var assemblyVersion = GetType().Assembly.GetName().Version;
+
             return Ok(new
             {
-                ProductVersion = GetType().Assembly.GetCustomAttribute<AssemblyVersionAttribute>()?.Version ?? "Development",
+                ProductVersion = $"{assemblyVersion.Major}.{assemblyVersion.Minor}.{assemblyVersion.Build}",
                 InformationalVersion = GetType().Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion
             });
         }
