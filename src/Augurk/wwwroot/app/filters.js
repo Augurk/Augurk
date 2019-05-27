@@ -38,21 +38,21 @@ AugurkFilters.filter('markdown', function() {
 // e.g. [Feature1] will be replaced with <a href="correctLink">Feature1</a>
 AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
     return function (input) {
-        return input.replace(/\[([\w\s]*)\]/gm,
+        return input.replace(/^[']?\[([\w\s]*)\]/gm,
             function (originalContent, featureTitle) {
                 if ($rootScope.featureGroups) {
-                    var group = $.grep($rootScope.featureGroups, function (group) { return group.name == $rootScope.currentGroupName; })[0];
-                    var featureDescriptions = $.grep(group.features, function (feature) { return feature.title == featureTitle; });
-                    if (featureDescriptions.length == 1) {
+                    var group = $.grep($rootScope.featureGroups, function (group) { return group.name === $rootScope.currentGroupName; })[0];
+                    var featureDescriptions = $.grep(group.features, function (feature) { return feature.title === featureTitle; });
+                    if (featureDescriptions.length === 1) {
                         return $('<a/>', {
                             html: featureDescriptions[0].title,
                             href: featureDescriptions[0].uri
                         })[0].outerHTML;
                     }
                 }
-		        return originalContent;
-		    }
-	    );
+                return originalContent;
+            }
+        );
     };
 }]);
 
@@ -63,26 +63,25 @@ AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
 AugurkFilters.filter('exampleparameters', function () {
     return function (input) {
         return input.replace(/\<([\w\d\s]*)\>/gm,
-		    function (entireString, match) {
-		            return $('<span/>', {
-		                html: '&lt;' + $('<span/>', {
-		                    html: match,
-		                    'class': 'example-parameter'
-		                })[0].outerHTML + '&gt;',
-		                'class': 'argument'
-		            })[0].outerHTML;
-		    }
-	    );
+           function (entireString, match) {
+                   return $('<span/>', {
+                       html: '&lt;' + $('<span/>', {
+                           html: match,
+                           'class': 'example-parameter'
+                       })[0].outerHTML + '&gt;',
+                       'class': 'argument'
+                   })[0].outerHTML;
+           }
+       );
     };
 });
 
-// exampleparameters filter
+// uml filter
 // ------------------------
-// Marks all text found between angle brackets as an example-parameter and marks the whole as an argument.
-// e.g. <some text> will be replaced with <span class="argument">&lt;<span class="example-parameter">some text</span>&gt;</span>
+// Replaces code blocks marked with the UML language by using the nomnoml or js-sequence-diagrams libraries to draw them onto a canvas.
 AugurkFilters.filter('uml', ['$sce', 'uniqueIntegerService', function ($sce, uniqueIntegerService) {
     return function (input) {
-        return $sce.trustAsHtml(input.replace(/\<pre><code class=\"UML language-UML\"\>(?:Label\:\W?(.*$))?([\s\S]*?)<\/code><\/pre>/gm,
+        var output = input.replace(/\<pre><code class=\"UML language-UML\"\>(?:Label\:\W?(.*$))?([\s\S]*?)<\/code><\/pre>/gm,
             function (entireString, title, match) {
                 var id = 'uml' + uniqueIntegerService.getNextInteger().toString();
                 var result = `<div class="uml">
@@ -97,7 +96,25 @@ nomnoml.draw(canvas, source);</script></div>`;
 
                 return result;
             }
-        ));
+        );
+
+        output = output.replace(/\<pre><code class=\"sequence language-sequence\"\>(?:Label\:\W?(.*$))?([\s\S]*?)<\/code><\/pre>/gm,
+            function (entireString, title, match) {
+                var id = 'seq' + uniqueIntegerService.getNextInteger().toString();
+                var result = `<div class="sequence" id="` + id + `">
+<script>
+var source = \`` + _.unescape(match) + `\`;
+var diagram = Diagram.parse(source);
+diagram.drawSVG("` + id + `", {theme: 'snapSimple'});</script></div>`;
+                if (title) {
+                    result += `<span class="uml-label">` + title + `</span>`;
+                }
+
+                return result;
+            }
+        );
+
+        return $sce.trustAsHtml(output);
     };
 }]);
 
@@ -105,7 +122,7 @@ function findFeature(featureDescriptions, title) {
     var result = null;
 
     $.each(featureDescriptions, function (index, featureDescription) {
-        if (featureDescription.name == title) {
+        if (featureDescription.name === title) {
             result = featureDescription;
             return false; // break;
         }

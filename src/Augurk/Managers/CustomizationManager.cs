@@ -26,7 +26,7 @@ namespace Augurk.Api.Managers
     /// </summary>
     public class CustomizationManager : ICustomizationManager
     {
-        private const string KEY = "urn:Augurk:Customization";
+        private const string DOCUMENT_KEY = "urn:Augurk:Customization";
         private readonly IDocumentStoreProvider _storeProvider;
 
         public CustomizationManager(IDocumentStoreProvider storeProvider)
@@ -44,7 +44,7 @@ namespace Augurk.Api.Managers
 
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                customizationSettings = await session.LoadAsync<Customization>(KEY);
+                customizationSettings = await session.LoadAsync<Customization>(DOCUMENT_KEY);
             }
 
             if (customizationSettings == null)
@@ -65,7 +65,7 @@ namespace Augurk.Api.Managers
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 // Using the store method when the customization already exists in the database will override it completely, this is acceptable
-                await session.StoreAsync(customizationSettings, KEY);
+                await session.StoreAsync(customizationSettings, DOCUMENT_KEY);
                 await session.SaveChangesAsync();
             }
         }

@@ -183,8 +183,8 @@ AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'produ
     }
 ]);
 
-AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService', 'configurationService', 'versionService',
-    function($rootScope, $scope, customizationService, configurationService, versionService) {
+AugurkControllers.controller('configurationController', ['$rootScope', '$scope', 'customizationService', 'configurationService', 'versionService', '$http',
+    function($rootScope, $scope, customizationService, configurationService, versionService, $http) {
         $rootScope.allowMenu = false;
 
         customizationService.get().$promise.then(function (customization) {
@@ -205,6 +205,34 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
         versionService.get().then(function (version) {
             $scope.version = version;
         });
+
+        $scope.import = function () {
+            var element = document.getElementById("importFile");
+            var file = element.files[0];
+
+            var formData = new FormData();
+            formData.append("filename", file.name);
+            formData.append("file", file);
+
+            var ajaxRequest = $.ajax({
+                cache: false,
+                type: 'POST',
+                url: '/api/v2/import',
+                contentType: false,
+                processData: false,
+                data: formData
+            });
+
+            ajaxRequest.done(function () {
+                alert("Import succesful. Please refresh the page.");
+            }).fail(function () {
+                alert("Import unsuccesful.");
+            });
+        };
+
+        $scope.export = function () {
+            window.open('/api/v2/export', '_blank', '');
+        };
     }
 ]);
 

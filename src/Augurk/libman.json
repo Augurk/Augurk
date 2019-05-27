@@ -3,8 +3,20 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "js-sequence-diagrams@1.0.6",
-      "destination": "wwwroot/libs/js-sequence-diagrams"
+      "library": "../../extLib/js-sequence-diagrams@2.0.1",
+      "destination": "wwwroot/libs/js-sequence-diagrams",
+      "provider": "filesystem"
+    },
+    {
+      "library": "snap.svg@0.5.1",
+      "destination": "wwwroot/libs/snap.svg",
+      "files": [
+        "snap.svg-min.js"
+      ]
+    },
+    {
+      "library": "webfont@1.6.28",
+      "destination": "wwwroot/libs/webfont"
     },
     {
       "library": "twitter-bootstrap@3.3.7",
@@ -88,6 +100,13 @@
       "files": [
         "dist/angular-bootstrap-toggle.min.js",
         "dist/angular-bootstrap-toggle.min.css"
+      ]
+    },
+    {
+      "library": "raphael@2.2.7",
+      "destination": "wwwroot/libs/raphael",
+      "files": [
+        "raphael.min.js"
       ]
     }
   ]
