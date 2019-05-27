@@ -105,18 +105,23 @@ namespace Augurk.Api.Controllers.V2
             string filePath = Path.GetTempFileName();
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
+                // Copy file to temporary location
                 await importFile.CopyToAsync(stream);
 
+                // Perform import
                 var importOptions = new DatabaseSmugglerImportOptions()
                 {
                     OperateOnTypes = DatabaseItemType.Documents,
                     IncludeExpired = false,
                 };
 
-                await _documentStore.Smuggler.ImportAsync(importOptions, filePath);
+                var operation = await _documentStore.Smuggler.ImportAsync(importOptions, filePath);
+                await operation.WaitForCompletionAsync();
+
+                // Delete temporary file
                 System.IO.File.Delete(filePath);
 
-                return Ok();
+                return NoContent();
             }
         }
 
