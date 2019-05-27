@@ -168,7 +168,7 @@ AugurkServices.factory('versionService', ['$q', '$http', function ($q, $http) {
 
     service.get = function () {
         var versionPromiseDeferrer = $q.defer();
-        $http({ method: 'GET', url: 'api/version' }).then(function (response) {
+        $http({ method: 'GET', url: 'api/v2/version' }).then(function (response) {
             versionPromiseDeferrer.resolve(response.data);
         });
 
