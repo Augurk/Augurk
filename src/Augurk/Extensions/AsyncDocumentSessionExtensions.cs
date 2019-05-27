@@ -23,16 +23,23 @@ using Raven.Client;
 
 namespace Augurk
 {
-    public static class AsyncDocumentSessionExtensions
+    internal static class AsyncDocumentSessionExtensions
     {
-        public static void SetExpirationIfEnabled(this IAsyncDocumentSession session, object document, string version, Configuration configuration)
+        public static void SetExpirationAccordingToConfiguration(this IAsyncDocumentSession session, object document, string version, Configuration configuration)
         {
             if (configuration.ExpirationEnabled &&
                     Regex.IsMatch(version, configuration.ExpirationRegex))
             {
                 // Set the expiration in the metadata
-                session.Advanced.GetMetadataFor(document)[Constants.Documents.Metadata.Expires] =
-                    DateTime.UtcNow.Date.AddDays(configuration.ExpirationDays);
+                var metadata = session.Advanced.GetMetadataFor(document);
+                var lastModifiedDate = (DateTime)metadata[Constants.Documents.Metadata.LastModified];
+                metadata[Constants.Documents.Metadata.Expires] = lastModifiedDate.Date.AddDays(configuration.ExpirationDays);
+            }
+            else
+            {
+                // Remove the expiration if it is set
+                var metadata = session.Advanced.GetMetadataFor(document);
+                metadata.Remove(Constants.Documents.Metadata.Expires);
             }
         }
 

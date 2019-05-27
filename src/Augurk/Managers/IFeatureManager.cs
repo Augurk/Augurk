@@ -123,5 +123,10 @@ namespace Augurk.Api.Managers
         /// <param name="title">The feature that should be deleted.</param>
         /// <param name="version">The version of the feature that should be deleted.</param>
         Task DeleteFeatureAsync(string productName, string groupName, string title, string version);
+
+        /// <summary>
+        /// Reset the expiration date for each feature.
+        /// </summary>
+        Task ResetFeatureExpirations();
     }
 }

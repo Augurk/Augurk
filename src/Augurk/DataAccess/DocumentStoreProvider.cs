@@ -22,6 +22,7 @@ using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Indexes;
+using Raven.Client.Documents.Operations.Expiration;
 using Raven.Embedded;
 
 namespace Augurk
@@ -60,6 +61,14 @@ namespace Augurk
 
             // Make sure that indexes are created
             IndexCreation.CreateIndexes(Assembly.GetExecutingAssembly(), Store);
+
+            // Enable the expiration option, even if it is already enabled
+            // This runs async, there is no need to wait on it
+            Store.Maintenance.SendAsync(new ConfigureExpirationOperation(new ExpirationConfiguration
+            {
+                        Disabled = false,
+                        DeleteFrequencyInSec = 3600
+            }));
 
             // Check if we're running in development
             if (environment.IsDevelopment())

@@ -302,7 +302,7 @@ namespace Augurk.Api.Managers
                 // Using the store method when the feature already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
 
-                session.SetExpirationIfEnabled(dbFeature, version, configuration);
+                session.SetExpirationAccordingToConfiguration(dbFeature, version, configuration);
 
                 await session.SaveChangesAsync();
             }
@@ -396,6 +396,23 @@ namespace Augurk.Api.Managers
                 session.Delete(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));
 
                 await session.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Reset the expiration date for each feature.
+        /// </summary>
+        internal async Task ResetFeatureExpirations(){
+
+            var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
+
+            using (var session = _storeProvider.Store.OpenAsyncSession())
+            {
+                var features = session.Query<DbFeature>();
+
+                foreach(var feature in features){
+                    session.SetExpirationAccordingToConfiguration(feature, feature.Version, configuration);
+                }
             }
         }
     }

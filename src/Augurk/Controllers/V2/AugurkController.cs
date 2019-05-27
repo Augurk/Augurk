@@ -41,12 +41,18 @@ namespace Augurk.Api.Controllers.V2
     {
         private readonly ICustomizationManager _customizationManager;
         private readonly IConfigurationManager _configurationManager;
+        private readonly IFeatureManager _featureManager;
         private readonly IDocumentStore _documentStore;
 
-        public AugurkController(ICustomizationManager customizationManager, IConfigurationManager configurationManager, IDocumentStoreProvider storeProvider)
+
+        public AugurkController(ICustomizationManager customizationManager, 
+                                IConfigurationManager configurationManager, 
+                                IFeatureManager featureManager,
+                                IDocumentStoreProvider storeProvider)
         {
             _customizationManager = customizationManager ?? throw new ArgumentNullException(nameof(customizationManager));
             _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
+            _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
             _documentStore = storeProvider?.Store ?? throw new ArgumentNullException(nameof(storeProvider));
         }
 
@@ -89,7 +95,7 @@ namespace Augurk.Api.Controllers.V2
         [Route("configuration")]
         [HttpPut]
         [HttpPost]
-        public async Task PersisConfigurationAsync([FromBody]Configuration configuration)
+        public async Task PersistConfigurationAsync([FromBody]Configuration configuration)
         {
             await _configurationManager.PersistConfigurationAsync(configuration);
         }
@@ -120,6 +126,9 @@ namespace Augurk.Api.Controllers.V2
 
                 // Delete temporary file
                 System.IO.File.Delete(filePath);
+
+                // Set the expirations as configured
+                await _featureManager.ResetFeatureExpirations();
 
                 return NoContent();
             }

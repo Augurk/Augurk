@@ -60,7 +60,7 @@ namespace Augurk.Api.Managers
                 // Store will override the existing report if it already exists
                 await session.StoreAsync(report, $"{productName}/{version}/{report.AnalyzedProject}");
 
-                session.SetExpirationIfEnabled(report, version, configuration);
+                session.SetExpirationAccordingToConfiguration(report, version, configuration);
                 session.Advanced.GetMetadataFor(report)["Product"] = productName;
 
                 await session.SaveChangesAsync();
@@ -113,7 +113,7 @@ namespace Augurk.Api.Managers
                 foreach(var invocation in invocations)
                 {
                     await session.StoreAsync(invocation, $"{productName}/{version}/{invocation.Signature}");
-                    session.SetExpirationIfEnabled(invocation, version, configuration);
+                    session.SetExpirationAccordingToConfiguration(invocation, version, configuration);
                     var metadata = session.Advanced.GetMetadataFor(invocation);
                     metadata["Product"] = productName;
                     metadata["Version"] = version;
