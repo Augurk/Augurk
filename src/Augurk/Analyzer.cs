@@ -94,7 +94,7 @@ namespace Augurk.Api
             var activeInvocations = new List<DbInvocation>();
 
             // Remove any old invocations in these features
-            foreach(var feature in features)
+            foreach (var feature in features)
             {
                 feature.DirectInvocationSignatures = new List<string>();
             }
@@ -102,11 +102,12 @@ namespace Augurk.Api
             var invocationsToPostProcess = new List<(DbInvocation dbInvocation, Invocation invocationToFlatten)>();
 
             // Determine the possible entrypoints
-            foreach(var invocation in reports.SelectMany(report => report.RootInvocations).Where(ri => ri.RegularExpressions?.Length > 0))
+            foreach (var invocation in reports.SelectMany(report => report.RootInvocations).Where(ri => ri.RegularExpressions?.Length > 0))
             {
                 // Collect the features which perform this invocation
                 var invokingFeatures = new List<DbFeature>();
-                foreach (var expression in invocation.RegularExpressions) {
+                foreach (var expression in invocation.RegularExpressions)
+                {
                     invokingFeatures.AddRange(
                         featureStepMaps.Where(map => map.WhereSteps.Any(step => Regex.IsMatch(step, expression)))
                         .Select(map => map.Feature));
@@ -117,16 +118,17 @@ namespace Augurk.Api
                 {
                     // Update the features
                     var localInvocations = GetHighestLocalInvocations(invocation).ToList();
-                    var localInvocationSignatures = localInvocations.SelectMany(i => {
+                    var localInvocationSignatures = localInvocations.SelectMany(i =>
+                    {
                         List<string> invocations = new List<string>();
                         invocations.Add(i.Signature);
                         // Add the interface definitions, if available
-                        if(i.InterfaceDefinitions != null)
+                        if (i.InterfaceDefinitions != null)
                         {
                             invocations.AddRange(i.InterfaceDefinitions);
                         }
                         return invocations;
-                        }).ToList();
+                    }).ToList();
                     invokingFeatures.ForEach(feature => feature.DirectInvocationSignatures.AddRange(localInvocationSignatures));
 
                     // Prepare the invocation for storage
@@ -162,7 +164,7 @@ namespace Augurk.Api
 
             var strippedDbInvocations = activeInvocations.Select(ai => ai.Signature).ToList();
             // Flatten the invocations
-            foreach(var invocation in invocationsToPostProcess)
+            foreach (var invocation in invocationsToPostProcess)
             {
                 invocation.dbInvocation.InvokedSignatures = FlattenUntilAMatchIsFound(invocation.invocationToFlatten, strippedDbInvocations);
             }

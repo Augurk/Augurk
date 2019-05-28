@@ -20,7 +20,7 @@ namespace Augurk.Api.Managers
 {
     public interface IConfigurationManager
     {
-                /// <summary>
+        /// <summary>
         /// Retrieves the configuration; or, creates it if it does not exist.
         /// </summary>
         /// <returns>A <see cref="Configuration"/> instance containing the configuration.</returns>

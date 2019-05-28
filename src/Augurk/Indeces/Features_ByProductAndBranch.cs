@@ -32,11 +32,11 @@ namespace Augurk.Api.Indeces
                                          .Union(feature.Scenarios.SelectMany(scenario => scenario.Tags))
                                          .Distinct()
                               select new
-                                  {
-                                      Tag = tag,
-                                      feature.Title,
-                                      feature.Product,
-                                      feature.Group
+                              {
+                                  Tag = tag,
+                                  feature.Title,
+                                  feature.Product,
+                                  feature.Group
                               };
 
             StoreAllFields(FieldStorage.Yes);
@@ -44,7 +44,7 @@ namespace Augurk.Api.Indeces
 
         public class TaggedFeature
         {
-            public string Tag { get; set;}
+            public string Tag { get; set; }
             public string Product { get; set; }
             public string Title { get; set; }
             public string Group { get; set; }

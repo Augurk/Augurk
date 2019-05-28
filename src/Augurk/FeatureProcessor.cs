@@ -43,14 +43,14 @@ namespace Augurk
             {
                 string[] tagParts = tag.Split(new[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
 
-                    if (_notImplementedTags.Contains(tagParts[0]))
-                    {
-                        feature.Properties |= FeatureProperties.NotImplemented;
-                    }
-                    if (_ignoreTags.Contains(tagParts[0]))
-                    {
-                        feature.Properties |= FeatureProperties.Ignore;
-                    }
+                if (_notImplementedTags.Contains(tagParts[0]))
+                {
+                    feature.Properties |= FeatureProperties.NotImplemented;
+                }
+                if (_ignoreTags.Contains(tagParts[0]))
+                {
+                    feature.Properties |= FeatureProperties.Ignore;
+                }
             }
 
             // Remove all server tags
@@ -66,7 +66,7 @@ namespace Augurk
         {
             foreach (var tag in feature.Tags)
             {
-                string[] tagParts = tag.Split(new[] {":"}, 2, StringSplitOptions.RemoveEmptyEntries);
+                string[] tagParts = tag.Split(new[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
                 if (_childTags.Contains(tagParts[0]))
                 {
                     return tagParts[1];

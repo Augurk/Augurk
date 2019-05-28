@@ -27,11 +27,11 @@ namespace Augurk.Api.Indeces.Analysis
         {
             Map = reports => from report in reports
                              let metadata = MetadataFor(report)
-                              select new
-                              {
-                                  Product = metadata.Value<string>("Product"),
-                                  Version = metadata.Value<string>("Version")
-                              };
+                             select new
+                             {
+                                 Product = metadata.Value<string>("Product"),
+                                 Version = metadata.Value<string>("Version")
+                             };
         }
 
         public class Entry

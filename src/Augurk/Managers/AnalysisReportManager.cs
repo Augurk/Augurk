@@ -75,7 +75,7 @@ namespace Augurk.Api.Managers
         /// <returns>A range of <see cref="AnalysisReport"/> instances stored for the provided product and version.</returns>
         public IEnumerable<AnalysisReport> GetAnalysisReportsByProductAndVersionAsync(string productName, string version)
         {
-            using(var session = _storeProvider.Store.OpenSession())
+            using (var session = _storeProvider.Store.OpenSession())
             {
                 return session.Query<AnalysisReports_ByProductAndVersion.Entry, AnalysisReports_ByProductAndVersion>()
                            .Where(report => report.Product == productName && report.Version == version)
@@ -110,7 +110,7 @@ namespace Augurk.Api.Managers
 
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                foreach(var invocation in invocations)
+                foreach (var invocation in invocations)
                 {
                     await session.StoreAsync(invocation, $"{productName}/{version}/{invocation.Signature}");
                     session.SetExpirationAccordingToConfiguration(invocation, version, configuration);

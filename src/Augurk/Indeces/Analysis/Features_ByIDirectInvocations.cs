@@ -27,7 +27,7 @@ namespace Augurk.Api.Indeces.Analysis
     {
         public Features_ByDirectInvocations()
         {
-            Map = features => from feature in features    
+            Map = features => from feature in features
                               select new
                               {
                                   feature.Title,

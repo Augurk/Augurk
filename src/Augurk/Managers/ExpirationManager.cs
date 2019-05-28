@@ -36,10 +36,10 @@ namespace Augurk.Api.Managers
 
         public async Task ApplyExpirationPolicyAsync(Configuration configuration)
         {
-            if(configuration.ExpirationEnabled)
-                {
-                    // Set the expiration on all records that have a matching version
-                    var query = $@"from @all_docs as d
+            if (configuration.ExpirationEnabled)
+            {
+                // Set the expiration on all records that have a matching version
+                var query = $@"from @all_docs as d
                                     where regex(d.Version, '{HttpUtility.JavaScriptStringEncode(configuration.ExpirationRegex)}')
                                     update
                                     {{
@@ -53,10 +53,10 @@ namespace Augurk.Api.Managers
                                         this[""@metadata""][""@expires""] = expirationDate; 
                                         put(id(d), this);
                                     }}";
-                    var operation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() {Query = query}));
+                var operation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() { Query = query }));
 
-                    // Remove the expiration from all versioned records that do not have a matching version
-                    query = $@"from @all_docs as d
+                // Remove the expiration from all versioned records that do not have a matching version
+                query = $@"from @all_docs as d
                                 where exists(d.Version) AND NOT regex(d.Version, '{HttpUtility.JavaScriptStringEncode(configuration.ExpirationRegex)}')
                                 update
                                 {{
@@ -68,15 +68,15 @@ namespace Augurk.Api.Managers
                                     delete this[""@metadata""][""@expires""]; 
                                     put(id(d), this);
                                 }}";
-                    var secondOperation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() {Query = query}));
-                
-                    await operation.WaitForCompletionAsync();
-                    await secondOperation.WaitForCompletionAsync();
-                }
-                else 
-                {
-                    // Remove the expiration from all versioned records
-                    var query = $@"from @all_docs as d
+                var secondOperation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() { Query = query }));
+
+                await operation.WaitForCompletionAsync();
+                await secondOperation.WaitForCompletionAsync();
+            }
+            else
+            {
+                // Remove the expiration from all versioned records
+                var query = $@"from @all_docs as d
                                     where exists(d.Version)
                                     update
                                     {{
@@ -88,9 +88,9 @@ namespace Augurk.Api.Managers
                                         delete this[""@metadata""][""@expires""]; 
                                         put(id(d), this);
                                     }}";
-                    var operation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() {Query = query}));
-                    await operation.WaitForCompletionAsync();
-                }
+                var operation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() { Query = query }));
+                await operation.WaitForCompletionAsync();
+            }
         }
 
     }

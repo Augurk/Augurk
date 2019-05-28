@@ -83,7 +83,7 @@ namespace Augurk.Api.Managers
                 await session.SaveChangesAsync();
             }
 
-            if(originalConfiguration == null 
+            if (originalConfiguration == null
                 || originalConfiguration.ExpirationDays != configuration.ExpirationDays
                 || originalConfiguration.ExpirationEnabled != configuration.ExpirationEnabled
                 || !originalConfiguration.ExpirationRegex.Equals(configuration.ExpirationRegex, StringComparison.Ordinal)

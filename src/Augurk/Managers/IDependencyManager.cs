@@ -30,7 +30,7 @@ namespace Augurk.Api.Managers
         /// the dependency graphs for the unparented features.
         /// </returns>
         Task<IEnumerable<FeatureGraph>> GetTopLevelFeatureGraphsAsync();
-        
+
         /// <summary>
         /// Gets the graph of features depending on the requested feature,
         /// as well as the features the requested feature depends on.

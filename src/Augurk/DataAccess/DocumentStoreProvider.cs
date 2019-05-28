@@ -66,8 +66,8 @@ namespace Augurk
             // This runs async, there is no need to wait on it
             Store.Maintenance.SendAsync(new ConfigureExpirationOperation(new ExpirationConfiguration
             {
-                        Disabled = false,
-                        DeleteFrequencyInSec = 60
+                Disabled = false,
+                DeleteFrequencyInSec = 60
             }));
 
             // Check if we're running in development
