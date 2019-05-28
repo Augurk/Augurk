@@ -398,22 +398,5 @@ namespace Augurk.Api.Managers
                 await session.SaveChangesAsync();
             }
         }
-
-        /// <summary>
-        /// Reset the expiration date for each feature.
-        /// </summary>
-        internal async Task ResetFeatureExpirations(){
-
-            var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
-
-            using (var session = _storeProvider.Store.OpenAsyncSession())
-            {
-                var features = session.Query<DbFeature>();
-
-                foreach(var feature in features){
-                    session.SetExpirationAccordingToConfiguration(feature, feature.Version, configuration);
-                }
-            }
-        }
     }
 }

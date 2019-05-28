@@ -67,7 +67,7 @@ namespace Augurk
             Store.Maintenance.SendAsync(new ConfigureExpirationOperation(new ExpirationConfiguration
             {
                         Disabled = false,
-                        DeleteFrequencyInSec = 3600
+                        DeleteFrequencyInSec = 60
             }));
 
             // Check if we're running in development

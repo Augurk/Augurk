@@ -42,17 +42,20 @@ namespace Augurk.Api.Controllers.V2
         private readonly ICustomizationManager _customizationManager;
         private readonly IConfigurationManager _configurationManager;
         private readonly IFeatureManager _featureManager;
+        private readonly IExpirationManager _expirationManager;
         private readonly IDocumentStore _documentStore;
 
 
         public AugurkController(ICustomizationManager customizationManager, 
                                 IConfigurationManager configurationManager, 
                                 IFeatureManager featureManager,
+                                IExpirationManager expirationManager,
                                 IDocumentStoreProvider storeProvider)
         {
             _customizationManager = customizationManager ?? throw new ArgumentNullException(nameof(customizationManager));
             _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
             _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
+            _expirationManager = expirationManager ?? throw new ArgumentNullException(nameof(expirationManager));
             _documentStore = storeProvider?.Store ?? throw new ArgumentNullException(nameof(storeProvider));
         }
 
@@ -134,7 +137,7 @@ namespace Augurk.Api.Controllers.V2
                 System.IO.File.Delete(filePath);
 
                 // Set the expirations as configured
-                await _featureManager.ResetFeatureExpirations();
+                await _expirationManager.ApplyExpirationPolicyAsync(await _configurationManager.GetOrCreateConfigurationAsync());
 
                 return NoContent();
             }

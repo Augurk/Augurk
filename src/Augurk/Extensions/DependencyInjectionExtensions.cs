@@ -40,6 +40,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">An <see cref="IServiceCollection" /> to add the services to.</param>
         public static void AddManagers(this IServiceCollection services)
         {
+            services.AddSingleton<IExpirationManager, ExpirationManager>();
             services.AddSingleton<IConfigurationManager, ConfigurationManager>();
             services.AddSingleton<ICustomizationManager, CustomizationManager>();
 
