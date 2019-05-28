@@ -40,7 +40,7 @@ namespace Augurk.Api
         /// <remarks>
         /// Each call will result a new instance being returned.
         /// </remarks>
-        public static Configuration Configuration => 
+        public static Configuration Configuration =>
             new Configuration
             {
                 ExpirationEnabled = false,

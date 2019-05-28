@@ -33,10 +33,10 @@ namespace Augurk
                 // Set the expiration in the metadata
                 var metadata = session.Advanced.GetMetadataFor(document);
                 DateTime lastModifiedDate = DateTime.UtcNow;
-                if(metadata.TryGetValue(Constants.Documents.Metadata.LastModified, out object value))
+                if (metadata.TryGetValue(Constants.Documents.Metadata.LastModified, out object value))
                 {
                     lastModifiedDate = DateTime.Parse(value.ToString());
-                } 
+                }
                 metadata[Constants.Documents.Metadata.Expires] = lastModifiedDate.Date.AddDays(configuration.ExpirationDays);
             }
             else

@@ -34,7 +34,7 @@ namespace Augurk.Test
         /// Returns the document store provider for the current test.
         /// </summary>
         /// <value></value>
-        protected IDocumentStoreProvider DocumentStoreProvider 
+        protected IDocumentStoreProvider DocumentStoreProvider
         {
             get { return _documentStoreProvider.Value; }
         }
@@ -45,7 +45,7 @@ namespace Augurk.Test
         /// <value></value>
         protected IDocumentStore DocumentStore
         {
-            get { return DocumentStoreProvider.Store; }    
+            get { return DocumentStoreProvider.Store; }
         }
 
         /// <summary>

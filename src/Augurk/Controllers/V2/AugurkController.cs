@@ -46,8 +46,8 @@ namespace Augurk.Api.Controllers.V2
         private readonly IDocumentStore _documentStore;
 
 
-        public AugurkController(ICustomizationManager customizationManager, 
-                                IConfigurationManager configurationManager, 
+        public AugurkController(ICustomizationManager customizationManager,
+                                IConfigurationManager configurationManager,
                                 IFeatureManager featureManager,
                                 IExpirationManager expirationManager,
                                 IDocumentStoreProvider storeProvider)

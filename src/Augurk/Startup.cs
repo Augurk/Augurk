@@ -44,7 +44,7 @@ namespace Augurk
                         options.GroupNameFormat = "'v'VVV";
                         options.SubstituteApiVersionInUrl = true;
                     });
-            
+
             // Add the rest of the MVC stack so we can use API controllers
             // Note: This will probably change in .NET Core 3.0 where we can more finely grained specify
             //       the parts of ASP.NET Core that we want to use.
@@ -104,8 +104,8 @@ namespace Augurk
             var info = new Info()
             {
                 Version = description.ApiVersion.ToString(),
-                Title = description.GroupName.ToUpperInvariant() == "V1" ? 
-                    "Augurk Branch based API" : 
+                Title = description.GroupName.ToUpperInvariant() == "V1" ?
+                    "Augurk Branch based API" :
                     "Augurk Product based API",
             };
 

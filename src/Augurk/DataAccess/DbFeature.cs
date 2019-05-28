@@ -61,7 +61,7 @@ namespace Augurk.Api
         /// </summary>
         public DbFeature()
         {
-            
+
         }
 
         /// <summary>

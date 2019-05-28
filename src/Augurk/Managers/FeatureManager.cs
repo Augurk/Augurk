@@ -131,7 +131,7 @@ namespace Augurk.Api.Managers
                                         .Take(1000)
                                         .ToListAsync();
 
-                foreach (var uniqueFeature in data.GroupBy(record => ( group: record.Group, title: record.Title)))
+                foreach (var uniqueFeature in data.GroupBy(record => (group: record.Group, title: record.Title)))
                 {
                     var latestFeature = uniqueFeature.OrderByDescending(record => record.Version, new SemanticVersionComparer()).First();
                     var featureDescription = new FeatureDescription()
@@ -233,9 +233,9 @@ namespace Augurk.Api.Managers
         /// <returns>An enumerable collection of <see cref="DbFeature"/> instances.</returns>
         public async Task<IEnumerable<DbFeature>> GetDbFeaturesByProductAndVersionAsync(string productName, string version)
         {
-            using(var session = _storeProvider.Store.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                var featureQuery =  session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                var featureQuery = session.Query<DbFeature, Features_ByTitleProductAndGroup>()
                                             .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
                                                            && feature.Version.Equals(version, StringComparison.OrdinalIgnoreCase));
 
@@ -263,9 +263,9 @@ namespace Augurk.Api.Managers
         /// <param name="features">A collection of <see cref="DbFeature"/> instances that should be persisted.</param>
         public async Task PersistDbFeatures(IEnumerable<DbFeature> features)
         {
-            using(var session = _storeProvider.Store.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                foreach(var feature in features)
+                foreach (var feature in features)
                 {
                     await session.StoreAsync(feature, feature.GetIdentifier());
                 }

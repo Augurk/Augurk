@@ -38,7 +38,7 @@ namespace Augurk.Api.Managers
             _analysisReportManager = analysisReportManager ?? throw new ArgumentNullException(nameof(analysisReportManager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-        
+
         /// <summary>
         /// Gets the top level feature graphs, that is the graphs 
         /// for features that do not have a parent feature.
@@ -56,18 +56,18 @@ namespace Augurk.Api.Managers
                 features.Count, invocations.Count);
 
             var invocationFeatures = (from invocation in invocations
-                                        select new
-                                        {
-                                            Invocation = invocation,
-                                            Features = features.Where(f => f.DirectInvocationSignatures != null && f.DirectInvocationSignatures.Intersect(invocation.InvokedSignatures).Any()).ToList()
-                                        }).ToList();
+                                      select new
+                                      {
+                                          Invocation = invocation,
+                                          Features = features.Where(f => f.DirectInvocationSignatures != null && f.DirectInvocationSignatures.Intersect(invocation.InvokedSignatures).Any()).ToList()
+                                      }).ToList();
 
             var featuresInvocations = (from feature in features
-                                        select new
-                                        {
-                                            Feature = feature,
-                                            Invocations = invocationFeatures.Where(i => feature.DirectInvocationSignatures != null && feature.DirectInvocationSignatures.Contains(i.Invocation.Signature))
-                                        }).ToList();
+                                       select new
+                                       {
+                                           Feature = feature,
+                                           Invocations = invocationFeatures.Where(i => feature.DirectInvocationSignatures != null && feature.DirectInvocationSignatures.Contains(i.Invocation.Signature))
+                                       }).ToList();
 
             var featureGraphs = new Dictionary<DbFeature, FeatureGraph>();
             foreach (var feature in featuresInvocations)
@@ -137,8 +137,8 @@ namespace Augurk.Api.Managers
                     return;
                 }
             }
-            
-            if(node.DependsOn.Any(dependency => dependency.DescribesSameFeature(result))
+
+            if (node.DependsOn.Any(dependency => dependency.DescribesSameFeature(result))
                && !result.Dependants.Any(dependant => dependant.DescribesSameFeature(node)))
             {
                 result.Dependants.Add(new FeatureGraph()

@@ -44,6 +44,6 @@ namespace Augurk.Entities
         /// <summary>
         /// Gets or sets the table argument for this step.
         /// </summary>
-        public Table TableArgument {get ;set;}
+        public Table TableArgument { get; set; }
     }
 }

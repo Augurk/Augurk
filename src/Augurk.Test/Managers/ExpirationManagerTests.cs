@@ -47,7 +47,7 @@ namespace Augurk.Test.Managers
                 ExpirationRegex = @"\d"
             };
 
-            var dbFeature = new DbFeature {Version = "1.0.0"};
+            var dbFeature = new DbFeature { Version = "1.0.0" };
             DateTime expectedUploadDate = await PersistDocument("testdocument1", dbFeature);
 
             // Act
@@ -61,19 +61,20 @@ namespace Augurk.Test.Managers
             await AssertMetadata("testdocument1", expectedUploadDate, expectedUploadDate.AddDays(configuration.ExpirationDays));
         }
 
-        public async Task RemoveExpirationFromNonMatchingVersion(){}
+        public async Task RemoveExpirationFromNonMatchingVersion() { }
 
-        public async Task SetUploadDateOnNonMatchingVersion(){
-        
+        public async Task SetUploadDateOnNonMatchingVersion()
+        {
+
         }
 
-        public async Task RemoveExpirationWhenDisabled(){}
+        public async Task RemoveExpirationWhenDisabled() { }
 
-        public async Task SetUploadDateOnNewDocumentsWhenDisabled(){}
+        public async Task SetUploadDateOnNewDocumentsWhenDisabled() { }
 
-        public async Task DoNotSetExpirationOnNonVersionedDocuments(){}
+        public async Task DoNotSetExpirationOnNonVersionedDocuments() { }
 
-        public async Task DoNotRemoveExpirationFromNonVersionedDocuments(){}
+        public async Task DoNotRemoveExpirationFromNonVersionedDocuments() { }
 
         private DateTime ParseWithoutMilliseconds(string dateString)
         {
@@ -103,23 +104,24 @@ namespace Augurk.Test.Managers
             {
                 var document = await session.LoadAsync<DbFeature>(documentId);
                 var metadata = session.Advanced.GetMetadataFor(document);
-                if(expectedUploadDate.HasValue)
+                if (expectedUploadDate.HasValue)
                 {
                     metadata["upload-date"].ShouldNotBeNull();
                     DateTime uploadDate = ParseWithoutMilliseconds(metadata["upload-date"].ToString());
                     uploadDate.ShouldBe(expectedUploadDate.Value);
                 }
-                else{
+                else
+                {
                     metadata["upload-date"].ShouldBeNull();
                 }
-                if(expectedExpireDate.HasValue)
+                if (expectedExpireDate.HasValue)
                 {
 
                     metadata[Constants.Documents.Metadata.Expires].ShouldNotBeNull();
                     DateTime expires = ParseWithoutMilliseconds(metadata[Constants.Documents.Metadata.Expires].ToString());
                     expires.ShouldBe(expectedExpireDate.Value);
                 }
-                else 
+                else
                 {
                     metadata[Constants.Documents.Metadata.Expires].ShouldBeNull();
                 }
