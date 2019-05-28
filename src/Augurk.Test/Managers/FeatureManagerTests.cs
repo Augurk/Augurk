@@ -116,6 +116,79 @@ namespace Augurk.Test.Managers
         }
 
         /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class can get both groups when there's a single feature
+        /// under multiple groups.
+        /// </summary>
+        [Fact]
+        public async Task CanGetGroupedFeatureDescriptions_WithSameFeatureUnderMultipleGroups()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "Group2", "MyFirstFeature", "0.0.0");
+                await session.SaveChangesAsync();
+            }
+
+            WaitForIndexing(documentStoreProvider.Store);
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.GetGroupedFeatureDescriptionsAsync("MyProduct");
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(2);
+
+            var firstGroup = result.FirstOrDefault();
+            firstGroup.ShouldNotBeNull();
+            firstGroup.Features.Count().ShouldBe(1);
+            firstGroup.Features.FirstOrDefault()?.Title.ShouldBe("MyFirstFeature");
+
+            var secondGroup = result.LastOrDefault();
+            secondGroup.ShouldNotBeNull();
+            secondGroup.Features.Count().ShouldBe(1);
+            secondGroup.Features.FirstOrDefault()?.Title.ShouldBe("MyFirstFeature");
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="FeatureManager" /> class does not duplicate features if multiple versions
+        /// of the same feature exist.
+        /// </summary>
+        [Fact]
+        public async Task CanGetGroupedFeatureDescriptions_DoesNotReturnSameFeatureIfMultipleVersionsExist()
+        {
+            // Arrange
+            var documentStoreProvider = GetDocumentStoreProvider();
+            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
+
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
+                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "1.0.0");
+                await session.SaveChangesAsync();
+            }
+
+            WaitForIndexing(documentStoreProvider.Store);
+
+            // Act
+            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var result = await sut.GetGroupedFeatureDescriptionsAsync("MyProduct");
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Count().ShouldBe(1);
+
+            var firstGroup = result.FirstOrDefault();
+            firstGroup.ShouldNotBeNull();
+            firstGroup.Features.Count().ShouldBe(1);
+            firstGroup.Features.FirstOrDefault()?.Title.ShouldBe("MyFirstFeature");
+        }
+
+        /// <summary>
         /// Tests that the <see cref="FeatureManager" /> class can get feature descriptions based on a branch and a tag.
         /// </summary>
         [Fact]
