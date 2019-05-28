@@ -48,7 +48,7 @@ namespace Augurk.Test.Managers
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                var dbFeature = new DbFeature {Version = "1.0.0"};
+                var dbFeature = new DbFeature { Version = "1.0.0" };
                 await session.StoreAsync(dbFeature, "testdocument1");
                 await session.SaveChangesAsync();
                 var metadata = session.Advanced.GetMetadataFor(dbFeature);

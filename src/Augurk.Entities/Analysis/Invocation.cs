@@ -60,6 +60,6 @@ namespace Augurk.Entities.Analysis
         /// <summary>
         /// The ordered invocations made from with this invocation.
         /// </summary>
-        public Invocation[] Invocations {get;set;}
+        public Invocation[] Invocations { get; set; }
     }
 }

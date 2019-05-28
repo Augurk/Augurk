@@ -43,7 +43,7 @@ namespace Augurk.Test.Managers
             // Assert
             result.ShouldNotBeNull();
             result.Count().ShouldBe(2);
-            result.SequenceEqual(new [] { "Product1", "Product2" }).ShouldBeTrue();
+            result.SequenceEqual(new[] { "Product1", "Product2" }).ShouldBeTrue();
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = GetDocumentStoreProvider();
-           await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
+            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             var existingFeature1 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MyFirstFeature", Version = "0.0.0" };
             var existingFeature2 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MyFirstFeature", Version = "1.0.0" };
@@ -213,7 +213,7 @@ namespace Augurk.Test.Managers
 
             var feature1 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MyFirstFeature", Version = "0.0.0" };
             var feature2 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MySecondFeature", Version = "0.0.0" };
-            
+
             feature1.Tags = new List<string> { "tag1", "tag2" };
             feature2.Tags = new List<string> { "tag2", "tag3" };
 

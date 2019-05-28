@@ -46,7 +46,7 @@ namespace Augurk.IntegrationTest
                 _.PostFeature(feature, "MyProduct", "MyGroup");
                 _.StatusCodeShouldBe(HttpStatusCode.Accepted);
             });
-            
+
             var result = await System.Scenario(_ =>
             {
                 _.Get.Url("/api/v2/export");

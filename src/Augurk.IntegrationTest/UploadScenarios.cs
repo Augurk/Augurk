@@ -47,7 +47,7 @@ namespace Augurk.IntegrationTest
             });
 
             WaitForIndexing(Store);
-            
+
             var result = await System.Scenario(_ =>
             {
                 _.GetFeature(productName, groupName, expectedFeature.Title);

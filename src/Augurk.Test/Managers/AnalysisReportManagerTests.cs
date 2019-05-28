@@ -80,9 +80,9 @@ namespace Augurk.Test.Managers
             var documentStoreProvider = GetDocumentStoreProvider();
             configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration
             {
-                 ExpirationEnabled = true,
-                 ExpirationDays = 1,
-                 ExpirationRegex = @"\d\.\d\.\d"
+                ExpirationEnabled = true,
+                ExpirationDays = 1,
+                ExpirationRegex = @"\d\.\d\.\d"
             });
 
             var expectedReport = new AnalysisReport
@@ -199,7 +199,7 @@ namespace Augurk.Test.Managers
 
             // Act
             var sut = new AnalysisReportManager(documentStoreProvider, configurationManager, logger);
-            await sut.PersistDbInvocationsAsync("Product1", "0.0.0", new [] { expectedInvocation1, expectedInvocation2 });
+            await sut.PersistDbInvocationsAsync("Product1", "0.0.0", new[] { expectedInvocation1, expectedInvocation2 });
 
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -234,14 +234,14 @@ namespace Augurk.Test.Managers
             var expectedInvocation = new DbInvocation { Signature = "Foo()" };
             configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration
             {
-                 ExpirationEnabled = true,
-                 ExpirationDays = 1,
-                 ExpirationRegex = @"\d\.\d\.\d"
+                ExpirationEnabled = true,
+                ExpirationDays = 1,
+                ExpirationRegex = @"\d\.\d\.\d"
             });
 
             // Act
             var sut = new AnalysisReportManager(documentStoreProvider, configurationManager, logger);
-            await sut.PersistDbInvocationsAsync("Product1", "0.0.0", new [] { expectedInvocation });
+            await sut.PersistDbInvocationsAsync("Product1", "0.0.0", new[] { expectedInvocation });
 
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())

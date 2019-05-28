@@ -73,11 +73,11 @@ namespace Augurk.IntegrationTest
         /// <summary>
         /// Gets the <see cref="SystemUnderTest" />.
         /// </summary>
-        protected SystemUnderTest System { get { return _fixture.System; }}
+        protected SystemUnderTest System { get { return _fixture.System; } }
 
         /// <summary>
         /// Gets the <see cref="IDocumentStore" />.
         /// </summary>
-        protected IDocumentStore Store { get { return _fixture.Store; }}
+        protected IDocumentStore Store { get { return _fixture.Store; } }
     }
 }

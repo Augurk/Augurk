@@ -88,7 +88,7 @@ namespace Augurk.Test.Managers
             var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
             var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
             var unlinkedFeature = CreateDbFeature("UnlinkedFeature");
-            _featureManager.GetAllDbFeatures().Returns(new [] { callingFeature, calledFeature, unlinkedFeature });
+            _featureManager.GetAllDbFeatures().Returns(new[] { callingFeature, calledFeature, unlinkedFeature });
             _analysisReportManager.GetAllDbInvocations().Returns(new DbInvocation[]
             {
                 new DbInvocation()
@@ -130,7 +130,7 @@ namespace Augurk.Test.Managers
             var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
             var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
             var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
-            _featureManager.GetAllDbFeatures().Returns(new [] { callingFeature, calledFeature, anotherCalledFeature });
+            _featureManager.GetAllDbFeatures().Returns(new[] { callingFeature, calledFeature, anotherCalledFeature });
             _analysisReportManager.GetAllDbInvocations().Returns(new DbInvocation[]
             {
                 new DbInvocation()
@@ -174,7 +174,7 @@ namespace Augurk.Test.Managers
             var callingFeature = CreateDbFeature("CallingFeature", "SomeClass.Foo()");
             var calledFeature = CreateDbFeature("CalledFeature", "SomeOtherClass.Bar()");
             var anotherCalledFeature = CreateDbFeature("AnotherCalledFeature", "SomeOtherClass.JuiceBar()");
-            _featureManager.GetAllDbFeatures().Returns(new  [] { callingFeature, calledFeature, anotherCalledFeature });
+            _featureManager.GetAllDbFeatures().Returns(new[] { callingFeature, calledFeature, anotherCalledFeature });
             _analysisReportManager.GetAllDbInvocations().Returns(new DbInvocation[]
             {
                 new DbInvocation()

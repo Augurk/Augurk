@@ -354,7 +354,7 @@ namespace Augurk.Test.Managers
                 Title = "My Feature",
                 Description = "As a math idiot",
             };
-            
+
             // Act
             var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
             var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
@@ -392,7 +392,7 @@ namespace Augurk.Test.Managers
                 ExpirationDays = 1,
                 ExpirationRegex = @"\d\.\d\.\d"
             });
-            
+
             // Act
             var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
             var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
@@ -428,7 +428,7 @@ namespace Augurk.Test.Managers
                 await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Feature", "0.0.0", "tag1");
                 await session.SaveChangesAsync();
             }
-            
+
             // Act
             var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
             var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
@@ -474,7 +474,7 @@ namespace Augurk.Test.Managers
                 ExpirationDays = 1,
                 ExpirationRegex = @"\d\.\d\.\d"
             });
-            
+
             // Act
             var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
             var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
@@ -574,14 +574,14 @@ namespace Augurk.Test.Managers
             // Act
             var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
             await sut.DeleteFeaturesAsync("MyProduct", "MyGroup");
-            
+
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 var features = await session.Query<DbFeature>().ToListAsync();
                 features.ShouldNotBeNull();
                 features.Count.ShouldBe(1);
-                
+
                 var remainingFeature = features.FirstOrDefault();
                 remainingFeature.ShouldNotBeNull();
                 remainingFeature.Title.ShouldBe("My Second Feature");
@@ -610,14 +610,14 @@ namespace Augurk.Test.Managers
             // Act
             var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
             await sut.DeleteFeaturesAsync("MyProduct", "MyGroup", "0.0.0");
-            
+
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 var features = await session.Query<DbFeature>().ToListAsync();
                 features.ShouldNotBeNull();
                 features.Count.ShouldBe(1);
-                
+
                 var remainingFeature = features.FirstOrDefault();
                 remainingFeature.ShouldNotBeNull();
                 remainingFeature.Version.ShouldBe("1.0.0");
@@ -647,14 +647,14 @@ namespace Augurk.Test.Managers
             // Act
             var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
             await sut.DeleteFeatureAsync("MyProduct", "MyGroup", "My First Feature");
-            
+
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 var features = await session.Query<DbFeature>().ToListAsync();
                 features.ShouldNotBeNull();
                 features.Count.ShouldBe(1);
-                
+
                 var remainingFeature = features.FirstOrDefault();
                 remainingFeature.ShouldNotBeNull();
                 remainingFeature.Title.ShouldBe("My Second Feature");
@@ -680,14 +680,14 @@ namespace Augurk.Test.Managers
             // Act
             var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
             await sut.DeleteFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
-            
+
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 var features = await session.Query<DbFeature>().ToListAsync();
                 features.ShouldNotBeNull();
                 features.Count.ShouldBe(2);
-                
+
                 var remainingFeature1 = features.FirstOrDefault();
                 remainingFeature1.ShouldNotBeNull();
                 remainingFeature1.Title.ShouldBe("My First Feature");
