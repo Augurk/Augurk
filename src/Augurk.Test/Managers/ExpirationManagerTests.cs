@@ -111,7 +111,7 @@ namespace Augurk.Test.Managers
         }
 
         [Fact]
-        public async Task RemoveExpirationWhenDisabled() 
+        public async Task RemoveExpirationWhenDisabled()
         {
             // Arrange
             var configuration = new Configuration()
@@ -122,7 +122,7 @@ namespace Augurk.Test.Managers
             };
 
             var dbFeature = new DbFeature { Version = "1.0.0" };
-            var additionalMetadata = new Dictionary<string, string> { { Constants.Documents.Metadata.Expires, DateTime.UtcNow.ToString() } };
+            var additionalMetadata = new Dictionary<string, object> { { Constants.Documents.Metadata.Expires, DateTime.UtcNow } };
             var expectedUploadDate = await PersistDocument("testdocument1", dbFeature, additionalMetadata);
 
             // Act
@@ -136,7 +136,7 @@ namespace Augurk.Test.Managers
         }
 
         [Fact]
-        public async Task SetUploadDateOnNewDocumentsWhenDisabled() 
+        public async Task SetUploadDateOnNewDocumentsWhenDisabled()
         {
             // Arrange
             var configuration = new Configuration()
@@ -191,7 +191,8 @@ namespace Augurk.Test.Managers
                 ExpirationEnabled = false
             };
 
-            var expires = ParseWithoutMilliseconds(DateTime.UtcNow.ToString());
+            var utcNow = DateTime.UtcNow;
+            var expires = new DateTime(utcNow.Year, utcNow.Month, utcNow.Day, utcNow.Hour, utcNow.Minute, utcNow.Second);
             var additionalMetadata = new Dictionary<string, object> { { Constants.Documents.Metadata.Expires, expires } };
             await PersistDocument("testdocument1", new { SomeProperty = "SomeValue" }, additionalMetadata);
 
