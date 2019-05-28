@@ -32,7 +32,7 @@ namespace Augurk.Test.Managers
         public async Task GetsAvailableVersionsForFeature()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -60,7 +60,7 @@ namespace Augurk.Test.Managers
         public async Task GetsPreviouslyStoredVersion()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
@@ -82,7 +82,7 @@ namespace Augurk.Test.Managers
         public async Task CanGetGroupedFeatureDescriptions()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -123,7 +123,7 @@ namespace Augurk.Test.Managers
         public async Task CanGetGroupedFeatureDescriptions_WithSameFeatureUnderMultipleGroups()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -162,7 +162,7 @@ namespace Augurk.Test.Managers
         public async Task CanGetGroupedFeatureDescriptions_DoesNotReturnSameFeatureIfMultipleVersionsExist()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -195,7 +195,7 @@ namespace Augurk.Test.Managers
         public async Task CanGetFeatureDescriptionsByBranchAndTagAsync()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByProductAndBranch());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -226,7 +226,7 @@ namespace Augurk.Test.Managers
         public async Task CanGetFeatureDescriptionsByProductAndGroupAsync()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -256,7 +256,7 @@ namespace Augurk.Test.Managers
         public async Task CanGetDbFeaturesByProductAndVersionAsync()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -291,7 +291,7 @@ namespace Augurk.Test.Managers
         public async Task CanGetAllDbFeatures()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
@@ -316,7 +316,7 @@ namespace Augurk.Test.Managers
         public async Task CanPersistDbFeatures()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var expectedFeature1 = TestExtensions.GenerateDbFeature("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
             var expectedFeature2 = TestExtensions.GenerateDbFeature("MyProduct", "MyGroup", "MySecondFeature", "0.0.0");
 
@@ -348,7 +348,7 @@ namespace Augurk.Test.Managers
         public async Task CanInsertNewFeature()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var feature = new Feature
             {
                 Title = "My Feature",
@@ -379,7 +379,7 @@ namespace Augurk.Test.Managers
         public async Task SetsExpirationIfEnabledWhenInsertingNewFeature()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var feature = new Feature
             {
                 Title = "My Feature",
@@ -415,7 +415,7 @@ namespace Augurk.Test.Managers
         public async Task CanUpdateExistingFeature()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var feature = new Feature
             {
                 Title = "My Feature",
@@ -454,7 +454,7 @@ namespace Augurk.Test.Managers
         public async Task SetsExpirationIfEnabledWhenUpdatingExistingFeature()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var feature = new Feature
             {
                 Title = "My Feature",
@@ -497,7 +497,7 @@ namespace Augurk.Test.Managers
         public async Task CanPersistTestResults()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var expectedTestResults = new FeatureTestResult
             {
                 FeatureTitle = "My Feature",
@@ -534,7 +534,7 @@ namespace Augurk.Test.Managers
         public async Task ThrowsWhenStoringTestResultsForNonExistingFeature()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var expectedTestResults = new FeatureTestResult
             {
                 FeatureTitle = "My Feature",
@@ -559,7 +559,7 @@ namespace Augurk.Test.Managers
         public async Task CanDeleteFeaturesByProductAndGroup()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -595,7 +595,7 @@ namespace Augurk.Test.Managers
         public async Task CanDeleteFeaturesByProductGroupAndVersion()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -631,7 +631,7 @@ namespace Augurk.Test.Managers
         public async Task CanDeleteFeatureByProductGroupAndTitle()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -668,7 +668,7 @@ namespace Augurk.Test.Managers
         public async Task CanDeleteFeatureByProductGroupTitleAndVersion()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");

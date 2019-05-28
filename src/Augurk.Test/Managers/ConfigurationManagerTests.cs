@@ -36,7 +36,7 @@ namespace Augurk.Test.Managers
         public async Task GetsExistingConfiguration()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var expectedConfiguration = new Configuration()
             {
                 ExpirationEnabled = true,
@@ -69,7 +69,7 @@ namespace Augurk.Test.Managers
         public async Task CreatesDefaultConfigurationIfNoneExists()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
 
             // Act
             var sut = new ConfigurationManager(documentStoreProvider, Substitute.For<IExpirationManager>());
@@ -89,7 +89,7 @@ namespace Augurk.Test.Managers
         public async Task CanPersistConfiguration()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var newConfiguration = new Configuration
             {
                 ExpirationEnabled = true,

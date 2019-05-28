@@ -25,7 +25,7 @@ namespace Augurk.Test.Managers
         public async Task GetsProducts()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
@@ -53,7 +53,7 @@ namespace Augurk.Test.Managers
         public async Task GetsProductDescription()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Products_ByName());
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
@@ -84,7 +84,7 @@ namespace Augurk.Test.Managers
         public async Task CanInsertProductDescription()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var identifier = new DbProduct { Name = "MyProduct" }.GetIdentifier();
 
             // Act
@@ -107,7 +107,7 @@ namespace Augurk.Test.Managers
         public async Task CanUpdateProductDescription()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var existingProduct = new DbProduct { Name = "MyProduct", DescriptionMarkdown = "# Hello World!" };
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
@@ -134,7 +134,7 @@ namespace Augurk.Test.Managers
         public async Task CanDeleteProduct()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             var existingFeature1 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MyFirstFeature", Version = "0.0.0" };
@@ -171,7 +171,7 @@ namespace Augurk.Test.Managers
         public async Task CanDeleteProductVersion()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
             var existingFeature1 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MyFirstFeature", Version = "0.0.0" };
@@ -208,7 +208,7 @@ namespace Augurk.Test.Managers
         public async Task CanGetTags()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByProductAndBranch());
 
             var feature1 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MyFirstFeature", Version = "0.0.0" };

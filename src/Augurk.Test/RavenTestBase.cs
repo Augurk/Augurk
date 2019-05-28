@@ -28,6 +28,26 @@ namespace Augurk.Test
     /// </summary>
     public abstract class RavenTestBase : RavenTestDriver
     {
+        private readonly Lazy<IDocumentStoreProvider> _documentStoreProvider;
+
+        /// <summary>
+        /// Returns the document store provider for the current test.
+        /// </summary>
+        /// <value></value>
+        protected IDocumentStoreProvider DocumentStoreProvider 
+        {
+            get { return _documentStoreProvider.Value; }
+        }
+
+        /// <summary>
+        /// Returns the document store for the current test.
+        /// </summary>
+        /// <value></value>
+        protected IDocumentStore DocumentStore
+        {
+            get { return DocumentStoreProvider.Store; }    
+        }
+
         /// <summary>
         /// Pre-configures the RavenDb in memory test server.
         /// </summary>
@@ -43,6 +63,11 @@ namespace Augurk.Test
             System.Console.WriteLine($"Configured RavenDb in memory test driver to use version {dotNetCoreVersion} of .NET Core.");
         }
 
+        public RavenTestBase()
+        {
+            _documentStoreProvider = new Lazy<IDocumentStoreProvider>(GetDocumentStoreProvider);
+        }
+
         /// <summary>
         /// Called before the document store is being initialized.
         /// </summary>
@@ -56,7 +81,7 @@ namespace Augurk.Test
         /// Gets a <see cref="IDocumentStoreProvider" /> implementation pre-configured to return the <see cref="IDocumentStore" />
         /// that's in scope for the current test.
         /// </summary>
-        protected IDocumentStoreProvider GetDocumentStoreProvider()
+        private IDocumentStoreProvider GetDocumentStoreProvider()
         {
             var documentStore = GetDocumentStore();
             var documentStoreProvider = Substitute.For<IDocumentStoreProvider>();

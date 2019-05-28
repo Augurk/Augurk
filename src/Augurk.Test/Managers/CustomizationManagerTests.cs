@@ -36,7 +36,7 @@ namespace Augurk.Test.Managers
         public async Task GetsExistingCustomization()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var expectedConfiguration = new Customization()
             {
                 InstanceName = "MyCustomInstance"
@@ -63,7 +63,7 @@ namespace Augurk.Test.Managers
         public async Task CreatesDefaultCustomizationIfNoneExists()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
 
             // Act
             var sut = new CustomizationManager(documentStoreProvider);
@@ -80,7 +80,7 @@ namespace Augurk.Test.Managers
         public async Task CanPersistCustomization()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var newCustomization = new Customization
             {
                 InstanceName = "MyCustomInstance"

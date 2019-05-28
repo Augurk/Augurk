@@ -40,8 +40,8 @@ namespace Augurk.Api.Managers
         public ConfigurationManager(IDocumentStoreProvider documentStoreProvider, IExpirationManager expirationManager)
         {
             _storeProvider = documentStoreProvider ?? throw new ArgumentNullException(nameof(documentStoreProvider));
+            _expirationManager = expirationManager ?? throw new ArgumentNullException(nameof(expirationManager));
         }
-
         /// <summary>
         /// Retrieves the configuration; or, creates it if it does not exist.
         /// </summary>

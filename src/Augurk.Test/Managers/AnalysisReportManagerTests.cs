@@ -44,7 +44,7 @@ namespace Augurk.Test.Managers
         public async Task StoresAnalysisReport()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var expectedReport = new AnalysisReport
             {
                 AnalyzedProject = "MyProject",
@@ -77,7 +77,7 @@ namespace Augurk.Test.Managers
         public async Task SetsExpirationOnAnalysisReportsIfConfigured()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration
             {
                  ExpirationEnabled = true,
@@ -113,7 +113,7 @@ namespace Augurk.Test.Managers
         public async Task GetsAnalysisReports()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new AnalysisReports_ByProductAndVersion());
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -160,7 +160,7 @@ namespace Augurk.Test.Managers
         public async Task GetsAllDbInvocations()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 await session.StoreAsync(new DbInvocation { Signature = "Foo()" });
@@ -193,7 +193,7 @@ namespace Augurk.Test.Managers
         public async Task PersistsDbInvocations()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var expectedInvocation1 = new DbInvocation { Signature = "Foo()" };
             var expectedInvocation2 = new DbInvocation { Signature = "Bar()" };
 
@@ -230,7 +230,7 @@ namespace Augurk.Test.Managers
         public async Task SetsExpirationOnDbInvocationsIfConfigured()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             var expectedInvocation = new DbInvocation { Signature = "Foo()" };
             configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration
             {
@@ -262,7 +262,7 @@ namespace Augurk.Test.Managers
         public async Task DeletesDbInvocations()
         {
             // Arrange
-            var documentStoreProvider = GetDocumentStoreProvider();
+            var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Invocation_ByProductAndVersion());
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
