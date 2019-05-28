@@ -48,8 +48,7 @@ namespace Augurk.Test.Managers
                 ExpirationRegex = @"\d"
             };
 
-            var dbFeature = new DbFeature { Version = "1.0.0" };
-            DateTime expectedUploadDate = await PersistDocument("testdocument1", dbFeature);
+            DateTime expectedUploadDate = await PersistDocument("testdocument1", new { Version = "1.0.0" });
 
             // Act
             var sut = new ExpirationManager(DocumentStoreProvider);
@@ -75,9 +74,8 @@ namespace Augurk.Test.Managers
                 ExpirationRegex = @"Hello World"
             };
 
-            var dbFeature = new DbFeature { Version = "1.0.0" };
-            var additionalMetadata = new Dictionary<string, string> { { Constants.Documents.Metadata.Expires, DateTime.UtcNow.ToString() } };
-            var expectedUploadDate = await PersistDocument("testdocument1", dbFeature, additionalMetadata);
+            var additionalMetadata = new Dictionary<string, object> { { Constants.Documents.Metadata.Expires, DateTime.UtcNow } };
+            var expectedUploadDate = await PersistDocument("testdocument1", new { Version = "1.0.0" }, additionalMetadata);
 
             // Act
             var sut = new ExpirationManager(DocumentStoreProvider);
@@ -100,8 +98,7 @@ namespace Augurk.Test.Managers
                 ExpirationRegex = @"Hello World"
             };
 
-            var dbFeature = new DbFeature { Version = "1.0.0" };
-            var expectedUploadDate = await PersistDocument("testdocument1", dbFeature);
+            var expectedUploadDate = await PersistDocument("testdocument1", new { Version = "1.0.0" });
 
             // Act
             var sut = new ExpirationManager(DocumentStoreProvider);
@@ -125,8 +122,7 @@ namespace Augurk.Test.Managers
                 ExpirationRegex = @"\d"
             };
 
-            var dbFeature = new DbFeature { Version = "1.0.0" };
-            DateTime expectedUploadDate = await PersistDocument("testdocument1", dbFeature);
+            DateTime expectedUploadDate = await PersistDocument("testdocument1", new { Version = "1.0.0" });
 
             // Act
             var sut = new ExpirationManager(DocumentStoreProvider);
@@ -139,9 +135,51 @@ namespace Augurk.Test.Managers
             await AssertMetadata("testdocument1", expectedUploadDate, null);
         }
 
-        public async Task DoNotSetExpirationOnNonVersionedDocuments() { }
+        [Fact]
+        public async Task DoNotSetExpirationOnNonVersionedDocuments()
+        {
+            // Arrange
+            var configuration = new Configuration()
+            {
+                ExpirationEnabled = true,
+                ExpirationDays = 1,
+                ExpirationRegex = @"Hello World"
+            };
 
-        public async Task DoNotRemoveExpirationFromNonVersionedDocuments() { }
+            await PersistDocument("testdocument1", new { SomeProperty = "SomeValue" });
+
+            // Act
+            var sut = new ExpirationManager(DocumentStoreProvider);
+            await sut.ApplyExpirationPolicyAsync(configuration);
+
+            WaitForIndexing(DocumentStore);
+
+            // Assert
+            await AssertMetadata("testdocument1", null, null);
+        }
+
+        [Fact]
+        public async Task DoNotRemoveExpirationFromNonVersionedDocuments()
+        {
+            // Arrange
+            var configuration = new Configuration()
+            {
+                ExpirationEnabled = false
+            };
+
+            var expires = ParseWithoutMilliseconds(DateTime.UtcNow.ToString());
+            var additionalMetadata = new Dictionary<string, object> { { Constants.Documents.Metadata.Expires, expires } };
+            await PersistDocument("testdocument1", new { SomeProperty = "SomeValue" }, additionalMetadata);
+
+            // Act
+            var sut = new ExpirationManager(DocumentStoreProvider);
+            await sut.ApplyExpirationPolicyAsync(configuration);
+
+            WaitForIndexing(DocumentStore);
+
+            // Assert
+            await AssertMetadata("testdocument1", null, expires);
+        }
 
         private DateTime ParseWithoutMilliseconds(string dateString)
         {
@@ -151,12 +189,11 @@ namespace Augurk.Test.Managers
         }
 
 
-        private async Task<DateTime> PersistDocument(string documentId, object document, Dictionary<string, string> additionalMetadata = null)
+        private async Task<DateTime> PersistDocument(string documentId, object document, Dictionary<string, object> additionalMetadata = null)
         {
             using (var session = DocumentStore.OpenAsyncSession())
             {
                 await session.StoreAsync(document, documentId);
-                await session.SaveChangesAsync();
 
                 if (additionalMetadata != null)
                 {
@@ -167,6 +204,7 @@ namespace Augurk.Test.Managers
                     }
                 }
 
+                await session.SaveChangesAsync();
 
                 WaitForIndexing(DocumentStore);
 
@@ -179,7 +217,7 @@ namespace Augurk.Test.Managers
         {
             using (var session = DocumentStore.OpenAsyncSession())
             {
-                var document = await session.LoadAsync<DbFeature>(documentId);
+                var document = await session.LoadAsync<object>(documentId);
                 var metadata = session.Advanced.GetMetadataFor(document);
                 if (expectedUploadDate.HasValue)
                 {
