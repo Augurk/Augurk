@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/Augurk/bin/Debug/netcoreapp2.1/Augurk.dll",
+            "program": "${workspaceFolder}/src/Augurk/bin/Debug/netcoreapp2.2/Augurk.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Augurk",
             "stopAtEntry": false,

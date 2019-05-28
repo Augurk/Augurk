@@ -4,7 +4,7 @@
 # https://docs.microsoft.com/vsts/pipelines/apps/windows/dot-net
 
 # Build ASP.NET Core project using Azure Pipelines
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core?view=vsts  
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core?view=vsts
 variables:
   buildConfiguration: 'Release'
 
@@ -15,9 +15,9 @@ jobs:
     vmImage: ubuntu-16.04
   steps:
   - task: DotNetCoreInstaller@0
-    displayName: 'Use .NET Core sdk 2.1.506'
+    displayName: 'Use .NET Core sdk 2.2.300'
     inputs:
-      version: 2.1.506
+      version: 2.2.300
 
   - script: |
       dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
@@ -75,9 +75,9 @@ jobs:
     vmImage: ubuntu-16.04
   steps:
     - task: DotNetCoreInstaller@0
-      displayName: 'Use .NET Core sdk 2.1.506'
+      displayName: 'Use .NET Core sdk 2.2.300'
       inputs:
-        version: 2.1.506
+        version: 2.2.300
     - script: |
         dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
         dotnet-gitversion /output buildserver
@@ -99,7 +99,7 @@ jobs:
         command: Run an image
         imageName: '$(imageName):unit-tests'
         runInBackground: false
-        volumes: 
+        volumes:
           '$(Build.ArtifactStagingDirectory):/app/Augurk.Test/TestResults/'
 
     - task: Docker@1
@@ -114,7 +114,7 @@ jobs:
         command: Run an image
         imageName: '$(imageName):integration-tests'
         runInBackground: false
-        volumes: 
+        volumes:
           '$(Build.ArtifactStagingDirectory):/app/Augurk.IntegrationTest/TestResults/'
 
     - task: PublishTestResults@2

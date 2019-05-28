@@ -10,7 +10,7 @@
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and 
+ See the License for the specific language governing permissions and
  limitations under the License.
 */
 using System;
@@ -38,12 +38,7 @@ namespace Augurk
         {
             // Add core MVC services and setup the versioned API explorer
             services.AddMvcCore()
-                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                    .AddVersionedApiExplorer(options =>
-                    {
-                        options.GroupNameFormat = "'v'VVV";
-                        options.SubstituteApiVersionInUrl = true;
-                    });
+                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             // Add the rest of the MVC stack so we can use API controllers
             // Note: This will probably change in .NET Core 3.0 where we can more finely grained specify
@@ -51,6 +46,11 @@ namespace Augurk
             services.AddMvc();
 
             // Setup API versioning
+            services.AddVersionedApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
             services.AddApiVersioning(options => options.AssumeDefaultVersionWhenUnspecified = true);
 
             // Add generation of Swagger documents
