@@ -34,14 +34,12 @@ namespace Augurk
                 var metadata = session.Advanced.GetMetadataFor(document);
                 var lastModifiedDate = DateTime.Parse(metadata[Constants.Documents.Metadata.LastModified].ToString());
                 metadata[Constants.Documents.Metadata.Expires] = lastModifiedDate.Date.AddDays(configuration.ExpirationDays);
-                metadata["@augurk-version"] = version;
             }
             else
             {
                 // Remove the expiration if it is set
                 var metadata = session.Advanced.GetMetadataFor(document);
                 metadata.Remove(Constants.Documents.Metadata.Expires);
-                metadata["@augurk-version"] = version;
             }
         }
 

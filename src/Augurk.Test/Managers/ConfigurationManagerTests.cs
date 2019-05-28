@@ -30,7 +30,7 @@ namespace Augurk.Test.Managers
     public class ConfigurationManagerTests : RavenTestBase
     {
         /// <summary>
-        /// Tests that the ConfigurationManaager retrieves an existing configuration.
+        /// Tests that the ConfigurationManager retrieves an existing configuration.
         /// </summary>
         [Fact]
         public async Task GetsExistingConfiguration()
@@ -52,7 +52,7 @@ namespace Augurk.Test.Managers
             }
 
             // Act
-            var sut = new ConfigurationManager(documentStoreProvider);
+            var sut = new ConfigurationManager(documentStoreProvider, Substitute.For<IExpirationManager>());
             var result = await sut.GetOrCreateConfigurationAsync();
 
             // Assert
@@ -72,7 +72,7 @@ namespace Augurk.Test.Managers
             var documentStoreProvider = GetDocumentStoreProvider();
 
             // Act
-            var sut = new ConfigurationManager(documentStoreProvider);
+            var sut = new ConfigurationManager(documentStoreProvider, Substitute.For<IExpirationManager>());
             var result = await sut.GetOrCreateConfigurationAsync();
 
             // Assert
@@ -97,9 +97,10 @@ namespace Augurk.Test.Managers
                 DependenciesEnabled = true,
                 ExpirationRegex = ".*"
             };
+            var expirationSubstitute = Substitute.For<IExpirationManager>();
 
             // Act
-            var sut = new ConfigurationManager(documentStoreProvider);
+            var sut = new ConfigurationManager(documentStoreProvider, expirationSubstitute);
             await sut.PersistConfigurationAsync(newConfiguration);
 
             // Assert
@@ -111,6 +112,7 @@ namespace Augurk.Test.Managers
                 configuration.DependenciesEnabled.ShouldBeTrue();
                 configuration.ExpirationRegex.ShouldBe(".*");
             }
+            await expirationSubstitute.Received().ApplyExpirationPolicyAsync(Arg.Any<Configuration>());
         }
     }
 }

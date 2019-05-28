@@ -53,7 +53,7 @@ namespace Augurk.Api.Managers
                                         this[""@metadata""][""@expires""] = expirationDate; 
                                         put(id(d), this);
                                     }}";
-                    await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() {Query = query}));
+                    var operation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() {Query = query}));
 
                     // Remove the expiration from all versioned records that do not have a matching version
                     query = $@"from @all_docs as d
@@ -68,7 +68,10 @@ namespace Augurk.Api.Managers
                                     delete this[""@metadata""][""@expires""]; 
                                     put(id(d), this);
                                 }}";
-                    await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() {Query = query}));
+                    var secondOperation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() {Query = query}));
+                
+                    await operation.WaitForCompletionAsync();
+                    await secondOperation.WaitForCompletionAsync();
                 }
                 else 
                 {
@@ -85,7 +88,8 @@ namespace Augurk.Api.Managers
                                         delete this[""@metadata""][""@expires""]; 
                                         put(id(d), this);
                                     }}";
-                    await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() {Query = query}));
+                    var operation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() {Query = query}));
+                    await operation.WaitForCompletionAsync();
                 }
         }
 
