@@ -83,7 +83,7 @@ namespace Augurk.Test.Managers
         }
 
         /// <summary>
-        /// Tests that the ConfigurationManager can persist a new configuration.
+        /// Tests that the ConfigurationManager can persist a configuration.
         /// </summary>
         [Fact]
         public async Task CanPersistConfiguration()
@@ -98,6 +98,50 @@ namespace Augurk.Test.Managers
                 ExpirationRegex = ".*"
             };
             var expirationSubstitute = Substitute.For<IExpirationManager>();
+
+            // Act
+            var sut = new ConfigurationManager(documentStoreProvider, expirationSubstitute);
+            await sut.PersistConfigurationAsync(newConfiguration);
+
+            // Assert
+            using (var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                var configuration = await session.LoadAsync<Configuration>("urn:Augurk:Configuration");
+                configuration.ExpirationEnabled.ShouldBeTrue();
+                configuration.ExpirationDays.ShouldBe(10);
+                configuration.DependenciesEnabled.ShouldBeTrue();
+                configuration.ExpirationRegex.ShouldBe(".*");
+            }
+            await expirationSubstitute.Received().ApplyExpirationPolicyAsync(Arg.Any<Configuration>());
+        }
+
+        /// <summary>
+        /// Tests that the ConfigurationManager can persist a new configuration over an existing one.
+        /// </summary>
+        [Fact]
+        public async Task CanPersistNewConfiguration()
+        {
+            // Arrange
+            var documentStoreProvider = DocumentStoreProvider;
+            var existingConfiguration = new Configuration
+            {
+                ExpirationEnabled = false,
+                DependenciesEnabled = true,
+            };
+            var newConfiguration = new Configuration
+            {
+                ExpirationEnabled = true,
+                ExpirationDays = 10,
+                DependenciesEnabled = true,
+                ExpirationRegex = ".*"
+            };
+            var expirationSubstitute = Substitute.For<IExpirationManager>();
+
+            using(var session = documentStoreProvider.Store.OpenAsyncSession())
+            {
+                await session.StoreAsync(existingConfiguration, "urn:Augurk:Configuration");
+                await session.SaveChangesAsync();
+            }
 
             // Act
             var sut = new ConfigurationManager(documentStoreProvider, expirationSubstitute);

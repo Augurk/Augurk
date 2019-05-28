@@ -71,14 +71,16 @@ namespace Augurk.Api.Managers
         public async Task PersistConfigurationAsync(Configuration configuration)
         {
             Configuration originalConfiguration = null;
-            using (var session = _storeProvider.Store.OpenAsyncSession())
+            using(var session = _storeProvider.Store.OpenAsyncSession())
             {
                 // Retrieve the original configuration
                 originalConfiguration = await session.LoadAsync<Configuration>(DOCUMENT_KEY);
+            }
 
+            using (var session = _storeProvider.Store.OpenAsyncSession())
+            {
                 // Using the store method when the configuration already exists in the database will override it completely, this is acceptable
                 await session.StoreAsync(configuration, DOCUMENT_KEY);
-
 
                 await session.SaveChangesAsync();
             }
