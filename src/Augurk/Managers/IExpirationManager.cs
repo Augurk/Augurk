@@ -14,17 +14,8 @@
  limitations under the License.
 */
 
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Augurk.Api.Indeces;
-using System;
-using Raven.Client.Documents.Queries;
-using Raven.Client.Documents;
-using Raven.Client.Documents.Operations;
-using Microsoft.Extensions.Logging;
 using Augurk.Entities;
-using System.Web;
 
 namespace Augurk.Api.Managers
 {
