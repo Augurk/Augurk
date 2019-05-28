@@ -21,9 +21,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="1.0.163" />
+    <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.0.48" />
     <PackageReference Include="NuGet.Versioning" Version="4.8.0" />
-    <PackageReference Include="RavenDB.Embedded" Version="4.1.4" />
+    <PackageReference Include="RavenDB.Embedded" Version="4.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
