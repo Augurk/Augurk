@@ -89,9 +89,28 @@ namespace Augurk.Test.Managers
             await AssertMetadata("testdocument1", expectedUploadDate, null);
         }
 
+        [Fact]
         public async Task SetUploadDateOnNonMatchingVersion()
         {
+            // Arrange
+            var configuration = new Configuration()
+            {
+                ExpirationEnabled = true,
+                ExpirationDays = 1,
+                ExpirationRegex = @"Hello World"
+            };
 
+            var dbFeature = new DbFeature { Version = "1.0.0" };
+            var expectedUploadDate = await PersistDocument("testdocument1", dbFeature);
+
+            // Act
+            var sut = new ExpirationManager(DocumentStoreProvider);
+            await sut.ApplyExpirationPolicyAsync(configuration);
+
+            WaitForIndexing(DocumentStore);
+
+            // Assert
+            await AssertMetadata("testdocument1", expectedUploadDate, null);
         }
 
         public async Task RemoveExpirationWhenDisabled() { }
