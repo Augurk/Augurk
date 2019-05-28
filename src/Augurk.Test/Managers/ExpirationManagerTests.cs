@@ -10,10 +10,11 @@
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and 
+ See the License for the specific language governing permissions and
  limitations under the License.
 */
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using Augurk.Api;
@@ -56,12 +57,37 @@ namespace Augurk.Test.Managers
 
             WaitForIndexing(DocumentStore);
 
-
             // Assert
             await AssertMetadata("testdocument1", expectedUploadDate, expectedUploadDate.AddDays(configuration.ExpirationDays));
         }
 
-        public async Task RemoveExpirationFromNonMatchingVersion() { }
+        /// <summary>
+        /// Tests that the ExpirationManager removes expiration for documents that do not match the version regex.
+        /// </summary>
+        [Fact]
+        public async Task RemoveExpirationFromNonMatchingVersion()
+        {
+            // Arrange
+            var configuration = new Configuration()
+            {
+                ExpirationEnabled = true,
+                ExpirationDays = 1,
+                ExpirationRegex = @"Hello World"
+            };
+
+            var dbFeature = new DbFeature { Version = "1.0.0" };
+            var additionalMetadata = new Dictionary<string, string> { { Constants.Documents.Metadata.Expires, DateTime.UtcNow.ToString() } };
+            var expectedUploadDate = await PersistDocument("testdocument1", dbFeature, additionalMetadata);
+
+            // Act
+            var sut = new ExpirationManager(DocumentStoreProvider);
+            await sut.ApplyExpirationPolicyAsync(configuration);
+
+            WaitForIndexing(DocumentStore);
+
+            // Assert
+            await AssertMetadata("testdocument1", expectedUploadDate, null);
+        }
 
         public async Task SetUploadDateOnNonMatchingVersion()
         {
@@ -84,12 +110,22 @@ namespace Augurk.Test.Managers
         }
 
 
-        private async Task<DateTime> PersistDocument(string documentId, DbFeature document)
+        private async Task<DateTime> PersistDocument(string documentId, DbFeature document, Dictionary<string, string> additionalMetadata = null)
         {
             using (var session = DocumentStore.OpenAsyncSession())
             {
                 await session.StoreAsync(document, documentId);
                 await session.SaveChangesAsync();
+
+                if (additionalMetadata != null)
+                {
+                    var documentMetadata = session.Advanced.GetMetadataFor(document);
+                    foreach (var pair in additionalMetadata)
+                    {
+                        documentMetadata[pair.Key] = pair.Value;
+                    }
+                }
+
 
                 WaitForIndexing(DocumentStore);
 
