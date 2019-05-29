@@ -46,14 +46,6 @@ jobs:
       configuration: $(buildConfiguration)
     displayName: dotnet test
 
-  - task: DotNetCoreCLI@2
-    inputs:
-      command: publish
-      publishWebProjects: True
-      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
-      zipAfterPublish: true
-    displayName: dotnet publish
-
   - task: DownloadSecureFile@1
     inputs:
       secureFile: license.json
@@ -63,8 +55,16 @@ jobs:
     inputs:
       sourceFolder: $(Agent.TempDirectory)
       contents: "license.json"
-      targetFolder: $(Build.ArtifactStagingDirectory)/RavenDBServer
+      targetFolder: $(Build.SourcesDirectory)/src
     displayName: Copy license.json
+
+  - task: DotNetCoreCLI@2
+    inputs:
+      command: publish
+      publishWebProjects: True
+      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
+      zipAfterPublish: true
+    displayName: dotnet publish
 
   - task: PublishBuildArtifacts@1
 

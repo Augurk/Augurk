@@ -10,10 +10,10 @@
     <Content Remove="CompiledIndexCache\**" />
     <EmbeddedResource Remove="CompiledIndexCache\**" />
     <None Remove="CompiledIndexCache\**" />
+    <Content Remove="license.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="DataAccess\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -31,5 +31,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Augurk.Entities\Augurk.Entities.csproj" />
   </ItemGroup>
+
+  <Target Name="CopyRavenDBLicense" AfterTargets="Publish" Condition="Exists('license.json')">
+    <Copy SourceFiles="license.json" DestinationFolder="$(PublishDir)/RavenDBServer" />
+  </Target>
 
 </Project>
