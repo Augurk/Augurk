@@ -60,21 +60,24 @@ AugurkFilters.filter('featurereferences', ['$rootScope', function ($rootScope) {
 // ------------------------
 // Marks all text found between angle brackets as an example-parameter and marks the whole as an argument.
 // e.g. <some text> will be replaced with <span class="argument">&lt;<span class="example-parameter">some text</span>&gt;</span>
-AugurkFilters.filter('exampleparameters', function () {
+AugurkFilters.filter('exampleparameters', ['$sce', function ($sce) {
     return function (input) {
-        return input.replace(/\<([\w\d\s]*)\>/gm,
+        return $sce.trustAsHtml(input.replace(/\<([\w\d\s]*)\>/gm,
            function (entireString, match) {
-                   return $('<span/>', {
-                       html: '&lt;' + $('<span/>', {
-                           html: match,
-                           'class': 'example-parameter'
-                       })[0].outerHTML + '&gt;',
-                       'class': 'argument'
-                   })[0].outerHTML;
+                var elem = $('<span></span>', {
+                    html: '&lt;' + $('<span></span>', {
+                        html: match,
+                        'class': 'example-parameter'
+                    })[0].outerHTML + '&gt;',
+                    'class': 'argument',
+                    'data-name': match
+                });
+
+                return elem[0].outerHTML;
            }
-       );
+       ));
     };
-});
+}]);
 
 // uml filter
 // ------------------------

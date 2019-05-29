@@ -92,6 +92,18 @@ AugurkControllers.controller('featureController', ['$rootScope', '$scope', '$rou
 
             $scope.feature.testResult.merged = true;
         };
+
+        $scope.fillExample = function($event, keys, values){
+            var placeholders = $($event.currentTarget).closest('.scenario').find('span.argument');
+            placeholders.each(function(index){
+                var placeholder = $(this);
+                var index = keys.indexOf(placeholder.data('name'));
+                if(index > -1)
+                {
+                    placeholder.html(values[index]);
+                }
+            });
+        }
     }
 ]);
 

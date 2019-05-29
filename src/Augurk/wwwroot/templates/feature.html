@@ -131,7 +131,7 @@
     </div>
 </div>
 
-<div ng-repeat="scenario in feature.scenarios">
+<div class="scenario" ng-repeat="scenario in feature.scenarios">
     <span class="glyphicon glyphicon-tags" ng-if="scenario.tags.length > 1"></span>
     <span class="glyphicon glyphicon-tag" ng-if="scenario.tags.length == 1"></span>
     <span class="tag" ng-repeat="tag in scenario.tags">{{tag}}</span>
@@ -186,7 +186,7 @@
                     </thead>
 
                     <tbody id="exampleTable{{feature.scenarios.indexOf(scenario)}}_{{scenario.exampleSets.indexOf(exampleSet)}}" class="table-body-collapse collapse in">
-                        <tr ng-repeat="row in exampleSet.rows">
+                        <tr ng-repeat="row in exampleSet.rows" ng-click="fillExample($event, exampleSet.columns, row)">
                             <td class="argument" ng-repeat="cell in row track by $index" ng-bind-html="cell|exampleparameters"></td>
                         </tr>
                     </tbody>
