@@ -32,7 +32,7 @@
     <ProjectReference Include="..\Augurk.Entities\Augurk.Entities.csproj" />
   </ItemGroup>
 
-  <Target Name="CopyRavenDBLicense" AfterTargets="Publish" Condition="Exists('license.json')">
+  <Target Name="CopyRavenDBLicense" AfterTargets="Publish">
     <Copy SourceFiles="license.json" DestinationFolder="$(PublishDir)/RavenDBServer" />
   </Target>
 
