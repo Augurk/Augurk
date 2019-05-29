@@ -54,6 +54,18 @@ jobs:
       zipAfterPublish: true
     displayName: dotnet publish
 
+  - task: DownloadSecureFile@1
+    inputs:
+      secureFile: license.json
+    displayName: Download RavenDB license
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: $(Agent.TempDirectory)
+      contents: "license.json"
+      targetFolder: $(Build.ArtifactStagingDirectory)/RavenDBServer
+    displayName: Copy license.json
+
   - task: PublishBuildArtifacts@1
 
   - task: CopyFiles@2
