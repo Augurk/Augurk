@@ -99,6 +99,18 @@ jobs:
       displayName: Set prerelease tag
       condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
 
+    - task: DownloadSecureFile@1
+      inputs:
+        secureFile: license.json
+      displayName: Download RavenDB license
+
+    - task: CopyFiles@2
+      inputs:
+        sourceFolder: $(Agent.TempDirectory)
+        contents: "license.json"
+        targetFolder: $(Build.SourcesDirectory)/src/Augurk
+      displayName: Copy license.json
+
     - task: Docker@1
       displayName: 'Build unit test image'
       inputs:
