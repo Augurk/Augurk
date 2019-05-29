@@ -1,0 +1,198 @@
+﻿<!--
+ Copyright 2014, Mark Taling
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+
+<span class="glyphicon glyphicon-tags" ng-show="feature.tags.length > 1"></span>
+<span class="glyphicon glyphicon-tag" ng-show="feature.tags.length == 1"></span>
+<span class="tag" ng-repeat="tag in feature.tags">{{tag}}</span>
+
+<div class="dropdown version pull-right" ng-hide="feature.version=='0.0.0'">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownVersion" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        {{feature.version}}
+        <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownVersion">
+        <li ng-repeat="version in availableVersions"><a href="#/feature/{{product}}/{{group}}/{{feature.title}}/{{version}}">{{version}}</a></li>
+    </ul>
+</div>
+
+<h3>{{feature.title}}</h3>
+
+<div class="panel panel-warning" ng-show="feature.properties.indexOf('NotImplemented') >= 0">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-warning-sign"></span>
+        Not Implemented
+    </div>
+    <div class="panel-body">
+        This feature has not (yet) been implemented, it is only shown here for reference-purposes.
+    </div>
+</div>
+
+<div class="panel panel-danger" ng-show="feature.properties.indexOf('Ignore') >= 0 && feature.properties.indexOf('NotImplemented') == -1">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-warning-sign"></span>
+        Ignore
+    </div>
+    <div class="panel-body">
+        This feature has been marked with an ignore-tag so it is ignored by the test-engine. As a result this feature has not been validated against the implementation!
+    </div>
+</div>
+
+<div class="panel panel-success" ng-show="configuration.dependenciesEnabled">
+    <div class="panel-heading">
+        Feature Dependencies
+        <span class="glyphicon glyphicon-font pull-right" title="This feature is still in Alpha"></span>
+    </div>
+    <div class="panel-body">
+        <p ng-if="dependencies.dependants.length > 0">
+            This feature is being used by:
+            <ul>
+                <li ng-repeat="dependency in dependencies.dependants">
+                    <a href="#/feature/{{dependency.productName}}/{{dependency.groupName}}/{{dependency.featureName}}/{{dependency.version}}">{{dependency.featureName}}</a>
+                    <span ng-if="dependency.productName !== dependencies.productName">(from <a href="#/home/{{dependency.productName}}">{{dependency.productName}}</a>)</span>
+                </li>
+            </ul>
+        </p>
+        <p ng-if="dependencies.dependants.length === 0">
+            There are no known features that make use of this feature.
+        </p>
+
+        <p ng-if="dependencies.dependsOn.length > 0">
+            This feature depends on:
+            <ul>
+                <li ng-repeat="dependency in dependencies.dependsOn">
+                    <a href="#/feature/{{dependency.productName}}/{{dependency.groupName}}/{{dependency.featureName}}/{{dependency.version}}">{{dependency.featureName}}</a>
+                    <span ng-if="dependency.productName !== dependencies.productName">(from <a href="#/home/{{dependency.productName}}">{{dependency.productName}}</a>)</span>
+                </li>
+            </ul>
+        </p>
+        <p ng-if="dependencies.dependsOn.length === 0">
+            This feature has no known dependencies
+        </p>
+    </div>
+</div>
+
+<div class="panel" ng-class="{'panel-danger': feature.testResult && feature.testResult.result == 'Failed', 'panel-success': feature.testResult && feature.testResult.result == 'Passed'}" ng-show="feature.testResult">
+    <div class="panel-heading">
+        <span class="glyphicon pull-right" ng-class="{'glyphicon-thumbs-down': feature.testResult && feature.testResult.result == 'Failed', 'glyphicon-thumbs-up': feature.testResult && feature.testResult.result == 'Passed'}" ></span>
+        Test result: {{feature.testResult.result}}
+    </div>
+    <div class="panel-body panel-collapse collapse"
+         ng-class="{in: !feature.testResult.merged}">
+        There are testresults available for the scenarios within this feature. Click this button to show them: 
+        <button type="button" 
+                class="btn"  
+                ng-class="{'btn-danger': feature.testResult && feature.testResult.result == 'Failed', 'btn-success': feature.testResult && feature.testResult.result == 'Passed'}"
+                ng-click="mergeTestResults()">Show Test Results</button>
+    </div>
+</div>
+
+<div class="feature-description" ng-bind-html="feature.description|markdown|featurereferences|uml"></div>
+
+<div class="panel panel-default" ng-show="feature.background">
+    <div class="panel-heading"
+         data-toggle="collapse"
+         data-target="#background"><span class="keyword">{{feature.background.keyword}}</span><span ng-show="feature.background.title">: {{feature.background.title}}</span></div>
+    <div class="panel-body panel-collapse collapse in" id="background">
+        <ul>
+                <li class="step" ng-repeat="step in feature.background.steps">
+                    <span class="keyword">{{step.keyword}}</span>
+                    <span ng-bind-html="step.content|exampleparameters"></span>
+                    <div class="horizontal-scrollview">
+                        <table class="table table-bordered table-condensed table-striped argument-table" ng-show="step.tableArgument">
+                            <thead data-toggle="collapse"
+                                   data-target="#tableBody{{feature.scenarios.indexOf(scenario)}}_{{scenario.steps.indexOf(step)}}">
+                                <tr>
+                                    <th ng-repeat="column in step.tableArgument.columns">{{column}}</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="Tbody1" class="table-body-collapse collapse in">
+                                <tr ng-repeat="row in step.tableArgument.rows">
+                                    <td class="argument" ng-repeat="cell in row track by $index" ng-bind-html="cell|exampleparameters"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </li>
+            </ul>
+    </div>
+</div>
+
+<div class="scenario" ng-repeat="scenario in feature.scenarios">
+    <span class="glyphicon glyphicon-tags" ng-if="scenario.tags.length > 1"></span>
+    <span class="glyphicon glyphicon-tag" ng-if="scenario.tags.length == 1"></span>
+    <span class="tag" ng-repeat="tag in scenario.tags">{{tag}}</span>
+    <div class="panel panel-default" 
+         ng-class="{'panel-danger': scenario.testResult && scenario.testResult.result == 'Failed', 'panel-success': scenario.testResult && scenario.testResult.result == 'Passed'}">
+        <div class="panel-heading"  
+             data-toggle="collapse"
+             data-target="#scenario{{feature.scenarios.indexOf(scenario)}}">   
+            <span class="glyphicon pull-right" 
+                  ng-class="{'glyphicon-thumbs-down': scenario.testResult.Result == 'Failed', 'glyphicon-thumbs-up': scenario.testResult.result == 'Passed'}"
+                  ng-show="scenario.testResult"></span>
+            {{scenario.title}}       
+        </div>
+        <div class="panel-body panel-collapse collapse"
+             id="scenario{{feature.scenarios.indexOf(scenario)}}"
+             ng-class="{in: !showTestResults}">
+            <span ng-bind-html="scenario.description|markdown"></span>
+            <ul>
+                <li class="step" ng-repeat="step in scenario.steps">
+                    <span class="keyword">{{step.keyword}}</span>
+                    <span ng-bind-html="step.content|exampleparameters"></span>
+                    <div class="horizontal-scrollview">
+                        <table class="table table-bordered table-condensed table-striped argument-table" ng-show="step.tableArgument">
+                            <thead data-toggle="collapse"
+                                   data-target="#tableBody{{feature.scenarios.indexOf(scenario)}}_{{scenario.steps.indexOf(step)}}">
+                                <tr>
+                                    <th ng-repeat="column in step.tableArgument.columns">{{column}}</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="tableBody{{feature.scenarios.indexOf(scenario)}}_{{scenario.steps.indexOf(step)}}" class="table-body-collapse collapse in">
+                                <tr ng-repeat="row in step.tableArgument.rows">
+                                    <td class="argument" ng-repeat="cell in row track by $index" ng-bind-html="cell|exampleparameters"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </li>
+            </ul>
+            
+            <div ng-repeat="exampleSet in scenario.exampleSets">
+                <span class="keyword">{{exampleSet.keyword}}:</span>
+                <span>{{exampleSet.title}}</span>
+                <div ng-if="exampleSet.description" ng-bind-html="exampleSet.description|markdown"></div>
+                <div class="horizontal-scrollview">
+                <table class="table table-bordered table-condensed table-striped argument-table">
+                    <thead data-toggle="collapse"
+                            data-target="#exampleTable{{feature.scenarios.indexOf(scenario)}}_{{scenario.exampleSets.indexOf(exampleSet)}}">
+                        <tr>
+                            <th ng-repeat="column in exampleSet.columns" class="example-parameter">{{column}}</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="exampleTable{{feature.scenarios.indexOf(scenario)}}_{{scenario.exampleSets.indexOf(exampleSet)}}" class="table-body-collapse collapse in">
+                        <tr ng-repeat="row in exampleSet.rows" ng-click="fillExample($event, exampleSet.columns, row)">
+                            <td class="argument" ng-repeat="cell in row track by $index" ng-bind-html="cell|exampleparameters"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+    </div>

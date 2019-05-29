@@ -23,6 +23,12 @@ namespace Augurk.Entities
     /// </summary>
     public class Feature
     {
+        public Feature()
+        {
+            Tags = new List<string>();
+            Scenarios = new List<Scenario>();
+        }
+
         /// <summary>
         /// Gets or sets the title of the feature.
         /// </summary>
@@ -36,7 +42,7 @@ namespace Augurk.Entities
         /// <summary>
         /// Gets or sets the tags of this feature.
         /// </summary>
-        public IEnumerable<string> Tags { get; set; } 
+        public IEnumerable<string> Tags { get; set; }
 
         /// <summary>
         /// Gets or sets the scenarios of this feature.
@@ -46,6 +52,6 @@ namespace Augurk.Entities
         /// <summary>
         /// Gets or sets the background of this feature.
         /// </summary>
-        public Background Background { get; set; } 
+        public Background Background { get; set; }
     }
 }

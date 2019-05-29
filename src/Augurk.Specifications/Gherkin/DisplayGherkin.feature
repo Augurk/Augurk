@@ -53,7 +53,6 @@ In order to improve readability, scenarios can be collapsed by clicking their ti
 	When I click the title of this scenario
 	Then the scenario is collapsed
 
-@notImplemented
 Scenario Outline: Readable Scenario Outlines
 Scenario outlines provide can provide a lot of examples. To make verification easier, 
 clicking on a scenario will result in the placeholders being replaced by the actual values.
