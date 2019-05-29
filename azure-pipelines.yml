@@ -55,7 +55,7 @@ jobs:
     inputs:
       sourceFolder: $(Agent.TempDirectory)
       contents: "license.json"
-      targetFolder: $(Build.SourcesDirectory)/src
+      targetFolder: $(Build.SourcesDirectory)/src/Augurk
     displayName: Copy license.json
 
   - task: DotNetCoreCLI@2
