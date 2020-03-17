@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1.200 AS build
 ARG Version
 ARG InformationalVersion
 WORKDIR /app
