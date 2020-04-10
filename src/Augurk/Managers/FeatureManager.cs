@@ -1,12 +1,12 @@
 ﻿/*
- Copyright 2014-2019, Augurk
- 
+ Copyright 2014-2020, Augurk
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,6 +28,7 @@ using Raven.Client.Documents;
 using Raven.Client.Documents.Queries;
 using Raven.Client.Documents.Operations;
 using Microsoft.Extensions.Logging;
+using Augurk.Entities.Search;
 
 namespace Augurk.Api.Managers
 {
@@ -80,7 +81,7 @@ namespace Augurk.Api.Managers
         /// <param name="title">The title of the feature.</param>
         /// <param name="version">Version of the feature to retrieve.</param>
         /// <returns>
-        /// A <see cref="DisplayableFeature"/> instance describing the requested feature; 
+        /// A <see cref="DisplayableFeature"/> instance describing the requested feature;
         /// or <c>null</c> if the feature cannot be found.
         /// </returns>
         public async Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string title, string version)
@@ -225,7 +226,7 @@ namespace Augurk.Api.Managers
         }
 
         /// <summary>
-        /// Gets a collection of <see cref="DbFeature"/> instances that match the 
+        /// Gets a collection of <see cref="DbFeature"/> instances that match the
         /// provided <paramref name="productName"/> and <paramref name="version"/>.
         /// </summary>
         /// <param name="productName">The name of the product for which the features should be retrieved.</param>
@@ -396,6 +397,44 @@ namespace Augurk.Api.Managers
                 session.Delete(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));
 
                 await session.SaveChangesAsync();
+            }
+        }
+
+        /// <summary>
+        /// Searches for features which match te specified query (e.g. contain the content)
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>An enumerable of <see cref="FeatureMatch"/> instances containing the matches.</returns>
+        public async Task<IEnumerable<FeatureMatch>> Search(string query){
+
+            using (var session = _storeProvider.Store.OpenAsyncSession())
+            {
+                var featureQuery = session.Query<DbFeature>()
+                                          .Search(feature => feature.Description, query, 5)
+                                          .Search(feature => feature.Scenarios, query, 5)
+                                          .Search(feature => feature.Background, query, 5)
+                                          .Search(feature => feature.ParentTitle, query, 1)
+                                          .Search(feature => feature.Tags, query, 9)
+                                          .Search(feature => feature.Title, query, 10);
+
+                var queryResults =  await featureQuery.ToListAsync();
+
+                var comparer = new SemanticVersionComparer();
+
+                var filteredResultsQuery = queryResults.Where(feature =>
+                    !queryResults.Any(feature2 => feature2.Title == feature.Title
+                                               && feature2.Product == feature.Product
+                                               && comparer.Compare(feature2.Version, feature.Version) > 0)
+                );
+
+                return filteredResultsQuery.Select(feature => new FeatureMatch(){
+                    FeatureName = feature.Title,
+                    ProductName = feature.Product,
+                    GroupName = feature.Group,
+                    Version = feature.Version,
+                    Tags = feature.Tags.ToList()
+
+                }).ToList();
             }
         }
     }

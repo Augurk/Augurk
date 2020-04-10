@@ -1,5 +1,5 @@
 /*
- Copyright 2019, Augurk
+ Copyright 2019-2020, Augurk
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -10,12 +10,13 @@
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and 
+ See the License for the specific language governing permissions and
  limitations under the License.
 */
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Augurk.Entities;
+using Augurk.Entities.Search;
 using Augurk.Entities.Test;
 
 namespace Augurk.Api.Managers
@@ -39,7 +40,7 @@ namespace Augurk.Api.Managers
         /// <param name="title">The title of the feature.</param>
         /// <param name="version">Version of the feature to retrieve.</param>
         /// <returns>
-        /// A <see cref="DisplayableFeature"/> instance describing the requested feature; 
+        /// A <see cref="DisplayableFeature"/> instance describing the requested feature;
         /// or <c>null</c> if the feature cannot be found.
         /// </returns>
         Task<DisplayableFeature> GetFeatureAsync(string productName, string groupName, string title, string version);
@@ -68,7 +69,7 @@ namespace Augurk.Api.Managers
         Task<IEnumerable<FeatureDescription>> GetFeatureDescriptionsByProductAndGroupAsync(string productName, string groupName);
 
         /// <summary>
-        /// Gets a collection of <see cref="DbFeature"/> instances that match the 
+        /// Gets a collection of <see cref="DbFeature"/> instances that match the
         /// provided <paramref name="productName"/> and <paramref name="version"/>.
         /// </summary>
         /// <param name="productName">The name of the product for which the features should be retrieved.</param>
@@ -123,5 +124,12 @@ namespace Augurk.Api.Managers
         /// <param name="title">The feature that should be deleted.</param>
         /// <param name="version">The version of the feature that should be deleted.</param>
         Task DeleteFeatureAsync(string productName, string groupName, string title, string version);
+
+        /// <summary>
+        /// Searches for features which match te specified query (e.g. contain the content)
+        /// </summary>
+        /// <param name="query"></param>
+        /// <returns>An enumerable of <see cref="FeatureMatch"/> instances containing the matches.</returns>
+        Task<IEnumerable<FeatureMatch>> Search(string query);
     }
 }
