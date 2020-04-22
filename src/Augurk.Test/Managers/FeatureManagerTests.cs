@@ -367,7 +367,7 @@ namespace Augurk.Test.Managers
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                var dbFeature = session.LoadAsync<DbFeature>(result.GetIdentifier());
+                var dbFeature = await session.LoadAsync<DbFeature>(result.GetIdentifier());
                 dbFeature.ShouldNotBeNull();
             }
         }
@@ -442,7 +442,7 @@ namespace Augurk.Test.Managers
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                var dbFeature = session.LoadAsync<DbFeature>(result.GetIdentifier());
+                var dbFeature = await session.LoadAsync<DbFeature>(result.GetIdentifier());
                 dbFeature.ShouldNotBeNull();
             }
         }
