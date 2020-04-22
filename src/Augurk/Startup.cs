@@ -78,7 +78,7 @@ namespace Augurk
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseFileServer();
 
             app.UseRouting();
 
