@@ -1,6 +1,7 @@
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 ARG Version
 ARG InformationalVersion
+ENV MSBUILDSINGLELOADCONTEXT 1
 WORKDIR /app
 
 # copy external library
