@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 ARG Version
 ARG InformationalVersion
 WORKDIR /app
@@ -28,7 +28,7 @@ WORKDIR /app/Augurk.IntegrationTest
 ENTRYPOINT [ "dotnet", "test", "--logger:trx" ]
 
 # build output image
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 WORKDIR /app
 COPY --from=build /app/Augurk/out ./
 ENTRYPOINT ["dotnet", "Augurk.dll"]
