@@ -32,14 +32,14 @@ jobs:
     displayName: dotnet restore
 
   - task: DotNetCoreCLI@2
+    env:
+      MSBUILDSINGLELOADCONTEXT: 1
+    displayName: dotnet build
     inputs:
       command: build
       workingDirectory: 'src'
       configuration: $(buildConfiguration)
       arguments: '/p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
-    displayName: dotnet build
-    env:
-      MSBUILDSINGLELOADCONTEXT: 1
 
   - task: DotNetCoreCLI@2
     inputs:
