@@ -14,15 +14,15 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-  - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk 3.1.201'
-    inputs:
-      version: 3.1.201
-
   - task: UseGitVersion@5
     displayName: Set version
     inputs:
       versionSpec: '5.x'
+
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk 3.1.201'
+    inputs:
+      version: 3.1.201
 
   - task: DotNetCoreCLI@2
     inputs:
@@ -86,15 +86,15 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-    - task: UseDotNet@2
-      displayName: 'Use .NET Core sdk 3.1.201'
-      inputs:
-        version: 3.1.201
-
     - task: UseGitVersion@5
       displayName: Set version
       inputs:
         versionSpec: '5.x'
+
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk 3.1.201'
+      inputs:
+        version: 3.1.201
 
     - script: |
         echo '##vso[task.setvariable variable=prerelease]-preview'
