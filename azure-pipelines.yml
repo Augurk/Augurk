@@ -38,6 +38,8 @@ jobs:
       configuration: $(buildConfiguration)
       arguments: '/p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
     displayName: dotnet build
+    env:
+      MSBUILDSINGLELOADCONTEXT: 1
 
   - task: DotNetCoreCLI@2
     inputs:
