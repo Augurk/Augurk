@@ -16,7 +16,7 @@ RUN dotnet restore
 # copy everything else and build app
 COPY src/. ./
 WORKDIR /app
-RUN dotnet publish /p:Version=$Version /p:InformationalVersion=$InformationalVersion -c Release -o out
+RUN dotnet publish /p:Version=$Version /p:InformationalVersion=$InformationalVersion -c Release -p:PublishDir=./out
 
 # build unit test stage
 FROM build AS unit-tests
