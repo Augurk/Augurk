@@ -19,6 +19,7 @@ using System.Reflection;
 using Augurk.Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Indexes;
@@ -35,7 +36,7 @@ namespace Augurk
         /// <summary>
         /// Default constructor for this class.
         /// </summary>
-        public DocumentStoreProvider(IHostingEnvironment environment, ILogger<DocumentStoreProvider> logger)
+        public DocumentStoreProvider(IWebHostEnvironment environment, ILogger<DocumentStoreProvider> logger)
         {
             // Build the options for the server
             string dotNetCoreVersion = EnvironmentUtils.GetNetCoreVersion();

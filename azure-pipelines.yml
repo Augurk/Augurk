@@ -7,6 +7,7 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core?view=vsts
 variables:
   buildConfiguration: 'Release'
+  MSBUILDSINGLELOADCONTEXT: 1
 
 jobs:
 - job: netcore
@@ -14,15 +15,15 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-  - task: DotNetCoreInstaller@0
-    displayName: 'Use .NET Core sdk 2.2.300'
-    inputs:
-      version: 2.2.300
-
-  - script: |
-      dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
-      dotnet-gitversion /output buildserver
+  - task: UseGitVersion@5
     displayName: Set version
+    inputs:
+      versionSpec: '5.x'
+
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk 3.1.201'
+    inputs:
+      version: 3.1.201
 
   - task: DotNetCoreCLI@2
     inputs:
@@ -32,12 +33,12 @@ jobs:
     displayName: dotnet restore
 
   - task: DotNetCoreCLI@2
+    displayName: dotnet build
     inputs:
       command: build
       workingDirectory: 'src'
       configuration: $(buildConfiguration)
       arguments: '/p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
-    displayName: dotnet build
 
   - task: DotNetCoreCLI@2
     inputs:
@@ -86,18 +87,21 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-    - task: DotNetCoreInstaller@0
-      displayName: 'Use .NET Core sdk 2.2.300'
-      inputs:
-        version: 2.2.300
-    - script: |
-        dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
-        dotnet-gitversion /output buildserver
+    - task: UseGitVersion@5
       displayName: Set version
+      inputs:
+        versionSpec: '5.x'
+
+    - task: UseDotNet@2
+      displayName: 'Use .NET Core sdk 3.1.201'
+      inputs:
+        version: 3.1.201
+
     - script: |
         echo '##vso[task.setvariable variable=prerelease]-preview'
       displayName: Set prerelease tag
       condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+
     - script: |
         echo '##vso[task.setvariable variable=prerelease]'
       displayName: Set empty prerelease tag

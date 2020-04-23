@@ -94,7 +94,7 @@
       ]
     },
     {
-      "provider": "unpkg",
+      "provider": "jsdelivr",
       "library": "angular-bootstrap-toggle@0.1.2",
       "destination": "wwwroot/libs/angular-bootstrap-toggle",
       "files": [

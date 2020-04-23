@@ -1,6 +1,7 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:2.2 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 ARG Version
 ARG InformationalVersion
+ENV MSBUILDSINGLELOADCONTEXT 1
 WORKDIR /app
 
 # copy external library
@@ -15,7 +16,7 @@ RUN dotnet restore
 # copy everything else and build app
 COPY src/. ./
 WORKDIR /app
-RUN dotnet publish /p:Version=$Version /p:InformationalVersion=$InformationalVersion -c Release -o out
+RUN dotnet publish /p:Version=$Version /p:InformationalVersion=$InformationalVersion -c Release -p:PublishDir=./out
 
 # build unit test stage
 FROM build AS unit-tests
@@ -28,7 +29,7 @@ WORKDIR /app/Augurk.IntegrationTest
 ENTRYPOINT [ "dotnet", "test", "--logger:trx" ]
 
 # build output image
-FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 WORKDIR /app
 COPY --from=build /app/Augurk/out ./
 ENTRYPOINT ["dotnet", "Augurk.dll"]
