@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.Test", "Augurk.Test\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.IntegrationTest", "Augurk.IntegrationTest\Augurk.IntegrationTest.csproj", "{644EB663-C3A6-4E1B-A559-E3247B8FF336}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Augurk.UI", "Augurk.UI\Augurk.UI.csproj", "{1D138BB5-3154-439D-ACCE-9BEA60440006}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{644EB663-C3A6-4E1B-A559-E3247B8FF336}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{644EB663-C3A6-4E1B-A559-E3247B8FF336}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{644EB663-C3A6-4E1B-A559-E3247B8FF336}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D138BB5-3154-439D-ACCE-9BEA60440006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D138BB5-3154-439D-ACCE-9BEA60440006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D138BB5-3154-439D-ACCE-9BEA60440006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D138BB5-3154-439D-ACCE-9BEA60440006}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
