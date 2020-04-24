@@ -1,12 +1,12 @@
 ﻿/*
  Copyright 2014, Mark Taling
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,9 @@
  limitations under the License.
 */
 
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Augurk.Entities
 {
@@ -32,5 +34,24 @@ namespace Augurk.Entities
         /// Gets or sets the rows for this table.
         /// </summary>
         public IEnumerable<IEnumerable<string>> Rows { get; set; }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+
+            sb.Append("|");
+            sb.Append(String.Join("|", Columns));
+            sb.Append("|");
+            sb.Append(Environment.NewLine);
+
+            foreach(var row in Rows){
+                sb.Append("|");
+                sb.Append(String.Join("|", row));
+                sb.Append("|");
+                sb.Append(Environment.NewLine);
+            }
+
+            return sb.ToString();
+        }
     }
 }

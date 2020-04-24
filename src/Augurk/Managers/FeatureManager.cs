@@ -405,7 +405,8 @@ namespace Augurk.Api.Managers
         /// </summary>
         /// <param name="query"></param>
         /// <returns>An enumerable of <see cref="FeatureMatch"/> instances containing the matches.</returns>
-        public async Task<IEnumerable<FeatureMatch>> Search(string query){
+        public async Task<IEnumerable<FeatureMatch>> Search(string query)
+        {
 
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
@@ -427,14 +428,7 @@ namespace Augurk.Api.Managers
                                                && comparer.Compare(feature2.Version, feature.Version) > 0)
                 );
 
-                return filteredResultsQuery.Select(feature => new FeatureMatch(){
-                    FeatureName = feature.Title,
-                    ProductName = feature.Product,
-                    GroupName = feature.Group,
-                    Version = feature.Version,
-                    Tags = feature.Tags.ToList()
-
-                }).ToList();
+                return filteredResultsQuery.Select(feature => feature.CreateFeatureMatch(query)).ToList();
             }
         }
     }
