@@ -1,10 +1,20 @@
 using System;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Augurk.Entities.Search;
 
 public class SearchService {
+
+    private HttpClient _client;
+
     public SearchResults LatestResults {
         get; private set;
+    }
+
+    public SearchService(HttpClient client)
+    {
+        _client = client;
     }
 
     public event Func<SearchResults, Task> OnSearchResultsChanged;
@@ -15,12 +25,7 @@ public class SearchService {
             LatestResults = null;
         }
         else {
-            var results = new SearchResults() {
-                SearchQuery = searchInput,
-                FeatureMatches = new [] {
-                    new FeatureMatch{ FeatureName = "Feature 1", MatchingText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer mollis dui sed eros consectetur aliquet. Donec varius libero ligula, ut fermentum tellus porttitor non." },
-                    new FeatureMatch{ FeatureName = "Feature with a very long name which mostly will not fit the screen", MatchingText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer mollis dui sed eros consectetur aliquet. Donec varius libero ligula, ut fermentum tellus porttitor non." }}
-            };
+            var results = await _client.GetFromJsonAsync<SearchResults>($"/api/v2/search?q={searchInput}");
 
             LatestResults = results;
         }
