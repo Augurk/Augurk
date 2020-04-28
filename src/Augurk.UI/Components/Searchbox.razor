@@ -1,0 +1,23 @@
+@using System.Threading
+@using Augurk.Entities.Search
+@inject SearchService SearchService
+
+<input type="text" placeholder="Type to search..." @bind-value="SearchTerm" @bind-value:event="oninput" />
+
+@code {
+    private string _searchTerm;
+    private string SearchTerm{
+        get { return _searchTerm; }
+        set {
+            _searchTerm = value;
+            Search();
+        }
+    }
+
+    public SearchResults SearchResults;
+
+    private void Search(){
+        // Don't await the result
+        var task = SearchService.Search(_searchTerm);
+    }
+}

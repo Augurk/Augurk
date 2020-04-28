@@ -1,7 +1,30 @@
 ﻿@page "/"
+@inject SearchService SearchService
+@using Augurk.Entities.Search
+@using Augurk.UI.Components
 
-<h1>Hello, world!</h1>
+<h1>Augurk 3.1.0 PREVIEW</h1>
 
-Welcome to your new app.
+<Searchbox />
+<br/>
+@_latestResults?.SearchQuery
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@foreach(var feature in _latestResults?.FeatureMatches ?? Enumerable.Empty<FeatureMatch>()) {
+    <FeatureResult Feature="feature" />
+}
+
+@code {
+    private SearchResults _latestResults;
+
+    protected override void OnInitialized() {
+        SearchService.OnSearchResultsChanged += OnSearchResultsChanged;
+    }
+
+    private async Task OnSearchResultsChanged(SearchResults newResults) {
+        await InvokeAsync(() =>
+        {
+            _latestResults = newResults;
+            StateHasChanged();
+        });
+    }
+}

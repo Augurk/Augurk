@@ -18,6 +18,7 @@ namespace Augurk.UI
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddSingleton<SearchService>();
 
             await builder.Build().RunAsync();
         }

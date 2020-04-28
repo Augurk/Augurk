@@ -1,0 +1,12 @@
+@using System.Threading
+@using Augurk.Entities.Search
+@inject SearchService SearchService
+
+<div>
+    @Feature?.FeatureName
+</div>
+
+@code {
+    [Parameter]
+    public FeatureMatch Feature { get;set; }
+}
