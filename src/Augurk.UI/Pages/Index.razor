@@ -5,11 +5,11 @@
 
 <h1>Augurk 3.1.0 PREVIEW</h1>
 
-<div style="align: center;">
+<div style="text-align: center;">
    <Searchbox />
 </div>
 
-<div style="align: center;">
+<div style="text-align: center;">
     @foreach(var feature in _latestResults?.FeatureMatches ?? Enumerable.Empty<FeatureMatch>()) {
         <FeatureResult Feature="feature" />
     }
