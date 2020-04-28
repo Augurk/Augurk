@@ -407,7 +407,6 @@ namespace Augurk.Api.Managers
         /// <returns>An enumerable of <see cref="FeatureMatch"/> instances containing the matches.</returns>
         public async Task<IEnumerable<FeatureMatch>> Search(string query)
         {
-
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
                 var featureQuery = session.Query<DbFeature>()

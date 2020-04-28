@@ -78,10 +78,18 @@ namespace Augurk.Api
             return match;
         }
 
+        /// <summary>
+        /// Searches for the provided searchTerms and returns the first match for each term in a single <see cref="String"/>.
+        /// </summary>
+        /// <param name="source">The source string to search within.</param>
+        /// <param name="searchTerms">The terms to search for.</param>
+        /// <returns>A <see cref="String"/> containing the matching text, or an empty <see cref="String"/> if no match could be found.</returns>
         private static string FindMatchingText(string source, string[] searchTerms)
         {
+            // Define the number of characters before and after the match that should be copied.
             const int characterPadding = 40;
 
+            // Find al terms and determine which substrings we should take
             var results = new List<(int start, int length)>();
             if(searchTerms.Any(source.Contains))
             {
@@ -102,14 +110,17 @@ namespace Augurk.Api
                 return String.Empty;
             }
 
+            // Combine the substrings
             StringBuilder sb = new StringBuilder();
             int? cursor = null;
             foreach(var result in results.OrderBy(r => r.start).ThenBy(r => r.length))
             {
+                // If the result overlaps with the previously copied result, adjust it so the fit seamlessly
                 if(cursor.HasValue && result.start < cursor){
                     int lengthToRemove = cursor.Value - result.start;
                     sb.Remove(sb.Length - lengthToRemove, lengthToRemove);
                 }
+                // If the result does not fit seamlessly, add some ellipses
                 else if(result.start > 0){
                     sb.Append("...");
                 }

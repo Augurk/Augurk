@@ -35,15 +35,13 @@ namespace Augurk.Api.Controllers.V2
     public class SearchController : Controller
     {
         private readonly IFeatureManager _featureManager;
-        private readonly Analyzer _analyzer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchController"/>.
         /// </summary>
-        public SearchController(IFeatureManager featureManager, IAnalysisReportManager analysisReportManager)
+        public SearchController(IFeatureManager featureManager)
         {
             _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
-            _analyzer = new Analyzer(_featureManager, analysisReportManager);
         }
 
         /// <summary>

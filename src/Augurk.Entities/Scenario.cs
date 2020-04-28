@@ -54,7 +54,7 @@ namespace Augurk.Entities
         /// <summary>
         /// Creates a textual representation of this background.
         /// </summary>
-        /// <returns>A <see cref="System.String"/> representation of this <see cref="Background"/> instance.</returns>
+        /// <returns>A <see cref="System.String"/> representation of this <see cref="Scenario"/> instance.</returns>
         public override string ToString()
         {
             if (Steps == null || !Steps.Any())
