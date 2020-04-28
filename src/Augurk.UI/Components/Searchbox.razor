@@ -1,6 +1,6 @@
 @using System.Threading
 @using Augurk.Entities.Search
-@inject SearchService SearchService
+@inject SearchService searchService
 
 <input type="text" placeholder="Type to search..." @bind-value="SearchTerm" @bind-value:event="oninput" />
 
@@ -10,14 +10,23 @@
         get { return _searchTerm; }
         set {
             _searchTerm = value;
-            Search();
+            // Don't await the result
+            var task = WaitAndSearch();
         }
     }
 
-    public SearchResults SearchResults;
+    private async Task WaitAndSearch(){
+        var searchInput = _searchTerm;
 
-    private void Search(){
-        // Don't await the result
-        var task = SearchService.Search(_searchTerm);
+        // Wait for half a second to determine whether the user is still typing
+        await Task.Delay(500);
+
+        // Don't do anything if the input has changed
+        if(searchInput != _searchTerm)
+        {
+            return;
+        }
+
+        var task = searchService.Search(searchInput);
     }
 }

@@ -2,8 +2,24 @@
 @using Augurk.Entities.Search
 @inject SearchService SearchService
 
-<div>
-    @Feature?.FeatureName
+<div style="
+    box-shadow: 2px 2px 3px black;
+    padding: 2px;
+    max-width: 300px;
+    display: inline-flex;
+">
+    <span style="
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+    white-space: nowrap;
+    ">@Feature?.FeatureName</span>
+    <span style="
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    ">@Feature?.MatchingText</span>
 </div>
 
 @code {
