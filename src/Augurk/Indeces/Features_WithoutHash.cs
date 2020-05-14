@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2015, 2020 Augurk
+ Copyright 2020, Augurk
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -22,35 +22,27 @@ namespace Augurk.Api.Indeces
     /// <summary>
     /// This index creates a map from the title, product and group found on a feature.
     /// </summary>
-    public class Features_ByTitleProductAndGroup : AbstractIndexCreationTask<DbFeature>
+    public class Features_WithoutHash : AbstractIndexCreationTask<DbFeature>
     {
-        public Features_ByTitleProductAndGroup()
+        public Features_WithoutHash()
         {
             Map = features => from feature in features
-                              from Version in feature.Versions
+                              where feature.Hash == null
                               select new
                               {
                                   feature.Title,
                                   feature.Product,
-                                  feature.Group,
-                                  feature.Hash,
-                                  Version
+                                  feature.Group
                               };
 
-            // Store the fields that are used often in the application,
-            // so raven can return this data directly from the index.
-            Stores.AddDbFeatureStoredFields();
-        }
-
-        public class QueryModel
-        {
-            public string Title { get; set; }
-            public string ParentTitle { get; set; }
-            public string Product { get; set; }
-            public string Group { get; set; }
-
-            public string Hash { get; set; }
-            public string Version { get; set; }
+            Reduce = results => from result in results
+                                group result by new {result.Title, result.Product, result.Group} into groupedResult
+                                select new
+                                {
+                                    groupedResult.Key.Title,
+                                    groupedResult.Key.Product,
+                                    groupedResult.Key.Group
+                                };
         }
     }
 }

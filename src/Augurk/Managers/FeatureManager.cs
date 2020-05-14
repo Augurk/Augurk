@@ -19,6 +19,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Augurk.Api.Indeces;
+using Augurk.Api.Indeces.Search;
 using Augurk.Entities;
 using Augurk.Entities.Test;
 using Newtonsoft.Json;
@@ -29,6 +30,8 @@ using Raven.Client.Documents.Queries;
 using Raven.Client.Documents.Operations;
 using Microsoft.Extensions.Logging;
 using Augurk.Entities.Search;
+using Raven.Client.Documents.Session;
+using Raven.Client.Documents.Commands;
 
 namespace Augurk.Api.Managers
 {
@@ -64,7 +67,7 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                var versions = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                var versions = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
                                             .Where(feature => feature.Product == productName && feature.Group == groupName && feature.Title == title)
                                             .Select(feature => feature.Version)
                                             .ToListAsync();
@@ -88,7 +91,13 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));
+                var dbFeature = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
+                                             .Where(feature => feature.Product == productName
+                                                            && feature.Group == groupName
+                                                            && feature.Title == title
+                                                            && feature.Version == version)
+                                             .OfType<DbFeature>()
+                                             .SingleOrDefaultAsync();
 
                 if (dbFeature == null)
                 {
@@ -97,7 +106,7 @@ namespace Augurk.Api.Managers
 
                 var result = new DisplayableFeature(dbFeature);
                 result.TestResult = dbFeature.TestResult;
-                result.Version = dbFeature.Version;
+                result.Version = version;
 
                 // Process the server tags
                 var processor = new FeatureProcessor();
@@ -127,18 +136,19 @@ namespace Augurk.Api.Managers
                                                     feature.Group,
                                                     feature.ParentTitle,
                                                     feature.Title,
-                                                    feature.Version
+                                                    feature.Versions
                                                 })
                                         .Take(1000)
                                         .ToListAsync();
 
+                var comparer = new SemanticVersionComparer();
                 foreach (var uniqueFeature in data.GroupBy(record => (group: record.Group, title: record.Title)))
                 {
-                    var latestFeature = uniqueFeature.OrderByDescending(record => record.Version, new SemanticVersionComparer()).First();
+                    var latestFeature = uniqueFeature.OrderByDescending(record => record.Versions.OrderByDescending(v => v, comparer).First(), comparer).First();
                     var featureDescription = new FeatureDescription()
                     {
                         Title = uniqueFeature.Key.title,
-                        LatestVersion = latestFeature.Version,
+                        LatestVersion = latestFeature.Versions.OrderByDescending(v => v, comparer).First(),
                     };
 
                     if (String.IsNullOrWhiteSpace(latestFeature.ParentTitle))
@@ -236,9 +246,10 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                var featureQuery = session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                var featureQuery = session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
                                             .Where(feature => feature.Product.Equals(productName, StringComparison.OrdinalIgnoreCase)
-                                                           && feature.Version.Equals(version, StringComparison.OrdinalIgnoreCase));
+                                                           && feature.Version.Equals(version, StringComparison.OrdinalIgnoreCase))
+                                            .OfType<DbFeature>();
 
                 return await featureQuery.ToListAsync();
             }
@@ -291,19 +302,36 @@ namespace Augurk.Api.Managers
             _logger.LogInformation("Persisting feature {FeatureTitle} version {Version} for product {ProductName} and group {GroupName}",
                 feature.Title, version, productName, groupName);
 
-            var processor = new FeatureProcessor();
-            string parentTitle = processor.DetermineParent(feature);
+            var hash = feature.CalculateHash();
 
-            DbFeature dbFeature = new DbFeature(feature, productName, groupName, parentTitle, version);
-
-            var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
+            DbFeature dbFeature;
 
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                // Using the store method when the feature already exists in the database will override it completely, this is acceptable
-                await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
 
-                session.SetExpirationAccordingToConfiguration(dbFeature, version, configuration);
+                dbFeature = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
+                                         .Where(f => f.Product == productName
+                                                  && f.Group == groupName
+                                                  && f.Title == feature.Title
+                                                  && f.Hash == hash)
+                                         .OfType<DbFeature>()
+                                         // Use a first, since all identical features might be returned
+                                         .FirstOrDefaultAsync();
+
+                if(dbFeature != null){
+                    // Add the new version to the list
+                    var versions = new List<string>(dbFeature.Versions);
+                    versions.Add(version);
+                    // Prevent duplicates
+                    dbFeature.Versions = versions.Distinct().ToArray();
+                }
+                else{
+                    // Create a new feature
+                    var processor = new FeatureProcessor();
+                    string parentTitle = processor.DetermineParent(feature);
+                    dbFeature = new DbFeature(feature, productName, groupName, parentTitle, version);
+                    await session.StoreAsync(dbFeature);
+                }
 
                 await session.SaveChangesAsync();
             }
@@ -313,10 +341,16 @@ namespace Augurk.Api.Managers
 
         public async Task PersistFeatureTestResultAsync(FeatureTestResult testResult, string productName, string groupName, string version)
         {
+            // TODO Save testresults per version
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, testResult.FeatureTitle, version));
-
+                var dbFeature = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
+                                         .Where(f => f.Product == productName
+                                                  && f.Group == groupName
+                                                  && f.Title == testResult.FeatureTitle
+                                                  && f.Version == version)
+                                         .OfType<DbFeature>()
+                                         .SingleOrDefaultAsync();
                 if (dbFeature == null)
                 {
                     throw new Exception(String.Format(CultureInfo.InvariantCulture,
@@ -358,10 +392,29 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.Operations.Send(
-                    new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
-                        x.Product == productName && x.Group == groupName && x.Version == version))
-                    .WaitForCompletionAsync();
+                var dbFeatures = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
+                                              .Where(f => f.Product == productName
+                                                       && f.Group == groupName
+                                                       && f.Version == version)
+                                               .OfType<DbFeature>()
+                                               .ToListAsync();
+
+                foreach(var dbFeature in dbFeatures){
+                    if(dbFeature.Versions.Length == 1)
+                    {
+                        // Remove the feature as this is the only version
+                        session.Delete(dbFeature);
+                    }
+                    else
+                    {
+                        // Remove this version, but let the feature remain as it contains other versions
+                        var versions = dbFeature.Versions.ToList();
+                        versions.Remove(version);
+                        dbFeature.Versions = versions.ToArray();
+                    }
+                }
+
+                await session.SaveChangesAsync();
             }
         }
 
@@ -393,10 +446,30 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                // The delete method only marks the entity with the provided id for deletion, as such it is not asynchronous
-                session.Delete(DbFeatureExtensions.GetIdentifier(productName, groupName, title, version));
+                var dbFeature = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
+                                             .Where(f => f.Product == productName
+                                                     && f.Group == groupName
+                                                     && f.Title == title
+                                                      && f.Version == version)
+                                              .OfType<DbFeature>()
+                                              .SingleOrDefaultAsync();
+                if(dbFeature != null)
+                {
+                    if(dbFeature.Versions.Length == 1)
+                    {
+                        // Remove the feature as this is the only version
+                        session.Delete(dbFeature);
+                    }
+                    else
+                    {
+                        // Remove this version, but let the feature remain as it contains other versions
+                        var versions = dbFeature.Versions.ToList();
+                        versions.Remove(version);
+                        dbFeature.Versions = versions.ToArray();
+                    }
 
-                await session.SaveChangesAsync();
+                    await session.SaveChangesAsync();
+                }
             }
         }
 
@@ -413,18 +486,19 @@ namespace Augurk.Api.Managers
                                           .Search(feature => feature.Description, query, 5)
                                           .Search(feature => feature.Scenarios, query, 5)
                                           .Search(feature => feature.Background, query, 5)
-                                          .Search(feature => feature.ParentTitle, query, 1)
                                           .Search(feature => feature.Tags, query, 9)
                                           .Search(feature => feature.Title, query, 10);
 
-                var queryResults =  await featureQuery.ToListAsync();
+                var queryResults = await featureQuery.ToListAsync();
 
                 var comparer = new SemanticVersionComparer();
 
                 var filteredResultsQuery = queryResults.Where(feature =>
                     !queryResults.Any(feature2 => feature2.Title == feature.Title
                                                && feature2.Product == feature.Product
-                                               && comparer.Compare(feature2.Version, feature.Version) > 0)
+                                               && feature2.Hash != feature.Hash
+                                               && comparer.Compare(feature2.Versions.OrderByDescending(v => v, comparer).First(),
+                                                                   feature.Versions.OrderByDescending(v => v, comparer).First()) > 0)
                 );
 
                 return filteredResultsQuery.Select(feature => feature.CreateFeatureMatch(query)).ToList();
