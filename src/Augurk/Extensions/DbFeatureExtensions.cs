@@ -55,6 +55,7 @@ namespace Augurk.Api
             var match = new FeatureMatch()
                 {
                     FeatureName = feature.Title,
+                    ShortenedDescription = feature.Description?.Substring(0, Math.Min(feature.Description.Length, 100)) + "...",
                     ProductName = feature.Product,
                     GroupName = feature.Group,
                     Version = feature.Versions.OrderBy(v => v, new SemanticVersionComparer()).FirstOrDefault(),

@@ -22,6 +22,8 @@ namespace Augurk.Entities.Search
     {
         public string FeatureName { get; set; }
 
+        public string ShortenedDescription { get; set; }
+
         public string ProductName { get; set; }
 
         public string GroupName { get; set; }

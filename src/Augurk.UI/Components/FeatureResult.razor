@@ -2,28 +2,20 @@
 @using Augurk.Entities.Search
 @inject SearchService SearchService
 
-<div style="
-    box-shadow: 2px 2px 3px black;
-    padding: 2px;
-    min-width: 120px;
-    max-width: 300px;
-    text-align: left;
-    height: 110px;
-">
-    <a href="/#/feature/@Feature?.ProductName/@Feature?.GroupName/@Feature?.FeatureName/@Feature?.Version">
-        <span style="
-        display: block;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-weight: bold;
-        white-space: nowrap;
-        ">@Feature?.FeatureName</span>
-    </a>
-    <span style="
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    ">@Feature?.MatchingText</span>
+<div class="card m-2" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">
+            @Feature?.FeatureName
+            @foreach (var tag in Feature?.Tags ?? Enumerable.Empty<string>())
+            {
+                <span class="badge badge-secondary">@tag</span>
+            }
+        </h5>
+        <p class="card-text">
+            @(string.IsNullOrWhiteSpace(Feature?.MatchingText) ? Feature?.ShortenedDescription : Feature.MatchingText)
+        </p>
+        <a href="/#/feature/@Feature?.ProductName/@Feature?.GroupName/@Feature?.FeatureName/@Feature?.Version" class="btn btn-primary pull-right">Show feature</a>
+    </div>
 </div>
 
 @code {
