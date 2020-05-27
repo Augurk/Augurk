@@ -6,11 +6,11 @@
     <div class="card-body">
         <h5 class="card-title">
             @Feature?.FeatureName
-            @foreach (var tag in Feature?.Tags ?? Enumerable.Empty<string>())
-            {
-                <span class="badge badge-secondary">@tag</span>
-            }
         </h5>
+        @foreach (var tag in Feature?.Tags ?? Enumerable.Empty<string>())
+        {
+            <span class="badge badge-secondary m-1">@tag</span>
+        }
         <p class="card-text">
             @(string.IsNullOrWhiteSpace(Feature?.MatchingText) ? Feature?.ShortenedDescription : Feature.MatchingText)
         </p>
