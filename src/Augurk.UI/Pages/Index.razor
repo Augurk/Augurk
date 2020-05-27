@@ -9,7 +9,7 @@
    <Searchbox />
 </div>
 
-<div style="text-align: center;">
+<div style="display: flex; justify-content: center">
     @foreach(var feature in _latestResults?.FeatureMatches ?? Enumerable.Empty<FeatureMatch>()) {
         <FeatureResult Feature="feature" />
     }
