@@ -10,7 +10,7 @@
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and 
+ See the License for the specific language governing permissions and
  limitations under the License.
 */
 using System;
@@ -25,6 +25,7 @@ using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Indexes;
 using Raven.Client.Documents.Operations.Expiration;
 using Raven.Embedded;
+using Augurk.Api.Managers;
 
 namespace Augurk
 {
@@ -36,7 +37,7 @@ namespace Augurk
         /// <summary>
         /// Default constructor for this class.
         /// </summary>
-        public DocumentStoreProvider(IWebHostEnvironment environment, ILogger<DocumentStoreProvider> logger)
+        public DocumentStoreProvider(IWebHostEnvironment environment, ILogger<DocumentStoreProvider> logger, ILogger<MigrationManager> migrationLogger)
         {
             // Build the options for the server
             string dotNetCoreVersion = EnvironmentUtils.GetNetCoreVersion();
@@ -70,6 +71,9 @@ namespace Augurk
                 Disabled = false,
                 DeleteFrequencyInSec = 60
             }));
+
+            // Start asynchronous migration
+            var migrationTask = new MigrationManager(this, migrationLogger).StartMigrating();
 
             // Check if we're running in development
             if (environment.IsDevelopment())

@@ -1,12 +1,12 @@
 ﻿/*
  Copyright 2015-2019, Augurk
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,24 @@ namespace Augurk.Api
         /// <summary>
         /// Gets or sets the version of the feature.
         /// </summary>
+        [Obsolete]
         public string Version { get; set; }
+
+        /// <summary>
+        /// Gets or sets the versions of the feature.
+        /// </summary>
+        /// <remarks>
+        /// All identical versions of a feature are regarded as a single feature.
+        /// </remarks>
+        public string[] Versions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the hash of this feature.
+        /// </summary>
+        /// <remarks>
+        /// The hash does not include the <see cref="Versions"/> or obsolete <see cref="Version"/> properties.
+        /// </remarks>
+        public string Hash{ get; set; }
 
         /// <summary>
         /// Gets or sets the title of the parent feature.
@@ -65,6 +82,28 @@ namespace Augurk.Api
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="DbFeature"/> class using the provided <see cref="Feature"/> to provide initial values.
+        /// </summary>
+        /// <param name="feature">The <see cref="Feature"/>that should be used when determining the the initial values.</param>
+        /// <param name="group">The group this feature falls under.</param>
+        /// <param name="parentTitle">The title of the parent feature.</param>
+        /// <param name="version">Version of the feature.</param>
+        /// <remarks>This constructor does not wrap the provided feature, it will result in an actual copy with shared scenarios and a shared background.</remarks>
+        public DbFeature(Feature feature, string product, string group, string parentTitle)
+        {
+            Product = product;
+            Group = group;
+            ParentTitle = parentTitle;
+
+            // Copy the properties from the provided feature
+            Title = feature.Title;
+            Description = feature.Description;
+            Tags = feature.Tags;
+            Scenarios = feature.Scenarios;
+            Background = feature.Background;
+        }
+
+                /// <summary>
         /// Initializes a new instance of the <see cref="DbFeature"/> class using the provided <see cref="Feature"/> to provide initial values.
         /// </summary>
         /// <param name="feature">The <see cref="Feature"/>that should be used when determining the the initial values.</param>
