@@ -115,7 +115,7 @@ namespace Augurk.Api
         {
             Product = product;
             Group = group;
-            Version = version;
+            Versions = new [] {version};
             ParentTitle = parentTitle;
 
             // Copy the properties from the provided feature

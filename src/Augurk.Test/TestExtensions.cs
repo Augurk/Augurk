@@ -1,6 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Augurk.Api;
+using Augurk.Api.Managers;
+using Augurk.Entities;
+using Microsoft.Extensions.Logging;
+using NSubstitute;
 using Raven.Client.Documents.Session;
 
 namespace Augurk.Test
@@ -19,10 +23,12 @@ namespace Augurk.Test
         /// <param name="title">Title of the feature.</param>
         /// <param name="version">Version of the feature.</param>
         /// <param name="tags">Optional additional tags for the feature.</param>
-        public static Task StoreDbFeatureAsync(this IAsyncDocumentSession session, string product, string group, string title, string version, params string[] tags)
+        public static Task StoreDbFeatureAsync(this IDocumentStoreProvider documentStoreProvider, string product, string group, string title, string version, params string[] tags)
         {
-            var feature = GenerateDbFeature(product, group, title, version, tags);
-            return session.StoreAsync(feature, feature.GetIdentifier());
+            var feature = GenerateFeature(title, tags);
+
+            var featureManager = new FeatureManager(documentStoreProvider, Substitute.For<ILogger<FeatureManager>>());
+            return featureManager.InsertOrUpdateFeatureAsync(feature, product, group, version);
         }
 
         /// <summary>
@@ -33,15 +39,12 @@ namespace Augurk.Test
         /// <param name="title">Title of the feature.</param>
         /// <param name="version">Version of the feature.</param>
         /// <param name="tags">Optional additional tags for the feature.</param>
-        /// <returns>A <see cref="DbFeature" /> instance with the provided values set.</returns>
-        public static DbFeature GenerateDbFeature(string product, string group, string title, string version, params string[] tags)
+        /// <returns>A <see cref="Feature" /> instance with the provided values set.</returns>
+        public static Feature GenerateFeature(string title, params string[] tags)
         {
-            var feature = new DbFeature
+            var feature = new Feature
             {
-                Product = product,
-                Group = group,
-                Title = title,
-                Version = version
+                Title = title
             };
 
             feature.Tags = new List<string>(tags);

@@ -17,6 +17,7 @@ using System;
 using System.Reflection;
 using System.Runtime.Versioning;
 using Augurk.Api;
+using Augurk.Api.Indeces;
 using NSubstitute;
 using Raven.Client.Documents;
 using Raven.TestDriver;
@@ -24,7 +25,7 @@ using Raven.TestDriver;
 namespace Augurk.Test
 {
     /// <summary>
-    /// Abstract baee class for tests that intercat with RavenDb.
+    /// Abstract base class for tests that interact with RavenDb.
     /// </summary>
     public abstract class RavenTestBase : RavenTestDriver
     {
@@ -84,6 +85,16 @@ namespace Augurk.Test
         private IDocumentStoreProvider GetDocumentStoreProvider()
         {
             var documentStore = GetDocumentStore();
+
+            // Prepare all indeces
+            documentStore.ExecuteIndex(new Features_ByProductAndBranch());
+            documentStore.ExecuteIndex(new Features_ByTitleProductAndGroup());
+            documentStore.ExecuteIndex(new Features_WithoutHash());
+            documentStore.ExecuteIndex(new Products_ByName());
+
+            // Wait for all indeces to be done
+            WaitForIndexing(documentStore);
+
             var documentStoreProvider = Substitute.For<IDocumentStoreProvider>();
             documentStoreProvider.Store.Returns(documentStore);
 

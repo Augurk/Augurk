@@ -41,7 +41,6 @@ namespace Augurk.Api.Managers
     public class FeatureManager : IFeatureManager
     {
         private readonly IDocumentStoreProvider _storeProvider;
-        private readonly IConfigurationManager _configurationManager;
         private readonly ILogger<FeatureManager> _logger;
 
         /// <summary>
@@ -49,10 +48,9 @@ namespace Augurk.Api.Managers
         /// </summary>
         internal static JsonSerializerSettings JsonSerializerSettings { get; set; }
 
-        public FeatureManager(IDocumentStoreProvider storeProvider, IConfigurationManager configurationManager, ILogger<FeatureManager> logger)
+        public FeatureManager(IDocumentStoreProvider storeProvider, ILogger<FeatureManager> logger)
         {
             _storeProvider = storeProvider ?? throw new ArgumentNullException(nameof(storeProvider));
-            _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
@@ -67,12 +65,13 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                var versions = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
+                var features = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
                                             .Where(feature => feature.Product == productName && feature.Group == groupName && feature.Title == title)
-                                            .Select(feature => feature.Version)
+                                            .OfType<DbFeature>()
+
                                             .ToListAsync();
 
-                return versions.OrderByDescending(version => version, new SemanticVersionComparer());
+                return features.SelectMany(f => f.Versions).OrderByDescending(version => version, new SemanticVersionComparer());
             }
         }
 
@@ -309,14 +308,7 @@ namespace Augurk.Api.Managers
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
 
-                dbFeature = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
-                                         .Where(f => f.Product == productName
-                                                  && f.Group == groupName
-                                                  && f.Title == feature.Title
-                                                  && f.Hash == hash)
-                                         .OfType<DbFeature>()
-                                         // Use a first, since all identical features might be returned
-                                         .FirstOrDefaultAsync();
+                dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, feature.Title, hash));
 
                 if(dbFeature != null){
                     // Add the new version to the list
@@ -330,7 +322,7 @@ namespace Augurk.Api.Managers
                     var processor = new FeatureProcessor();
                     string parentTitle = processor.DetermineParent(feature);
                     dbFeature = new DbFeature(feature, productName, groupName, parentTitle, version);
-                    await session.StoreAsync(dbFeature);
+                    await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
                 }
 
                 await session.SaveChangesAsync();
