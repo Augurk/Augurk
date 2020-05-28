@@ -2,7 +2,9 @@
 @using Augurk.Entities.Search
 @inject SearchService searchService
 
-<input type="text" placeholder="Type to search..." @bind-value="SearchTerm" @bind-value:event="oninput" />
+<form class="form col-md-6 offset-md-3">
+    <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" @bind-value="SearchTerm" @bind-value:event="oninput" >
+</form>
 
 @code {
     private string _searchTerm;

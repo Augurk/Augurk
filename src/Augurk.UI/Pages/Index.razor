@@ -3,16 +3,15 @@
 @using Augurk.Entities.Search
 @using Augurk.UI.Components
 
-<h1>Augurk 3.1.0 PREVIEW</h1>
-
-<div style="text-align: center;">
-   <Searchbox />
-</div>
-
-<div style="display: flex; justify-content: center; flex-wrap: wrap">
-    @foreach(var feature in _latestResults?.FeatureMatches ?? Enumerable.Empty<FeatureMatch>()) {
-        <FeatureResult Feature="feature" />
-    }
+<div class="container-fluid">
+    <div class="row">
+        <Searchbox />
+    </div>
+    <div class="row">
+        @foreach(var feature in _latestResults?.FeatureMatches ?? Enumerable.Empty<FeatureMatch>()) {
+            <FeatureResult Feature="feature" />
+        }
+    </div>
 </div>
 
 @code {
