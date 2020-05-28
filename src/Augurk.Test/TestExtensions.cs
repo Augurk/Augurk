@@ -17,13 +17,13 @@ namespace Augurk.Test
         /// <summary>
         /// Stores a <see cref="DbFeature" /> with the provided parameters to the database.
         /// </summary>
-        /// <param name="session">An <see cref="IAsyncDocumentSession" /> used to store the data.</param>
+        /// <param name="documentStoreProvider">An <see cref="IDocumentStoreProvider" /> used to store the data.</param>
         /// <param name="product">Name of the product containing the feature.</param>
         /// <param name="group">Name of the group containing the feature.</param>
         /// <param name="title">Title of the feature.</param>
         /// <param name="version">Version of the feature.</param>
         /// <param name="tags">Optional additional tags for the feature.</param>
-        public static Task StoreDbFeatureAsync(this IDocumentStoreProvider documentStoreProvider, string product, string group, string title, string version, params string[] tags)
+        public static Task<DbFeature> StoreDbFeatureAsync(this IDocumentStoreProvider documentStoreProvider, string product, string group, string title, string version, params string[] tags)
         {
             var feature = GenerateFeature(title, tags);
 
@@ -32,12 +32,9 @@ namespace Augurk.Test
         }
 
         /// <summary>
-        /// Generates a <see cref="DbFeature" /> instance.
+        /// Generates a <see cref="Feature" /> instance.
         /// </summary>
-        /// <param name="product">Name of the product containing the feature.</param>
-        /// <param name="group">Name of the group containing the feature.</param>
         /// <param name="title">Title of the feature.</param>
-        /// <param name="version">Version of the feature.</param>
         /// <param name="tags">Optional additional tags for the feature.</param>
         /// <returns>A <see cref="Feature" /> instance with the provided values set.</returns>
         public static Feature GenerateFeature(string title, params string[] tags)

@@ -118,15 +118,31 @@ namespace Augurk.Api.Managers
         /// <param name="version">The version of the productName to delete.</param>
         public async Task DeleteProductAsync(string productName, string version)
         {
-            throw new NotImplementedException();
-
-            /*using (var session = _storeProvider.Store.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.Operations.Send(
-                    new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
-                        x.Product == productName && x.Version == version))
-                    .WaitForCompletionAsync();
-            }*/
+                var dbFeatures = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
+                                              .Where(f => f.Product == productName
+                                                       && f.Version == version)
+                                               .OfType<DbFeature>()
+                                               .ToListAsync();
+
+                foreach(var dbFeature in dbFeatures){
+                    if(dbFeature.Versions.Length == 1)
+                    {
+                        // Remove the feature as this is the only version
+                        session.Delete(dbFeature);
+                    }
+                    else
+                    {
+                        // Remove this version, but let the feature remain as it contains other versions
+                        var versions = dbFeature.Versions.ToList();
+                        versions.Remove(version);
+                        dbFeature.Versions = versions.ToArray();
+                    }
+                }
+
+                await session.SaveChangesAsync();
+            }
         }
 
         /// <summary>

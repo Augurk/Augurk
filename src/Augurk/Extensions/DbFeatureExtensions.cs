@@ -93,7 +93,7 @@ namespace Augurk.Api
 
             // Find al terms and determine which substrings we should take
             var results = new List<(int start, int length)>();
-            if(searchTerms.Any(source.Contains))
+            if(!string.IsNullOrWhiteSpace(source) && searchTerms.Any(source.Contains))
             {
                 foreach (string term in searchTerms)
                 {
