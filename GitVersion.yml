@@ -6,3 +6,4 @@ branches:
     mode: ContinuousDelivery
     increment: Patch
     tag: useBranchName
+    source-branches: [ 'master' ]
