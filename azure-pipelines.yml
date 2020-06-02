@@ -62,10 +62,10 @@ jobs:
   - task: DotNetCoreCLI@2
     inputs:
       command: publish
-      projects: src/Augurk/Augurk.csproj
       publishWebProjects: True
       arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) --self-contained true -r win10-x64 /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
       zipAfterPublish: true
+      workingDirectory: src/Augurk
     displayName: dotnet publish
 
   - task: PublishBuildArtifacts@1
