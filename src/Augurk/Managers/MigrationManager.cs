@@ -15,23 +15,12 @@
 */
 
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Augurk.Api.Indeces;
-using Augurk.Api.Indeces.Search;
-using Augurk.Entities;
-using Augurk.Entities.Test;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using Group = Augurk.Entities.Group;
 using Raven.Client.Documents;
-using Raven.Client.Documents.Queries;
-using Raven.Client.Documents.Operations;
 using Microsoft.Extensions.Logging;
-using Augurk.Entities.Search;
 using Raven.Client.Documents.Session;
-using Raven.Client.Documents.Commands;
 
 namespace Augurk.Api.Managers
 {
@@ -57,9 +46,18 @@ namespace Augurk.Api.Managers
             dynamic features;
             using(var session = _storeProvider.Store.OpenAsyncSession())
             {
+                QueryStatistics stats;
                 features = await session.Query<DbFeature, Features_WithoutHash>()
+                                        .Statistics(out stats)
                                         .Select(f => new {f.Product, f.Group, f.Title})
                                         .ToListAsync();
+
+                if(stats.IsStale)
+                {
+                    // The index is stale, it's probably better to wait a bit.
+                    var newTask = Task.Delay(60000).ContinueWith(t => StartMigrating());
+                    return;
+                }
 
             };
 
