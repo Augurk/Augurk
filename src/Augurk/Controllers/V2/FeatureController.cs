@@ -97,6 +97,8 @@ namespace Augurk.Api.Controllers.V2
         /// <returns>Returns a reponse message indicating whether saving the feature succeeded.</returns>
         [Route("{title}/versions/{version}")]
         [HttpPost]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(202)]
         public async Task<ActionResult<Feature>> PostAsync([FromBody]Feature feature, string productName, string groupName, string title, string version)
         {
             if (!feature.Title.Equals(title, StringComparison.OrdinalIgnoreCase))

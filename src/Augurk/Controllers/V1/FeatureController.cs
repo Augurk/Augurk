@@ -59,6 +59,8 @@ namespace Augurk.Api.Controllers
 
         [Route("api/features/{branchName}/{groupName}/{title}")]
         [HttpPost]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(201)]
         public async Task<ActionResult<Feature>> PostAsync(Feature feature, string branchName, string groupName, string title)
         {
             if (!feature.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
@@ -81,6 +83,8 @@ namespace Augurk.Api.Controllers
 
         [Route("api/features/{branchName}/{groupName}/{title}/testresult")]
         [HttpPost]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(201)]
         public async Task<ActionResult<FeatureTestResult>> PostAsync([FromBody]FeatureTestResult testResult, string branchName, string groupName, string title)
         {
             if (!testResult.FeatureTitle.Equals(title, StringComparison.OrdinalIgnoreCase))
