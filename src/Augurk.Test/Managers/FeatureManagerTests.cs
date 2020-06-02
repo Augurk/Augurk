@@ -461,6 +461,8 @@ namespace Augurk.Test.Managers
             var sut = new FeatureManager(documentStoreProvider, logger);
             await sut.DeleteFeaturesAsync("MyProduct", "MyGroup");
 
+            WaitForIndexing(documentStoreProvider.Store);
+
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {

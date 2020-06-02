@@ -50,6 +50,7 @@ namespace Augurk.Api.Controllers.V2
         /// <param name="groupName">Name of the group that the feature belongs to.</param>
         [Route("reports")]
         [HttpPost]
+        [ProducesResponseType(202)]
         public async Task<ActionResult> PostAnalysisReport([FromBody]AnalysisReport analysisReport, string productName, string version)
         {
             analysisReport.Version = version;

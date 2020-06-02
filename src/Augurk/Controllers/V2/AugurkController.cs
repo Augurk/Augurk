@@ -112,6 +112,8 @@ namespace Augurk.Api.Controllers.V2
         [HttpPost]
         [DisableRequestSizeLimit]
         [RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue, ValueLengthLimit = Int32.MaxValue)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
         public async Task<ActionResult> Import(IFormFile file)
         {
             // Make sure that we have an input file
