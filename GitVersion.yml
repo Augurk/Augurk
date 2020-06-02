@@ -1,2 +1,8 @@
 next-version: 2.7.0
 mode: Mainline
+branches:
+  dependabot:
+    regex: ˆdependabot?[/-]
+    mode: ContinuousDelivery
+    increment: Patch
+    tag: useBranchName

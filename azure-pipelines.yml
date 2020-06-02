@@ -11,7 +11,7 @@ variables:
 
 jobs:
 - job: netcore
-  displayName: .NET Core Framework Dependent
+  displayName: .NET Core Self Contained
   pool:
     vmImage: ubuntu-16.04
   steps:
@@ -21,9 +21,9 @@ jobs:
       versionSpec: '5.x'
 
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk 3.1.201'
+    displayName: 'Use .NET Core sdk 3.1.300'
     inputs:
-      version: 3.1.201
+      version: 3.1.300
 
   - task: DotNetCoreCLI@2
     inputs:
@@ -63,7 +63,7 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
+      arguments: 'src/Augurk/Augurk.csproj --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) --self-contained /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
       zipAfterPublish: true
     displayName: dotnet publish
 
@@ -93,9 +93,9 @@ jobs:
         versionSpec: '5.x'
 
     - task: UseDotNet@2
-      displayName: 'Use .NET Core sdk 3.1.201'
+      displayName: 'Use .NET Core sdk 3.1.300'
       inputs:
-        version: 3.1.201
+        version: 3.1.300
 
     - script: |
         echo '##vso[task.setvariable variable=prerelease]-preview'
@@ -173,6 +173,7 @@ jobs:
         imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(prerelease)'
         containerregistrytype: Container Registry
         dockerRegistryEndpoint: 'Docker Hub'
+      condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/dependabot/')))
     - task: Docker@1
       displayName: 'Push runtime image (latest)'
       inputs:
