@@ -73,6 +73,9 @@ namespace Augurk
             }));
 
             // Start asynchronous migration
+            // Note: We're instantiating the MigrationManager here directly, rather than having it injected
+            //       This is because of a chicken-egg problem, since the MigrationManager also needs a
+            //       IDocumentStoreProvider
             var migrationTask = new MigrationManager(this, migrationLogger).StartMigrating();
 
             // Check if we're running in development
