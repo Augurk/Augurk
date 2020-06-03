@@ -143,7 +143,8 @@ namespace Augurk.Api.Controllers.V2
                 System.IO.File.Delete(filePath);
 
                 // Set the expirations as configured
-                //await _expirationManager.ApplyExpirationPolicyAsync(await _configurationManager.GetOrCreateConfigurationAsync());
+                // TODO Restore functionality
+                // await _expirationManager.ApplyExpirationPolicyAsync(await _configurationManager.GetOrCreateConfigurationAsync());
 
                 // Migrate the imported data asynchronously
                 var taskWeShallNotWaitFor = _migrationManager.StartMigrating();
