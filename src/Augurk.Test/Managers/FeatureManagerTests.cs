@@ -266,6 +266,8 @@ namespace Augurk.Test.Managers
             await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
             await documentStoreProvider.StoreDbFeatureAsync("MyOtherProduct", "MyOtherGroup", "MySecondFeature", "0.0.0");
 
+            WaitForIndexing(documentStoreProvider.Store);
+
             // Act
             var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.GetAllDbFeatures();
@@ -365,6 +367,8 @@ namespace Augurk.Test.Managers
             };
 
             await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Feature", "0.0.0", "tag1");
+
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Act
             var sut = new FeatureManager(documentStoreProvider, logger);
