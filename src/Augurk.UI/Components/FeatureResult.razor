@@ -16,21 +16,24 @@
 @using Augurk.Entities.Search
 @inject SearchService SearchService
 
-<div class="card m-2" style="width: 18rem;">
-    <div class="card-body">
-        <h5 class="card-title">
-            @Feature?.FeatureName
-        </h5>
-        @foreach (var tag in Feature?.Tags ?? Enumerable.Empty<string>())
-        {
-            <span class="badge badge-secondary m-1">@tag</span>
-        }
-        <p class="card-text">
-            @(string.IsNullOrWhiteSpace(Feature?.MatchingText) ? Feature?.ShortenedDescription : Feature.MatchingText)
-        </p>
-        <a href="/#/feature/@Feature?.ProductName/@Feature?.GroupName/@Feature?.FeatureName/@Feature?.Version" class="btn btn-primary pull-right">Show feature</a>
+@if (Feature != null)
+{
+    <div class="card m-2" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">
+                @Feature.FeatureName
+            </h5>
+            @foreach (var tag in Feature.Tags ?? Enumerable.Empty<string>())
+            {
+                <span class="badge badge-secondary m-1">@tag</span>
+            }
+            <p class="card-text">
+                @(string.IsNullOrWhiteSpace(Feature.MatchingText) ? Feature.ShortenedDescription : Feature.MatchingText)
+            </p>
+            <a href="/#/feature/@Feature.ProductName/@Feature.GroupName/@Feature.FeatureName/@Feature.Version" class="btn btn-primary pull-right">Show feature</a>
+        </div>
     </div>
-</div>
+}
 
 @code {
     [Parameter]

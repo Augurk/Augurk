@@ -61,7 +61,8 @@ namespace Augurk.Api.Managers
 
             };
 
-            foreach(var feature in features){
+            foreach(var feature in features)
+            {
                 // Don't await them, let them run in parallel
                 MigrateFeature(feature.Product, feature.Group, feature.Title);
             }
