@@ -530,6 +530,8 @@ namespace Augurk.Test.Managers
             var sut = new FeatureManager(documentStoreProvider, logger);
             await sut.DeleteFeatureAsync("MyProduct", "MyGroup", "My First Feature");
 
+            WaitForIndexing(documentStoreProvider.Store);
+
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
@@ -556,9 +558,13 @@ namespace Augurk.Test.Managers
             await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "1.0.0");
             await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Second Feature", "0.0.0");
 
+            WaitForIndexing(documentStoreProvider.Store);
+
             // Act
             var sut = new FeatureManager(documentStoreProvider, logger);
             await sut.DeleteFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
