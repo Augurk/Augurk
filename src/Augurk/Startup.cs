@@ -74,6 +74,7 @@ namespace Augurk
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseWebAssemblyDebugging();
             }
             else
             {
@@ -81,6 +82,7 @@ namespace Augurk
             }
 
             app.UseHttpsRedirection();
+            app.UseBlazorFrameworkFiles("/preview");
             app.UseFileServer();
 
             app.UseRouting();
@@ -88,6 +90,7 @@ namespace Augurk
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapFallbackToFile("preview/{*path:nonfile}", "preview/index.html");
             });
 
             // Add Swagger support at the appropriate endpoints

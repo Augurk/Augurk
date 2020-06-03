@@ -238,6 +238,7 @@ _Pvt_Extensions
 
 # LibMan libraries
 src/Augurk/wwwroot/libs
+src/Augurk.UI/wwwroot/lib
 
 # Test coverage files
 coverage.info

@@ -1,12 +1,12 @@
 ﻿/*
  Copyright 2017-2019, Augurk
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,19 +44,21 @@ namespace Augurk.Api.Controllers.V2
         private readonly IFeatureManager _featureManager;
         private readonly IExpirationManager _expirationManager;
         private readonly IDocumentStore _documentStore;
-
+        private readonly MigrationManager _migrationManager;
 
         public AugurkController(ICustomizationManager customizationManager,
                                 IConfigurationManager configurationManager,
                                 IFeatureManager featureManager,
                                 IExpirationManager expirationManager,
-                                IDocumentStoreProvider storeProvider)
+                                IDocumentStoreProvider storeProvider,
+                                MigrationManager migrationManager)
         {
             _customizationManager = customizationManager ?? throw new ArgumentNullException(nameof(customizationManager));
             _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
             _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
             _expirationManager = expirationManager ?? throw new ArgumentNullException(nameof(expirationManager));
             _documentStore = storeProvider?.Store ?? throw new ArgumentNullException(nameof(storeProvider));
+            _migrationManager = migrationManager ?? throw new ArgumentNullException(nameof(migrationManager));
         }
 
         /// <summary>
@@ -108,6 +110,10 @@ namespace Augurk.Api.Controllers.V2
         /// </summary>
         [Route("import")]
         [HttpPost]
+        [DisableRequestSizeLimit]
+        [RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue, ValueLengthLimit = Int32.MaxValue)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
         public async Task<ActionResult> Import(IFormFile file)
         {
             // Make sure that we have an input file
@@ -137,7 +143,11 @@ namespace Augurk.Api.Controllers.V2
                 System.IO.File.Delete(filePath);
 
                 // Set the expirations as configured
-                await _expirationManager.ApplyExpirationPolicyAsync(await _configurationManager.GetOrCreateConfigurationAsync());
+                // TODO Restore functionality
+                // await _expirationManager.ApplyExpirationPolicyAsync(await _configurationManager.GetOrCreateConfigurationAsync());
+
+                // Migrate the imported data asynchronously
+                var taskWeShallNotWaitFor = _migrationManager.StartMigrating();
 
                 return NoContent();
             }

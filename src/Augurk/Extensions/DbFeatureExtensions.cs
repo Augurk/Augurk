@@ -29,10 +29,11 @@ namespace Augurk.Api
     {
         public static string GetIdentifier(this DbFeature feature)
         {
-            return GetIdentifier(feature.Product, feature.Group, feature.Title, feature.Version);
+            // Calculate the hash if it doesn't have it, it might still be an old feature
+            return GetIdentifier(feature.Product, feature.Group, feature.Title, feature.Hash ?? feature.CalculateHash());
         }
 
-        public static string GetIdentifier(string product, string group, string title, string version)
+        public static string GetIdentifier(string product, string group, string title, string hash)
         {
 
             string combinedTitle = String.Join("/", product.ToLowerInvariant(), group.ToLowerInvariant(), title.ToLowerInvariant());
@@ -43,7 +44,7 @@ namespace Augurk.Api
                 var guid = new Guid(cryptoServiceProvider.ComputeHash(bytes));
                 var id = String.Format(CultureInfo.InvariantCulture,
                                        "{0}/{1}",
-                                       version.ToLowerInvariant(),
+                                       hash,
                                        guid);
                 return id;
             }
@@ -54,9 +55,10 @@ namespace Augurk.Api
             var match = new FeatureMatch()
                 {
                     FeatureName = feature.Title,
+                    ShortenedDescription = feature.Description?.Substring(0, Math.Min(feature.Description.Length, 100)) + "...",
                     ProductName = feature.Product,
                     GroupName = feature.Group,
-                    Version = feature.Version,
+                    Version = feature.Versions.OrderBy(v => v, new SemanticVersionComparer()).FirstOrDefault(),
                     Tags = feature.Tags.ToList()
                 };
 
@@ -91,7 +93,7 @@ namespace Augurk.Api
 
             // Find al terms and determine which substrings we should take
             var results = new List<(int start, int length)>();
-            if(searchTerms.Any(source.Contains))
+            if(!string.IsNullOrWhiteSpace(source) && searchTerms.Any(source.Contains))
             {
                 foreach (string term in searchTerms)
                 {

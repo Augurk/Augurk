@@ -1,12 +1,12 @@
 ﻿/*
- Copyright 2014-2019, Augurk
- 
+ Copyright 2014-2020, Augurk
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -120,10 +120,28 @@ namespace Augurk.Api.Managers
         {
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                await session.Advanced.DocumentStore.Operations.Send(
-                    new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
-                        x.Product == productName && x.Version == version))
-                    .WaitForCompletionAsync();
+                var dbFeatures = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
+                                              .Where(f => f.Product == productName
+                                                       && f.Version == version)
+                                               .OfType<DbFeature>()
+                                               .ToListAsync();
+
+                foreach(var dbFeature in dbFeatures){
+                    if(dbFeature.Versions.Length == 1)
+                    {
+                        // Remove the feature as this is the only version
+                        session.Delete(dbFeature);
+                    }
+                    else
+                    {
+                        // Remove this version, but let the feature remain as it contains other versions
+                        var versions = dbFeature.Versions.ToList();
+                        versions.Remove(version);
+                        dbFeature.Versions = versions.ToArray();
+                    }
+                }
+
+                await session.SaveChangesAsync();
             }
         }
 

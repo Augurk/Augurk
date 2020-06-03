@@ -22,7 +22,6 @@ namespace Augurk.Test.Managers
     /// </summary>
     public class FeatureManagerTests : RavenTestBase
     {
-        private readonly IConfigurationManager configurationManager = Substitute.For<IConfigurationManager>();
         private readonly ILogger<FeatureManager> logger = Substitute.For<ILogger<FeatureManager>>();
 
         /// <summary>
@@ -33,19 +32,14 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "1.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "2.0.0");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "1.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "2.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.GetFeatureAvailableVersions("MyProduct", "MyGroup", "MyFirstFeature");
 
             // Assert
@@ -61,14 +55,12 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
-                await session.SaveChangesAsync();
-            }
+
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var actualFeature = await sut.GetFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
 
             // Assert
@@ -83,20 +75,15 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MySecondFeature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "Group2", "MyOtherFeature", "0.0.0");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group1", "MySecondFeature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group2", "MyOtherFeature", "0.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.GetGroupedFeatureDescriptionsAsync("MyProduct");
 
             // Assert
@@ -124,19 +111,14 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "Group2", "MyFirstFeature", "0.0.0");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group2", "MyFirstFeature", "0.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.GetGroupedFeatureDescriptionsAsync("MyProduct");
 
             // Assert
@@ -163,19 +145,14 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "1.0.0");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "1.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.GetGroupedFeatureDescriptionsAsync("MyProduct");
 
             // Assert
@@ -196,20 +173,15 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByProductAndBranch());
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0", "tag1");
-                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MySecondFeature", "0.0.0", "tag1", "tag2");
-                await session.StoreDbFeatureAsync("MyProduct", "Group2", "MyOtherFeature", "0.0.0", "tag3");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0", "tag1");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group1", "MySecondFeature", "0.0.0", "tag1", "tag2");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group2", "MyOtherFeature", "0.0.0", "tag3");
 
             WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.GetFeatureDescriptionsByBranchAndTagAsync("MyProduct", "tag1");
 
             // Assert
@@ -227,20 +199,15 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "Group2", "MySecondFeature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyOtherProduct", "Group1", "MyThirdFeature", "0.0.0");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group1", "MyFirstFeature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "Group2", "MySecondFeature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyOtherProduct", "Group1", "MyThirdFeature", "0.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.GetFeatureDescriptionsByProductAndGroupAsync("MyProduct", "Group1");
 
             // Assert
@@ -259,29 +226,32 @@ namespace Augurk.Test.Managers
             var documentStoreProvider = DocumentStoreProvider;
             await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "1.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MySecondFeature", "1.0.0");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "1.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MySecondFeature", "1.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyThirdFeature", "0.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.GetDbFeaturesByProductAndVersionAsync("MyProduct", "1.0.0");
 
             // Assert
             result.ShouldNotBeNull();
             result.Count().ShouldBe(2);
 
-            result.FirstOrDefault()?.Title.ShouldBe("MyFirstFeature");
-            result.FirstOrDefault()?.Version.ShouldBe("1.0.0");
+            result.First().Title.ShouldBe("MyFirstFeature");
+            result.First().Versions.ShouldNotBeNull();
+            result.First().Versions.Length.ShouldBe(2);
+            result.First().Versions.ShouldContain("0.0.0");
+            result.First().Versions.ShouldContain("1.0.0");
 
-            result.LastOrDefault()?.Title.ShouldBe("MySecondFeature");
-            result.LastOrDefault()?.Version.ShouldBe("1.0.0");
+            result.Last().Title.ShouldBe("MySecondFeature");
+            result.Last().Versions.ShouldNotBeNull();
+            result.Last().Versions.Length.ShouldBe(1);
+            result.Last().Versions.ShouldContain("1.0.0");
+
         }
 
         /// <summary>
@@ -292,15 +262,14 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyOtherProduct", "MyOtherGroup", "MySecondFeature", "0.0.0");
-                await session.SaveChangesAsync();
-            }
+
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyOtherProduct", "MyOtherGroup", "MySecondFeature", "0.0.0");
+
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.GetAllDbFeatures();
 
             // Assert
@@ -317,11 +286,21 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            var expectedFeature1 = TestExtensions.GenerateDbFeature("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
-            var expectedFeature2 = TestExtensions.GenerateDbFeature("MyProduct", "MyGroup", "MySecondFeature", "0.0.0");
+            var expectedFeature1 = new DbFeature(){
+                Title="MyFirstFeature",
+                Product = "MyProduct",
+                Group = "MyGroup",
+                Versions= new [] {"0.0.0", "0.1.0"}
+            };
+            var expectedFeature2 = new DbFeature(){
+                Title="MySecondFeature",
+                Product = "MyProduct",
+                Group = "MyGroup",
+                Versions= new [] {"0.0.0"}
+            };
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             await sut.PersistDbFeatures(new[] { expectedFeature1, expectedFeature2 });
 
             // Assert
@@ -356,55 +335,19 @@ namespace Augurk.Test.Managers
             };
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
 
             // Assert
             result.Product.ShouldBe("MyProduct");
             result.Group.ShouldBe("MyGroup");
             result.Title.ShouldBe("My Feature");
-            result.Version.ShouldBe("0.0.0");
+            result.Versions.ShouldBe(new []{"0.0.0"});
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 var dbFeature = await session.LoadAsync<DbFeature>(result.GetIdentifier());
                 dbFeature.ShouldNotBeNull();
-            }
-        }
-
-        /// <summary>
-        /// Tests that the <see cref="FeatureManager" /> class sets the expiration on a feature if that is configured.
-        /// </summary>
-        [Fact]
-        public async Task SetsExpirationIfEnabledWhenInsertingNewFeature()
-        {
-            // Arrange
-            var documentStoreProvider = DocumentStoreProvider;
-            var feature = new Feature
-            {
-                Title = "My Feature",
-                Description = "As a math idiot",
-            };
-
-            configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration
-            {
-                ExpirationEnabled = true,
-                ExpirationDays = 1,
-                ExpirationRegex = @"\d\.\d\.\d"
-            });
-
-            // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
-            var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
-
-            // Assert
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                var dbFeature = await session.LoadAsync<DbFeature>(result.GetIdentifier());
-                dbFeature.ShouldNotBeNull();
-
-                var dbFeatureMetadata = session.Advanced.GetMetadataFor(dbFeature);
-                dbFeatureMetadata[Constants.Documents.Metadata.Expires].ShouldNotBeNull();
             }
         }
 
@@ -423,70 +366,25 @@ namespace Augurk.Test.Managers
                 Tags = new List<string> { "tag1", "tag2" }
             };
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Feature", "0.0.0", "tag1");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Feature", "0.0.0", "tag1");
+
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
 
             // Assert
             result.Product.ShouldBe("MyProduct");
             result.Group.ShouldBe("MyGroup");
             result.Title.ShouldBe("My Feature");
-            result.Version.ShouldBe("0.0.0");
+            result.Versions.ShouldBe(new []{"0.0.0"});
             result.Tags.ShouldBe(new string[] { "tag1", "tag2" });
 
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 var dbFeature = await session.LoadAsync<DbFeature>(result.GetIdentifier());
                 dbFeature.ShouldNotBeNull();
-            }
-        }
-
-        /// <summary>
-        /// Tests that the <see cref="FeatureManager" /> class sets the expiration on a feature if that is configured.
-        /// </summary>
-        [Fact]
-        public async Task SetsExpirationIfEnabledWhenUpdatingExistingFeature()
-        {
-            // Arrange
-            var documentStoreProvider = DocumentStoreProvider;
-            var feature = new Feature
-            {
-                Title = "My Feature",
-                Description = "As a math idiot",
-                Tags = new List<string> { "tag1", "tag2" }
-            };
-
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Feature", "0.0.0", "tag1");
-                await session.SaveChangesAsync();
-            }
-
-            configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration
-            {
-                ExpirationEnabled = true,
-                ExpirationDays = 1,
-                ExpirationRegex = @"\d\.\d\.\d"
-            });
-
-            // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
-            var result = await sut.InsertOrUpdateFeatureAsync(feature, "MyProduct", "MyGroup", "0.0.0");
-
-            // Assert
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                var dbFeature = await session.LoadAsync<DbFeature>(result.GetIdentifier());
-                dbFeature.ShouldNotBeNull();
-
-                var dbFeatureMetadata = session.Advanced.GetMetadataFor(dbFeature);
-                dbFeatureMetadata[Constants.Documents.Metadata.Expires].ShouldNotBeNull();
             }
         }
 
@@ -505,21 +403,18 @@ namespace Augurk.Test.Managers
                 TestExecutionDate = DateTime.Now
             };
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Feature", "0.0.0");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Feature", "0.0.0");
+
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             await sut.PersistFeatureTestResultAsync(expectedTestResults, "MyProduct", "MyGroup", "0.0.0");
 
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                var dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier("MyProduct", "MyGroup", "My Feature", "0.0.0"));
-                dbFeature.ShouldNotBeNull();
+                var dbFeature = (await sut.GetDbFeaturesByProductAndVersionAsync("MyProduct", "0.0.0")).Single();
                 dbFeature.TestResult.ShouldNotBeNull();
                 dbFeature.TestResult.Result.ShouldBe(TestResult.Passed);
                 dbFeature.TestResult.TestExecutionDate.ShouldBe(expectedTestResults.TestExecutionDate);
@@ -543,7 +438,7 @@ namespace Augurk.Test.Managers
             };
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             var exception = await Should.ThrowAsync<Exception>(sut.PersistFeatureTestResultAsync(expectedTestResults, "MyProduct", "MyGroup", "0.0.0"));
 
             // Assert
@@ -560,20 +455,17 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "MyOtherGroup", "My Second Feature", "0.0.0");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyOtherGroup", "My Second Feature", "0.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             await sut.DeleteFeaturesAsync("MyProduct", "MyGroup");
+
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -596,19 +488,14 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "1.0.0");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "1.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             await sut.DeleteFeaturesAsync("MyProduct", "MyGroup", "0.0.0");
 
             // Assert
@@ -620,7 +507,7 @@ namespace Augurk.Test.Managers
 
                 var remainingFeature = features.FirstOrDefault();
                 remainingFeature.ShouldNotBeNull();
-                remainingFeature.Version.ShouldBe("1.0.0");
+                remainingFeature.Versions.ShouldBe(new [] {"1.0.0"});
             }
         }
 
@@ -632,21 +519,18 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "1.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Second Feature", "0.0.0");
-                await session.SaveChangesAsync();
-            }
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "1.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Second Feature", "0.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             await sut.DeleteFeatureAsync("MyProduct", "MyGroup", "My First Feature");
+
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
@@ -669,34 +553,35 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "1.0.0");
-                await session.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Second Feature", "0.0.0");
-                await session.SaveChangesAsync();
-            }
+
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My First Feature", "1.0.0");
+            await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "My Second Feature", "0.0.0");
+
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Act
-            var sut = new FeatureManager(documentStoreProvider, configurationManager, logger);
+            var sut = new FeatureManager(documentStoreProvider, logger);
             await sut.DeleteFeatureAsync("MyProduct", "MyGroup", "My First Feature", "0.0.0");
+
+            WaitForIndexing(documentStoreProvider.Store);
 
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                var features = await session.Query<DbFeature>().ToListAsync();
+                var features = await session.Query<DbFeature>().OrderBy(f => f.Title).ToListAsync();
                 features.ShouldNotBeNull();
                 features.Count.ShouldBe(2);
 
                 var remainingFeature1 = features.FirstOrDefault();
                 remainingFeature1.ShouldNotBeNull();
                 remainingFeature1.Title.ShouldBe("My First Feature");
-                remainingFeature1.Version.ShouldBe("1.0.0");
+                remainingFeature1.Versions.ShouldBe(new [] {"1.0.0"});
 
                 var remainingFeature2 = features.LastOrDefault();
                 remainingFeature2.ShouldNotBeNull();
                 remainingFeature2.Title.ShouldBe("My Second Feature");
-                remainingFeature2.Version.ShouldBe("0.0.0");
+                remainingFeature2.Versions.ShouldBe(new [] {"0.0.0"});
             }
         }
     }
