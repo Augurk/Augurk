@@ -229,7 +229,7 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
             var ajaxRequest = $.ajax({
                 cache: false,
                 type: 'POST',
-                url: '/api/v2/import',
+                url: 'api/v2/import',
                 contentType: false,
                 processData: false,
                 data: formData
@@ -243,7 +243,7 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
         };
 
         $scope.export = function () {
-            window.open('/api/v2/export', '_blank', '');
+            window.open('api/v2/export', '_blank', '');
         };
     }
 ]);
