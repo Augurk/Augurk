@@ -128,29 +128,29 @@ namespace Augurk.Api.Controllers.V2
             {
                 // Copy file to temporary location
                 await file.CopyToAsync(stream);
-
-                // Perform import
-                var importOptions = new DatabaseSmugglerImportOptions()
-                {
-                    OperateOnTypes = DatabaseItemType.Documents,
-                    IncludeExpired = false,
-                };
-
-                var operation = await _documentStore.Smuggler.ImportAsync(importOptions, filePath);
-                await operation.WaitForCompletionAsync();
-
-                // Delete temporary file
-                System.IO.File.Delete(filePath);
-
-                // Set the expirations as configured
-                // TODO Restore functionality
-                // await _expirationManager.ApplyExpirationPolicyAsync(await _configurationManager.GetOrCreateConfigurationAsync());
-
-                // Migrate the imported data asynchronously
-                var taskWeShallNotWaitFor = _migrationManager.StartMigrating();
-
-                return NoContent();
             }
+
+            // Perform import
+            var importOptions = new DatabaseSmugglerImportOptions()
+            {
+                OperateOnTypes = DatabaseItemType.Documents,
+                IncludeExpired = false,
+            };
+
+            var operation = await _documentStore.Smuggler.ImportAsync(importOptions, filePath);
+            await operation.WaitForCompletionAsync();
+
+            // Delete temporary file
+            System.IO.File.Delete(filePath);
+
+            // Set the expirations as configured
+            // TODO Restore functionality
+            // await _expirationManager.ApplyExpirationPolicyAsync(await _configurationManager.GetOrCreateConfigurationAsync());
+
+            // Migrate the imported data asynchronously
+            var taskWeShallNotWaitFor = _migrationManager.StartMigrating();
+
+            return NoContent();
         }
 
         /// <summary>
