@@ -75,7 +75,7 @@ namespace Augurk.Test
         /// <param name="documentStore">A <see cref="IDocumentStore" /> instance to configure.</param>
         protected override void PreInitialize(IDocumentStore documentStore)
         {
-            documentStore.Conventions.IdentityPartsSeparator = "-";
+            documentStore.Conventions.IdentityPartsSeparator = '-';
         }
 
         /// <summary>

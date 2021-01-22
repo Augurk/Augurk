@@ -53,7 +53,7 @@ namespace Augurk
             {
                 Conventions = new DocumentConventions
                 {
-                    IdentityPartsSeparator = "-"
+                    IdentityPartsSeparator = '-'
                 }
             };
 
