@@ -40,12 +40,13 @@ namespace Augurk
         public DocumentStoreProvider(IWebHostEnvironment environment, ILogger<DocumentStoreProvider> logger, ILogger<MigrationManager> migrationLogger)
         {
             // Build the options for the server
-            string dotNetCoreVersion = EnvironmentUtils.GetNetCoreVersion();
+            var dotNetCoreVersion = EnvironmentUtils.GetNetCoreVersion();
             logger.LogInformation("Configuring embedded RavenDb server to use version {NetCoreVersion} of .NET Core.", dotNetCoreVersion);
             var serverOptions = new ServerOptions
             {
+                AcceptEula = true,
                 DataDirectory = Path.Combine(Environment.CurrentDirectory, "data"),
-                FrameworkVersion = dotNetCoreVersion
+                FrameworkVersion = dotNetCoreVersion,
             };
 
             // Build the options for the database
