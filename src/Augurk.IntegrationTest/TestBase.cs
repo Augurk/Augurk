@@ -40,14 +40,14 @@ namespace Augurk.IntegrationTest
         /// </summary>
         static TestBase()
         {
-            string dotNetCoreVersion = EnvironmentUtils.GetNetCoreVersion();
+            var dotNetVersion = Environment.Version.ToString();
 
             RavenTestDriver.ConfigureServer(new TestServerOptions
             {
-                FrameworkVersion = dotNetCoreVersion
+                FrameworkVersion = dotNetVersion
             });
 
-            Console.WriteLine($"Configured RavenDb in memory test driver to use version {dotNetCoreVersion} of .NET Core.");
+            Console.WriteLine($"Configured RavenDb in memory test driver to use version {dotNetVersion} of .NET Core.");
         }
 
         /// <summary>
