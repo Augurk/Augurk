@@ -10,8 +10,8 @@ variables:
   MSBUILDSINGLELOADCONTEXT: 1
 
 jobs:
-- job: netcore
-  displayName: .NET Core Self Contained
+- job: net5
+  displayName: .NET Self Contained
   pool:
     vmImage: ubuntu-16.04
   steps:
@@ -21,7 +21,7 @@ jobs:
       versionSpec: '5.x'
 
   - task: UseDotNet@2
-    displayName: 'Use .NET Core sdk 5.0'
+    displayName: 'Use .NET SDK 5.0'
     inputs:
       version: 5.0.x
 
@@ -94,7 +94,7 @@ jobs:
         versionSpec: '5.x'
 
     - task: UseDotNet@2
-      displayName: 'Use .NET Core sdk 5.0'
+      displayName: 'Use .NET SDK 5.0'
       inputs:
         version: 5.0.x
 
