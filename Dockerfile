@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS build
 ARG Version
 ARG InformationalVersion
 ENV MSBUILDSINGLELOADCONTEXT 1
@@ -29,7 +29,7 @@ WORKDIR /app/Augurk.IntegrationTest
 ENTRYPOINT [ "dotnet", "test", "--logger:trx" ]
 
 # build output image
-FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS runtime
 WORKDIR /app
 COPY --from=build /app/Augurk/out ./
 ENTRYPOINT ["dotnet", "Augurk.dll"]
