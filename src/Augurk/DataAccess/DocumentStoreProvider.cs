@@ -16,7 +16,6 @@
 using System;
 using System.IO;
 using System.Reflection;
-using Augurk.Api;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
@@ -41,13 +40,21 @@ namespace Augurk
         {
             // Build the options for the server
             var dotNetVersion = Environment.Version.ToString();
-            logger.LogInformation("Configuring embedded RavenDb server to use version {NetCoreVersion} of .NET Core.", dotNetVersion);
+            logger.LogInformation("Configuring embedded RavenDb server to use version {DotNetVersion} of .NET.", dotNetVersion);
             var serverOptions = new ServerOptions
             {
                 AcceptEula = true,
                 DataDirectory = Path.Combine(Environment.CurrentDirectory, "data"),
                 FrameworkVersion = dotNetVersion,
             };
+
+            // Setup logging for RavenDB during development
+            if (environment.IsDevelopment())
+            {
+                // Enable diagnostic logging
+                serverOptions.LogsPath = Path.Combine(Environment.CurrentDirectory, "logs");
+                serverOptions.CommandLineArgs.Add("--Logs.Mode=Information");
+            }
 
             // Build the options for the database
             var databaseOptions = new DatabaseOptions("AugurkStore")
@@ -59,6 +66,7 @@ namespace Augurk
             };
 
             // Start the mebedded RavenDB server
+            EmbeddedServer.Instance.ServerProcessExited += (sender, args) => logger.LogError("Embedded RavenDb server has exited unexpectedly.");
             EmbeddedServer.Instance.StartServer(serverOptions);
             Store = EmbeddedServer.Instance.GetDocumentStore(databaseOptions);
 
