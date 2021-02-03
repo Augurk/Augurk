@@ -16,6 +16,7 @@
 using Augurk;
 using Augurk.Api.Managers;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -31,7 +32,9 @@ namespace Microsoft.Extensions.DependencyInjection
         public static void AddRavenDb(this IServiceCollection services)
         {
             // NOTE: Using TryAddSingleton here to allow integration tests to plug in a different IDocumentStoreProvider
-            services.TryAddSingleton<IDocumentStoreProvider, DocumentStoreProvider>();
+            services.TryAddSingleton<DocumentStoreProvider>();
+            services.TryAddSingleton<IDocumentStoreProvider>(sp => sp.GetRequiredService<DocumentStoreProvider>());
+            services.TryAddSingleton<IHostedService>(sp => sp.GetRequiredService<DocumentStoreProvider>());
         }
 
         /// <summary>
