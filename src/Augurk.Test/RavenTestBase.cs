@@ -54,14 +54,14 @@ namespace Augurk.Test
         /// </summary>
         static RavenTestBase()
         {
-            string dotNetCoreVersion = EnvironmentUtils.GetNetCoreVersion();
+            var dotNetVersion = Environment.Version.ToString();
 
             RavenTestDriver.ConfigureServer(new TestServerOptions
             {
-                FrameworkVersion = dotNetCoreVersion
+                FrameworkVersion = dotNetVersion
             });
 
-            System.Console.WriteLine($"Configured RavenDb in memory test driver to use version {dotNetCoreVersion} of .NET Core.");
+            System.Console.WriteLine($"Configured RavenDb in memory test driver to use version {dotNetVersion} of .NET Core.");
         }
 
         public RavenTestBase()
@@ -75,7 +75,7 @@ namespace Augurk.Test
         /// <param name="documentStore">A <see cref="IDocumentStore" /> instance to configure.</param>
         protected override void PreInitialize(IDocumentStore documentStore)
         {
-            documentStore.Conventions.IdentityPartsSeparator = "-";
+            documentStore.Conventions.IdentityPartsSeparator = '-';
         }
 
         /// <summary>
