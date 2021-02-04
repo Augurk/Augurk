@@ -7,22 +7,23 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core?view=vsts
 variables:
   buildConfiguration: 'Release'
+  MSBUILDSINGLELOADCONTEXT: 1
 
 jobs:
-- job: netcore
-  displayName: .NET Core Framework Dependent
+- job: net5
+  displayName: .NET Self Contained
   pool:
     vmImage: ubuntu-16.04
   steps:
-  - task: DotNetCoreInstaller@0
-    displayName: 'Use .NET Core sdk 2.2.300'
-    inputs:
-      version: 2.2.300
-
-  - script: |
-      dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
-      dotnet-gitversion /output buildserver
+  - task: UseGitVersion@5
     displayName: Set version
+    inputs:
+      versionSpec: '5.x'
+
+  - task: UseDotNet@2
+    displayName: 'Use .NET SDK 5.0'
+    inputs:
+      version: 5.0.x
 
   - task: DotNetCoreCLI@2
     inputs:
@@ -32,12 +33,12 @@ jobs:
     displayName: dotnet restore
 
   - task: DotNetCoreCLI@2
+    displayName: dotnet build
     inputs:
       command: build
       workingDirectory: 'src'
       configuration: $(buildConfiguration)
       arguments: '/p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
-    displayName: dotnet build
 
   - task: DotNetCoreCLI@2
     inputs:
@@ -62,8 +63,9 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
+      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) --self-contained true -r win10-x64 /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
       zipAfterPublish: true
+      workingDirectory: src/Augurk
     displayName: dotnet publish
 
   - task: PublishBuildArtifacts@1
@@ -86,18 +88,21 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-    - task: DotNetCoreInstaller@0
-      displayName: 'Use .NET Core sdk 2.2.300'
-      inputs:
-        version: 2.2.300
-    - script: |
-        dotnet tool install --global GitVersion.Tool --version 4.0.1-beta1-50
-        dotnet-gitversion /output buildserver
+    - task: UseGitVersion@5
       displayName: Set version
+      inputs:
+        versionSpec: '5.x'
+
+    - task: UseDotNet@2
+      displayName: 'Use .NET SDK 5.0'
+      inputs:
+        version: 5.0.x
+
     - script: |
         echo '##vso[task.setvariable variable=prerelease]-preview'
       displayName: Set prerelease tag
       condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+
     - script: |
         echo '##vso[task.setvariable variable=prerelease]'
       displayName: Set empty prerelease tag
@@ -169,6 +174,7 @@ jobs:
         imageName: '$(imageName):$(GitVersion.Major).$(GitVersion.Minor).$(GitVersion.Patch)$(prerelease)'
         containerregistrytype: Container Registry
         dockerRegistryEndpoint: 'Docker Hub'
+      condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/dependabot/')))
     - task: Docker@1
       displayName: 'Push runtime image (latest)'
       inputs:

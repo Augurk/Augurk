@@ -1,5 +1,5 @@
 /*
- Copyright 2019, Augurk
+ Copyright 2019-2020, Augurk
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -10,13 +10,14 @@
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and 
+ See the License for the specific language governing permissions and
  limitations under the License.
 */
 using System;
 using System.Reflection;
 using System.Runtime.Versioning;
 using Augurk.Api;
+using Augurk.Api.Indeces;
 using NSubstitute;
 using Raven.Client.Documents;
 using Raven.TestDriver;
@@ -24,7 +25,7 @@ using Raven.TestDriver;
 namespace Augurk.Test
 {
     /// <summary>
-    /// Abstract baee class for tests that intercat with RavenDb.
+    /// Abstract base class for tests that interact with RavenDb.
     /// </summary>
     public abstract class RavenTestBase : RavenTestDriver
     {
@@ -53,14 +54,14 @@ namespace Augurk.Test
         /// </summary>
         static RavenTestBase()
         {
-            string dotNetCoreVersion = EnvironmentUtils.GetNetCoreVersion();
+            var dotNetVersion = Environment.Version.ToString();
 
             RavenTestDriver.ConfigureServer(new TestServerOptions
             {
-                FrameworkVersion = dotNetCoreVersion
+                FrameworkVersion = dotNetVersion
             });
 
-            System.Console.WriteLine($"Configured RavenDb in memory test driver to use version {dotNetCoreVersion} of .NET Core.");
+            System.Console.WriteLine($"Configured RavenDb in memory test driver to use version {dotNetVersion} of .NET Core.");
         }
 
         public RavenTestBase()
@@ -74,7 +75,7 @@ namespace Augurk.Test
         /// <param name="documentStore">A <see cref="IDocumentStore" /> instance to configure.</param>
         protected override void PreInitialize(IDocumentStore documentStore)
         {
-            documentStore.Conventions.IdentityPartsSeparator = "-";
+            documentStore.Conventions.IdentityPartsSeparator = '-';
         }
 
         /// <summary>
@@ -84,6 +85,16 @@ namespace Augurk.Test
         private IDocumentStoreProvider GetDocumentStoreProvider()
         {
             var documentStore = GetDocumentStore();
+
+            // Prepare all indeces
+            documentStore.ExecuteIndex(new Features_ByProductAndBranch());
+            documentStore.ExecuteIndex(new Features_ByTitleProductAndGroup());
+            documentStore.ExecuteIndex(new Features_WithoutHash());
+            documentStore.ExecuteIndex(new Products_ByName());
+
+            // Wait for all indeces to be done
+            WaitForIndexing(documentStore);
+
             var documentStoreProvider = Substitute.For<IDocumentStoreProvider>();
             documentStoreProvider.Store.Returns(documentStore);
 

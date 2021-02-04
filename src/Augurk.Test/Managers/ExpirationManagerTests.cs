@@ -37,7 +37,7 @@ namespace Augurk.Test.Managers
         /// <summary>
         /// Tests that the ExpirationManager sets the expiration properly.
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Expiration needs to return in the next preview.")]
         public async Task SetExpiration()
         {
             // Arrange
@@ -63,7 +63,7 @@ namespace Augurk.Test.Managers
         /// <summary>
         /// Tests that the ExpirationManager removes expiration for documents that do not match the version regex.
         /// </summary>
-        [Fact]
+        [Fact(Skip = "Expiration needs to return in the next preview.")]
         public async Task RemoveExpirationFromNonMatchingVersion()
         {
             // Arrange
@@ -87,7 +87,7 @@ namespace Augurk.Test.Managers
             await AssertMetadata("testdocument1", expectedUploadDate, null);
         }
 
-        [Fact]
+        [Fact(Skip = "Expiration needs to return in the next preview.")]
         public async Task SetUploadDateOnNonMatchingVersion()
         {
             // Arrange
@@ -110,7 +110,7 @@ namespace Augurk.Test.Managers
             await AssertMetadata("testdocument1", expectedUploadDate, null);
         }
 
-        [Fact]
+        [Fact(Skip = "Expiration needs to return in the next preview.")]
         public async Task RemoveExpirationWhenDisabled()
         {
             // Arrange
@@ -135,7 +135,7 @@ namespace Augurk.Test.Managers
             await AssertMetadata("testdocument1", expectedUploadDate, null);
         }
 
-        [Fact]
+        [Fact(Skip = "Expiration needs to return in the next preview.")]
         public async Task SetUploadDateOnNewDocumentsWhenDisabled()
         {
             // Arrange
@@ -159,7 +159,7 @@ namespace Augurk.Test.Managers
             await AssertMetadata("testdocument1", expectedUploadDate, null);
         }
 
-        [Fact]
+        [Fact(Skip = "Expiration needs to return in the next preview.")]
         public async Task DoNotSetExpirationOnNonVersionedDocuments()
         {
             // Arrange
@@ -182,7 +182,7 @@ namespace Augurk.Test.Managers
             await AssertMetadata("testdocument1", null, null);
         }
 
-        [Fact]
+        [Fact(Skip = "Expiration needs to return in the next preview.")]
         public async Task DoNotRemoveExpirationFromNonVersionedDocuments()
         {
             // Arrange

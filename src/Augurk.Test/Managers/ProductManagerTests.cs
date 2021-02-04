@@ -26,13 +26,9 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreAsync(new DbFeature { Product = "Product1" });
-                await session.StoreAsync(new DbFeature { Product = "Product2" });
-                await session.SaveChangesAsync();
-            }
+
+            await documentStoreProvider.StoreDbFeatureAsync("Product1", "Group", "Title", "Version");
+            await documentStoreProvider.StoreDbFeatureAsync("Product2", "Group", "Title", "Version");
 
             WaitForIndexing(documentStoreProvider.Store);
 
@@ -54,7 +50,7 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Products_ByName());
+
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
                 var product = new DbProduct
@@ -135,16 +131,9 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            var existingFeature1 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MyFirstFeature", Version = "0.0.0" };
-            var existingFeature2 = new DbFeature { Product = "MyOtherProduct", Group = "MyGroup", Title = "MySecondFeature", Version = "0.0.0" };
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreAsync(existingFeature1, existingFeature1.GetIdentifier());
-                await session.StoreAsync(existingFeature2, existingFeature2.GetIdentifier());
-                await session.SaveChangesAsync();
-            }
+            var existingFeature1 = await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
+            var existingFeature2 = await documentStoreProvider.StoreDbFeatureAsync("MyOtherProduct", "MyGroup", "MySecondFeature", "0.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
@@ -172,16 +161,9 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByTitleProductAndGroup());
 
-            var existingFeature1 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MyFirstFeature", Version = "0.0.0" };
-            var existingFeature2 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MyFirstFeature", Version = "1.0.0" };
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreAsync(existingFeature1, existingFeature1.GetIdentifier());
-                await session.StoreAsync(existingFeature2, existingFeature2.GetIdentifier());
-                await session.SaveChangesAsync();
-            }
+            var existingFeature1 = await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0");
+            var existingFeature2 = await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "1.0.0");
 
             WaitForIndexing(documentStoreProvider.Store);
 
@@ -192,11 +174,9 @@ namespace Augurk.Test.Managers
             // Assert
             using (var session = documentStoreProvider.Store.OpenAsyncSession())
             {
-                var actualFeature1 = await session.LoadAsync<DbFeature>(existingFeature1.GetIdentifier());
-                var actualFeature2 = await session.LoadAsync<DbFeature>(existingFeature2.GetIdentifier());
+                var actualFeature = await session.LoadAsync<DbFeature>(existingFeature1.GetIdentifier());
 
-                actualFeature1.ShouldBeNull();
-                actualFeature2.ShouldNotBeNull();
+                actualFeature.Versions.ShouldBe(new [] {"1.0.0"});
             }
         }
 
@@ -209,20 +189,9 @@ namespace Augurk.Test.Managers
         {
             // Arrange
             var documentStoreProvider = DocumentStoreProvider;
-            await documentStoreProvider.Store.ExecuteIndexAsync(new Features_ByProductAndBranch());
 
-            var feature1 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MyFirstFeature", Version = "0.0.0" };
-            var feature2 = new DbFeature { Product = "MyProduct", Group = "MyGroup", Title = "MySecondFeature", Version = "0.0.0" };
-
-            feature1.Tags = new List<string> { "tag1", "tag2" };
-            feature2.Tags = new List<string> { "tag2", "tag3" };
-
-            using (var session = documentStoreProvider.Store.OpenAsyncSession())
-            {
-                await session.StoreAsync(feature1, feature1.GetIdentifier());
-                await session.StoreAsync(feature2, feature2.GetIdentifier());
-                await session.SaveChangesAsync();
-            }
+            var existingFeature1 = await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MyFirstFeature", "0.0.0", "tag1", "tag2");
+            var existingFeature2 = await documentStoreProvider.StoreDbFeatureAsync("MyProduct", "MyGroup", "MySecondFeature", "0.0.0", "tag2", "tag3");
 
             WaitForIndexing(documentStoreProvider.Store);
 

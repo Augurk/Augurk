@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2019, Augurk
+ Copyright 2019-2020, Augurk
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -13,23 +13,24 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 */
-using System;
+using Augurk.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
+// Assume everything in here is an API since we don't have any MVC views
+[assembly: ApiController]
 namespace Augurk
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public Startup(IConfiguration configuration) => Configuration = configuration;
 
         public IConfiguration Configuration { get; }
 
@@ -37,30 +38,27 @@ namespace Augurk
         public void ConfigureServices(IServiceCollection services)
         {
             // Add core MVC services and setup the versioned API explorer
-            services.AddMvcCore()
-                    .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-
-            // Add the rest of the MVC stack so we can use API controllers
-            // Note: This will probably change in .NET Core 3.0 where we can more finely grained specify
-            //       the parts of ASP.NET Core that we want to use.
-            services.AddMvc();
+            services.AddControllers();
 
             // Setup API versioning
+            services.AddApiVersioning(options =>
+            {
+                // reporting api versions will return the headers "api-supported-versions" and "api-deprecated-versions"
+                options.ReportApiVersions = true;
+                options.AssumeDefaultVersionWhenUnspecified = true;
+            });
             services.AddVersionedApiExplorer(options =>
             {
                 options.GroupNameFormat = "'v'VVV";
                 options.SubstituteApiVersionInUrl = true;
             });
-            services.AddApiVersioning(options => options.AssumeDefaultVersionWhenUnspecified = true);
 
             // Add generation of Swagger documents
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen(options =>
             {
-                var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
-                foreach (var description in provider.ApiVersionDescriptions)
-                {
-                    options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
-                }
+                // Add a custom operation filter which sets default values
+                options.OperationFilter<SwaggerDefaultValues>();
             });
 
             // Setup RavenDB (Embedded)
@@ -71,11 +69,12 @@ namespace Augurk
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApiVersionDescriptionProvider provider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseWebAssemblyDebugging();
             }
             else
             {
@@ -83,8 +82,16 @@ namespace Augurk
             }
 
             app.UseHttpsRedirection();
-            app.UseMvc();
+            app.UseBlazorFrameworkFiles("/preview");
             app.UseFileServer();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapFallbackToFile("preview/{*path:nonfile}", "preview/index.html");
+            });
 
             // Add Swagger support at the appropriate endpoints
             app.UseSwagger(options => options.RouteTemplate = "doc/api/{documentName}");
@@ -97,24 +104,6 @@ namespace Augurk
                     options.SwaggerEndpoint($"/doc/api/{description.GroupName}", description.GroupName.ToUpperInvariant());
                 }
             });
-        }
-
-        static Info CreateInfoForApiVersion(ApiVersionDescription description)
-        {
-            var info = new Info()
-            {
-                Version = description.ApiVersion.ToString(),
-                Title = description.GroupName.ToUpperInvariant() == "V1" ?
-                    "Augurk Branch based API" :
-                    "Augurk Product based API",
-            };
-
-            if (description.IsDeprecated)
-            {
-                info.Description += " This API version has been deprecated.";
-            }
-
-            return info;
         }
     }
 }
