@@ -91,6 +91,7 @@ namespace Augurk
             {
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("preview/{*path:nonfile}", "preview/index.html");
+                endpoints.MapFallbackToFile("preview/feature/{product}/{group}/{feature}/{version?}", "preview/index.html");
             });
 
             // Add Swagger support at the appropriate endpoints

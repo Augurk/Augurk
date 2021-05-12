@@ -16,6 +16,7 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Augurk.UI.Services;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -32,7 +33,7 @@ namespace Augurk.UI
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddScoped<SearchService>();
-
+            builder.Services.AddScoped<FeatureService>();
 
             await builder.Build().RunAsync();
         }
