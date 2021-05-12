@@ -1,5 +1,5 @@
 ﻿<!--
- Copyright 2020, Augurk
+ Copyright 2020-2021, Augurk
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -10,7 +10,7 @@
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and 
+ See the License for the specific language governing permissions and
  limitations under the License.
 -->
 @page "/"
@@ -21,6 +21,15 @@
 <div class="container-fluid">
     <div class="row">
         <Searchbox />
+        @if (_searching)
+        {
+        <div class="col-md-6 offset-md-3" style="margin-top: 5px;">
+            <div class="progress">
+                <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: 100%"></div>
+            </div>
+        </div>
+        }
+
     </div>
     <div class="row">
         @foreach(var feature in _latestResults?.FeatureMatches ?? Enumerable.Empty<FeatureMatch>()) {
@@ -31,10 +40,12 @@
 
 @code {
     private SearchResults _latestResults;
+    private bool _searching;
 
     protected override void OnInitialized()
     {
         SearchService.OnSearchResultsChanged += OnSearchResultsChanged;
+        SearchService.OnSearchStateChanged += OnSearchStateChanged;
     }
 
     private async Task OnSearchResultsChanged(SearchResults newResults)
@@ -42,6 +53,15 @@
         await InvokeAsync(() =>
         {
             _latestResults = newResults;
+            StateHasChanged();
+        });
+    }
+
+    private async Task OnSearchStateChanged(bool searching)
+    {
+        await InvokeAsync(() =>
+        {
+            _searching = searching;
             StateHasChanged();
         });
     }
