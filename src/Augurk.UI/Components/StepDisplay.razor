@@ -14,23 +14,12 @@
  limitations under the License.
 -->
 
-<TagDisplay Tags="@Scenario.Tags" />
-<Collapse ShowArrow="true">
-    <CollapseItems>
-        <CollapseItem Text="@Scenario.Title" IsCollapsed="false">
-            <Markdown Input="@Scenario.Description" />
-            <ul>
-                @foreach (var step in Scenario.Steps)
-                {
-                    <StepDisplay Step="@step" />
-                }
-            </ul>
-        </CollapseItem>
-    </CollapseItems>
-</Collapse>
-<br/>
+<li class="step">
+    <span class="keyword">@Step.Keyword</span>
+    <span>@Step.Content</span>
+</li>
 
 @code {
     [Parameter]
-    public Scenario Scenario { get; set; }
+    public Entities.Step Step { get; set; }
 }
