@@ -39,23 +39,16 @@
                 <CollapseItems>
                     @foreach (var scenario in @CurrentFeature?.Scenarios)
                     {
-                        <CollapseItem Text="@scenario.Title">
+                        <CollapseItem Text="@scenario.Title" IsCollapsed="false">
                             <p class="card-text">@scenario.Description</p>
                             <ul>
-                                <li>Given ...</li>
-                                <li>When ...</li>
-                                <li>Then ...</li>
+                                @foreach (var step in scenario.Steps)
+                                {
+                                    <li>@step.Keyword @step.Content</li>
+                                }
                             </ul>
                         </CollapseItem>
                     }
-                    <CollapseItem Text="Dummy Scenario">
-                        <p class="card-text">Dummy Scenario</p>
-                        <ul>
-                            <li>Given ...</li>
-                            <li>When ...</li>
-                            <li>Then ...</li>
-                        </ul>
-                    </CollapseItem>
                 </CollapseItems>
             </Collapse>
         </Row>
