@@ -3,11 +3,21 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "twitter-bootstrap@4.3.1",
+      "library": "twitter-bootstrap@4.6.0",
       "destination": "wwwroot/lib/bootstrap",
       "files": [
         "css/bootstrap.min.css",
         "css/bootstrap.min.css.map"
+      ]
+    },
+    {
+      "library": "bootstrap-icons@1.5.0",
+      "destination": "wwwroot/lib/bootstrap-icons",
+      "provider": "jsdelivr",
+      "files": [
+        "font/bootstrap-icons.min.css",
+        "font/fonts/bootstrap-icons.woff",
+        "font/fonts/bootstrap-icons.woff2"
       ]
     },
     {
