@@ -17,15 +17,7 @@
 @inject FeatureService FeatureService
 
 <div class="container-fluid">
-    <Row>
-        <p>
-            @if (@HasTags)
-            {
-                <i class="bi-tag"></i>
-            }
-            <i>tags</i>
-        </p>
-    </Row>
+    <TagDisplay Tags="@CurrentFeature?.Tags" />
     <Row>
         <h3>@CurrentFeature?.Title</h3>
     </Row>
@@ -35,10 +27,11 @@
     @if (CurrentFeature != null)
     {
         <Row ItemsPerRow="ItemsPerRow.One">
-            <Collapse ShowArrow="true">
-                <CollapseItems>
-                    @foreach (var scenario in @CurrentFeature?.Scenarios)
-                    {
+            @foreach (var scenario in @CurrentFeature?.Scenarios)
+            {
+                <TagDisplay Tags="@scenario.Tags" />
+                <Collapse ShowArrow="true">
+                    <CollapseItems>
                         <CollapseItem Text="@scenario.Title" IsCollapsed="false">
                             <Markdown Input="@scenario.Description" />
                             <ul>
@@ -48,9 +41,10 @@
                                 }
                             </ul>
                         </CollapseItem>
-                    }
-                </CollapseItems>
-            </Collapse>
+                    </CollapseItems>
+                </Collapse>
+                <br/>
+            }
         </Row>
     }
 </div>
@@ -70,7 +64,6 @@
     public string Version { get; set; }
 
     private Feature CurrentFeature { get; set; }
-    private bool HasTags { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
