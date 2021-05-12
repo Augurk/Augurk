@@ -29,21 +29,7 @@
         <Row ItemsPerRow="ItemsPerRow.One">
             @foreach (var scenario in @CurrentFeature?.Scenarios)
             {
-                <TagDisplay Tags="@scenario.Tags" />
-                <Collapse ShowArrow="true">
-                    <CollapseItems>
-                        <CollapseItem Text="@scenario.Title" IsCollapsed="false">
-                            <Markdown Input="@scenario.Description" />
-                            <ul>
-                                @foreach (var step in scenario.Steps)
-                                {
-                                    <li>@step.Keyword @step.Content</li>
-                                }
-                            </ul>
-                        </CollapseItem>
-                    </CollapseItems>
-                </Collapse>
-                <br/>
+                <ScenarioDisplay Scenario="@scenario" />
             }
         </Row>
     }
