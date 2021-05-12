@@ -10,7 +10,7 @@
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and 
+ See the License for the specific language governing permissions and
  limitations under the License.
 -->
 @using Augurk.Entities.Search
@@ -30,7 +30,7 @@
             <p class="card-text">
                 @(string.IsNullOrWhiteSpace(Feature.MatchingText) ? Feature.ShortenedDescription : Feature.MatchingText)
             </p>
-            <a href="/#/feature/@Feature.ProductName/@Feature.GroupName/@Feature.FeatureName/@Feature.Version" class="btn btn-primary pull-right">Show feature</a>
+            <a href="feature/@Feature.ProductName/@Feature.GroupName/@Feature.FeatureName/@Feature.Version" class="btn btn-primary pull-right">Show feature</a>
         </div>
     </div>
 }
