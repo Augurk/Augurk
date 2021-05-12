@@ -30,7 +30,7 @@
         <h3>@CurrentFeature?.Title</h3>
     </Row>
     <Row>
-        <p>@CurrentFeature?.Description</p>
+        <Markdown Input="@CurrentFeature?.Description" />
     </Row>
     @if (CurrentFeature != null)
     {
@@ -40,7 +40,7 @@
                     @foreach (var scenario in @CurrentFeature?.Scenarios)
                     {
                         <CollapseItem Text="@scenario.Title" IsCollapsed="false">
-                            <p class="card-text">@scenario.Description</p>
+                            <Markdown Input="@scenario.Description" />
                             <ul>
                                 @foreach (var step in scenario.Steps)
                                 {
