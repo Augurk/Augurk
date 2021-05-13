@@ -14,16 +14,14 @@
  limitations under the License.
 -->
 
-<li class="step">
-    <KeywordDisplay Keyword="@Step.Keyword" />
-    <span>@Step.Content</span>
-    @if (@Step.TableArgument != null)
-    {
-        <StepTable Table="@Step.TableArgument" />
-    }
-</li>
+<div>
+    <KeywordDisplay Keyword="@ExampleSet.Keyword" />:
+    <span>@ExampleSet.Title</span>
+    <Markdown Input="@ExampleSet.Description" />
+    <StepTable Table="@ExampleSet" />
+</div>
 
 @code {
     [Parameter]
-    public Entities.Step Step { get; set; }
+    public ExampleSet ExampleSet { get; set; }
 }

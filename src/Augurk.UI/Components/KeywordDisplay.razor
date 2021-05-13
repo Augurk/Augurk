@@ -14,16 +14,9 @@
  limitations under the License.
 -->
 
-<li class="step">
-    <KeywordDisplay Keyword="@Step.Keyword" />
-    <span>@Step.Content</span>
-    @if (@Step.TableArgument != null)
-    {
-        <StepTable Table="@Step.TableArgument" />
-    }
-</li>
+<span class="keyword">@Keyword</span>
 
 @code {
     [Parameter]
-    public Entities.Step Step { get; set; }
+    public string Keyword { get; set; }
 }

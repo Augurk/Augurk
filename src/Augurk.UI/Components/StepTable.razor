@@ -14,7 +14,7 @@
  limitations under the License.
 -->
 
-<table class="table table-bordered table-sm table-striped">
+<table class="table table-bordered table-hover table-sm table-striped">
     <thead aria-expanded="@(!Collapsed)" @onclick="ToggleCollapsed">
         <tr>
             @foreach (var column in Table.Columns)
@@ -40,7 +40,7 @@
     [Parameter]
     public Entities.Table Table { get; set; }
 
-    public bool Collapsed { get; set; }
+    private bool Collapsed { get; set; }
 
     public void ToggleCollapsed()
     {

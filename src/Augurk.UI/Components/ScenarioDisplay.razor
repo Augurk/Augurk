@@ -25,6 +25,13 @@
                     <StepDisplay Step="@step" />
                 }
             </ul>
+            @if (Scenario.ExampleSets != null && Scenario.ExampleSets.Count() > 0)
+            {
+                @foreach (var exampleSet in Scenario.ExampleSets)
+                {
+                    <ExamplesTable ExampleSet="@exampleSet" />
+                }
+            }
         </CollapseItem>
     </CollapseItems>
 </Collapse>
