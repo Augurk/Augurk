@@ -17,6 +17,10 @@
 <li class="step">
     <span class="keyword">@Step.Keyword</span>
     <span>@Step.Content</span>
+    @if (@Step.TableArgument != null)
+    {
+        <StepTable Table="@Step.TableArgument" />
+    }
 </li>
 
 @code {
