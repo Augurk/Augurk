@@ -18,20 +18,22 @@
 <Collapse ShowArrow="true">
     <CollapseItems>
         <CollapseItem Text="@Scenario.Title" IsCollapsed="false">
-            <Markdown Input="@Scenario.Description" />
-            <ul>
-                @foreach (var step in Scenario.Steps)
+            <CascadingValue Value="ChosenExample">
+                <Markdown Input="@Scenario.Description" />
+                <ul>
+                    @foreach (var step in Scenario.Steps)
+                    {
+                        <StepDisplay Step="@step" />
+                    }
+                </ul>
+                @if (Scenario.ExampleSets != null && Scenario.ExampleSets.Count() > 0)
                 {
-                    <StepDisplay Step="@step" />
+                    @foreach (var exampleSet in Scenario.ExampleSets)
+                    {
+                        <ExamplesTable ExampleSet="@exampleSet" />
+                    }
                 }
-            </ul>
-            @if (Scenario.ExampleSets != null && Scenario.ExampleSets.Count() > 0)
-            {
-                @foreach (var exampleSet in Scenario.ExampleSets)
-                {
-                    <ExamplesTable ExampleSet="@exampleSet" />
-                }
-            }
+            </CascadingValue>
         </CollapseItem>
     </CollapseItems>
 </Collapse>
@@ -40,4 +42,6 @@
 @code {
     [Parameter]
     public Scenario Scenario { get; set; }
+
+    private Dictionary<string, string> ChosenExample = null;
 }
