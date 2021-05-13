@@ -18,10 +18,18 @@
     <KeywordDisplay Keyword="@ExampleSet.Keyword" />:
     <span>@ExampleSet.Title</span>
     <Markdown Input="@ExampleSet.Description" />
-    <StepTable Table="@ExampleSet" />
+    <StepTable Table="@ExampleSet" OnRowChosen="RowChosen" />
 </div>
 
 @code {
     [Parameter]
     public ExampleSet ExampleSet { get; set; }
+
+    [Parameter]
+    public EventCallback<Dictionary<string, string>> OnExampleChosen { get; set; }
+
+    protected async Task RowChosen(Dictionary<string, string> chosenRow)
+    {
+        await OnExampleChosen.InvokeAsync(chosenRow);
+    }
 }

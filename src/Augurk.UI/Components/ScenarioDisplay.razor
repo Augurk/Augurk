@@ -30,7 +30,7 @@
                 {
                     @foreach (var exampleSet in Scenario.ExampleSets)
                     {
-                        <ExamplesTable ExampleSet="@exampleSet" />
+                        <ExamplesTable ExampleSet="@exampleSet" OnExampleChosen="OnExampleChosen" />
                     }
                 }
             </CascadingValue>
@@ -44,4 +44,9 @@
     public Scenario Scenario { get; set; }
 
     private Dictionary<string, string> ChosenExample = null;
+
+    protected void OnExampleChosen(Dictionary<string, string> chosenExample)
+    {
+        ChosenExample = chosenExample;
+    }
 }
