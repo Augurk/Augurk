@@ -3,6 +3,7 @@ using Alba;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
 
@@ -19,9 +20,8 @@ namespace Augurk.IntegrationTest
         /// </summary>
         public SystemUnderTestFixture()
         {
-            var builder = WebHost
+            var builder = Host
                 .CreateDefaultBuilder()
-                .UseStartup<Startup>()
                 .UseEnvironment("Production")
                 .ConfigureLogging(logging =>
                 {
@@ -33,6 +33,10 @@ namespace Augurk.IntegrationTest
                 {
                     // Use this instance as the IDocumentStoreProvider
                     services.AddSingleton<IDocumentStoreProvider>(this);
+                })
+                .ConfigureWebHost(configure =>
+                {
+                    configure.UseStartup<Startup>();
                 });
 
             System = new SystemUnderTest(builder);
