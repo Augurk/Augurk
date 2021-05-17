@@ -1,14 +1,10 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Augurk.Entities;
 using Xunit;
 using Alba;
-using System.Linq;
 using Shouldly;
 using System.Net;
 using System.IO;
-using System.Text;
-using System;
 using System.Net.Http;
 
 namespace Augurk.IntegrationTest
@@ -67,28 +63,26 @@ namespace Augurk.IntegrationTest
         {
             // Arrange
             var fileName = "augurk-documentation.bak";
-            using (var file = File.OpenRead(Path.Combine("../../../", fileName)))
-            using (var content = new StreamContent(file))
-            using (var formData = new MultipartFormDataContent())
+            using var file = File.OpenRead(Path.Combine("../../../", fileName));
+            using var content = new StreamContent(file);
+            using var formData = new MultipartFormDataContent
             {
-                formData.Add(content, "file", fileName);
+                { content, "file", fileName }
+            };
 
-                // Act
-                var client = this.System.Server.CreateClient();
-                var response = await client.PostAsync("/api/v2/import", formData);
-                response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
+            // Act
+            var client = System.Server.CreateClient();
+            var response = await client.PostAsync("/api/v2/import", formData);
+            response.StatusCode.ShouldBe(HttpStatusCode.NoContent);
 
-                WaitForIndexing(Store);
+            WaitForIndexing(Store);
 
-                var result = await System.Scenario(_ =>
-                {
-                    _.GetProductDescription("Documentation");
-                    _.StatusCodeShouldBeOk();
-                });
-
-                // Assert
-                // Assertion already handled
-            }
+            // Assert
+            var result = await System.Scenario(_ =>
+            {
+                _.GetProductDescription("Documentation");
+                _.StatusCodeShouldBeOk();
+            });
         }
     }
 }
