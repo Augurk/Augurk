@@ -148,7 +148,7 @@ namespace Augurk.Api.Controllers.V2
             // await _expirationManager.ApplyExpirationPolicyAsync(await _configurationManager.GetOrCreateConfigurationAsync());
 
             // Migrate the imported data asynchronously
-            var taskWeShallNotWaitFor = _migrationManager.StartMigrating();
+            await _migrationManager.StartMigrating();
 
             return NoContent();
         }
