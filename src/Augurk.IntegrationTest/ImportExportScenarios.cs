@@ -6,7 +6,6 @@ using Shouldly;
 using System.Net;
 using System.IO;
 using System.Net.Http;
-using Raven.Client.ServerWide.Operations;
 
 namespace Augurk.IntegrationTest
 {
@@ -44,14 +43,16 @@ namespace Augurk.IntegrationTest
                 _.StatusCodeShouldBe(HttpStatusCode.Accepted);
             });
 
-            // Assert
-            await System.Scenario(_ =>
+            var result = await System.Scenario(_ =>
             {
                 _.Get.Url("/api/v2/export");
                 _.ContentTypeShouldBe("application/octet-stream");
                 _.Header("Content-Disposition").ShouldHaveOneNonNullValue();
                 _.StatusCodeShouldBeOk();
             });
+
+            // Assert
+            // Assertion already handled above
         }
 
         /// <summary>
@@ -82,9 +83,6 @@ namespace Augurk.IntegrationTest
                 _.GetProductDescription("Documentation");
                 _.StatusCodeShouldBeOk();
             });
-
-            // Explicitly delete the database asychrnously to avoid flaky tests
-            await Store.Maintenance.Server.SendAsync(new DeleteDatabasesOperation(Store.Database, hardDelete: true));
         }
     }
 }
