@@ -17,40 +17,39 @@
 @inject FeatureService FeatureService
 
 <div class="container-fluid">
-    <Row>
-        <p>
-            @if (@HasTags)
-            {
-                <i class="bi-tag"></i>
-            }
-            <i>tags</i>
-        </p>
-    </Row>
+    <TagDisplay Tags="@CurrentFeature?.Tags" />
     <Row>
         <h3>@CurrentFeature?.Title</h3>
     </Row>
+    @if (FeatureIsNotImplemented)
+    {
+        <Row>
+            <Card Color="Color.Warning">
+                <CardHeader><i class="bi-exclamation-square-fill text-warning">&nbsp;</i>Not Implemented</CardHeader>
+                <CardBody>This feature has not (yet) been implemented, it is only shown here for reference-purposes.</CardBody>
+            </Card>
+        </Row>
+    }
+    @if (!FeatureIsNotImplemented && FeatureIsIgnored)
+    {
+        <Row>
+            <Card Color="Color.Danger">
+                <CardHeader><i class="bi-exclamation-triangle-fill text-danger">&nbsp;</i>Ignore</CardHeader>
+                <CardBody>This feature has been marked with an ignore-tag so it is ignored by the test-engine. As a result this feature has not been validated against the implementation!</CardBody>
+            </Card>
+        </Row>
+    }
+    <br/>
     <Row>
         <Markdown Input="@CurrentFeature?.Description" />
     </Row>
     @if (CurrentFeature != null)
     {
         <Row ItemsPerRow="ItemsPerRow.One">
-            <Collapse ShowArrow="true">
-                <CollapseItems>
-                    @foreach (var scenario in @CurrentFeature?.Scenarios)
-                    {
-                        <CollapseItem Text="@scenario.Title" IsCollapsed="false">
-                            <Markdown Input="@scenario.Description" />
-                            <ul>
-                                @foreach (var step in scenario.Steps)
-                                {
-                                    <li>@step.Keyword @step.Content</li>
-                                }
-                            </ul>
-                        </CollapseItem>
-                    }
-                </CollapseItems>
-            </Collapse>
+            @foreach (var scenario in @CurrentFeature?.Scenarios)
+            {
+                <ScenarioDisplay Scenario="@scenario" />
+            }
         </Row>
     }
 </div>
@@ -69,11 +68,14 @@
     [Parameter]
     public string Version { get; set; }
 
-    private Feature CurrentFeature { get; set; }
-    private bool HasTags { get; set; } = true;
+    private DisplayableFeature CurrentFeature { get; set; }
+    private bool FeatureIsNotImplemented { get; set; }
+    private bool FeatureIsIgnored { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         CurrentFeature = await FeatureService.GetFeatureAsync(Product, Group, FeatureTitle, Version);
+        FeatureIsNotImplemented = CurrentFeature.Properties.HasFlag(FeatureProperties.NotImplemented);
+        FeatureIsIgnored = CurrentFeature.Properties.HasFlag(FeatureProperties.Ignore);
     }
 }

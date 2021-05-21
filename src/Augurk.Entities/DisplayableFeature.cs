@@ -1,12 +1,12 @@
 ﻿/*
  Copyright 2014-2015, Mark Taling
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,7 +16,6 @@
 
 using System.Linq;
 using Augurk.Entities.Test;
-using System.Collections.Generic;
 
 namespace Augurk.Entities
 {
@@ -39,6 +38,14 @@ namespace Augurk.Entities
         /// Gets or sets the the test result
         /// </summary>
         public FeatureTestResult TestResult { get; set; }
+
+        /// <summary>
+        /// Parameterless constructor for deserialization purposes.
+        /// </summary>
+        public DisplayableFeature()
+        {
+            // Nothing to do here
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DisplayableFeature"/> class using the provided <see cref="Feature"/> to provide initial values.

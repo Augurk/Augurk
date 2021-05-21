@@ -30,9 +30,9 @@ namespace Augurk.UI.Services
             _client = client ?? throw new ArgumentNullException(nameof(client));
         }
 
-        public async Task<Feature> GetFeatureAsync(string product, string group, string featureTitle, string version)
+        public async Task<DisplayableFeature> GetFeatureAsync(string product, string group, string featureTitle, string version)
         {
-            var feature = await _client.GetFromJsonAsync<Feature>($"/api/v2/products/{product}/groups/{group}/features/{featureTitle}/versions/{version}");
+            var feature = await _client.GetFromJsonAsync<DisplayableFeature>($"/api/v2/products/{product}/groups/{group}/features/{featureTitle}/versions/{version}");
             return feature;
         }
     }
