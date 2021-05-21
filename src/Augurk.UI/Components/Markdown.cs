@@ -24,7 +24,7 @@ namespace Augurk.UI.Components
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             base.BuildRenderTree(builder);
-            ComponentReplacer.ReplaceUml(rawHtml)(builder);
+            ComponentReplacer.ReplaceDiagrams(rawHtml)(builder);
         }
         protected override void OnParametersSet()
         {
