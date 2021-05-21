@@ -13,23 +13,32 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<li class="step">
-    <KeywordDisplay Keyword="@Step.Keyword" />
-    <span>@Content</span>
-    @if (@Step.TableArgument != null)
-    {
-        <StepTable Table="@Step.TableArgument" />
-    }
-</li>
+@using System.Web
+@inject IJSRuntime jsRuntime
+
+<div class="uml">
+    <canvas @ref=Canvas></canvas>
+</div>
+@if(!String.IsNullOrWhiteSpace(Label))
+{
+<span class="label">@Label</span>
+}
+
 
 @code {
     [Parameter]
-    public Entities.Step Step { get; set; }
+    public string Label { get; set; }
 
-    private RenderFragment Content { get; set; }
+    [Parameter]
+    public string DiagramText { get; set; }
 
-    protected override void OnParametersSet()
+    private ElementReference Canvas { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Content = ComponentReplacer.ReplaceArguments(Step.Content);
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("nomnoml.draw", Canvas, HttpUtility.HtmlDecode(DiagramText.Replace(@"\#", "#")));
+        }
     }
 }

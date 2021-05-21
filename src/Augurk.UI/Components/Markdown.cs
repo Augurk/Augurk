@@ -8,27 +8,34 @@ namespace Augurk.UI.Components
     {
         [Parameter]
         public string Input { get; set; }
-        private MarkupString _markupString = new();
+        private string rawHtml = string.Empty;
 
         public virtual MarkdownPipeline Pipeline => new MarkdownPipelineBuilder()
             .UseEmojiAndSmiley()
             .UseAdvancedExtensions()
             .Build();
+
+        public Markdown()
+        {
+            var builder = new MarkdownPipelineBuilder()
+            .UseEmojiAndSmiley()
+            .UseAdvancedExtensions();
+        }
         protected override void BuildRenderTree(RenderTreeBuilder builder)
         {
             base.BuildRenderTree(builder);
-            builder.AddContent(0, _markupString);
+            ComponentReplacer.ReplaceUml(rawHtml)(builder);
         }
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
             if (!string.IsNullOrEmpty(Input))
             {
-                _markupString = new MarkupString(Markdig.Markdown.ToHtml(Input, Pipeline));
+                rawHtml = Markdig.Markdown.ToHtml(Input, Pipeline);
             }
             else
             {
-                _markupString = new();
+                rawHtml = string.Empty;
             }
         }
     }

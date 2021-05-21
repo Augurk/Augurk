@@ -1,0 +1,11 @@
+div.uml{
+    background-color: #FDF6E6;
+    border: solid black;
+    text-align: center;
+}
+span.label {
+    display: block;
+    text-align: center;
+    font-style: italic;
+    font-weight: bold;
+}
