@@ -93,11 +93,11 @@ namespace Augurk.Api
 
             // Find al terms and determine which substrings we should take
             var results = new List<(int start, int length)>();
-            if(!string.IsNullOrWhiteSpace(source) && searchTerms.Any(source.Contains))
+            if(!string.IsNullOrWhiteSpace(source) && searchTerms.Any(s => source.Contains(s, StringComparison.InvariantCultureIgnoreCase)))
             {
                 foreach (string term in searchTerms)
                 {
-                    int index = source.IndexOf(term);
+                    int index = source.IndexOf(term, StringComparison.InvariantCultureIgnoreCase);
                     if(index >= 0)
                     {
                         int start = Math.Max(index - characterPadding, 0);
