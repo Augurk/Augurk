@@ -1,5 +1,5 @@
 ﻿/*
- Copyright 2017-2020, Augurk
+ Copyright 2017-2021, Augurk
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -98,8 +98,8 @@ namespace Augurk.Api.Controllers.V2
         [Route("{title}/versions/{version}")]
         [HttpPost]
         [ProducesResponseType(400)]
-        [ProducesResponseType(202)]
-        public async Task<ActionResult<Feature>> PostAsync([FromBody]Feature feature, string productName, string groupName, string title, string version)
+        [ProducesResponseType(typeof(PostResult), 202)]
+        public async Task<ActionResult<PostResult>> PostAsync([FromBody]Feature feature, string productName, string groupName, string title, string version)
         {
             if (!feature.Title.Equals(title, StringComparison.OrdinalIgnoreCase))
             {
@@ -121,7 +121,12 @@ namespace Augurk.Api.Controllers.V2
                 }
             }
 
-            return Accepted();
+            // Build a nice result
+            var result = new PostResult();
+            result.ApiUrl = $"{Request.Scheme}://{Request.Host.ToString()}{Request.Path}";
+            result.WebUrl = $"{Request.Scheme}://{Request.Host.ToString()}preview/feature/{productName}/{groupName}/{title}/{version}";
+
+            return Accepted(result);
         }
 
         /// <summary>
