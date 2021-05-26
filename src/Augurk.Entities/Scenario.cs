@@ -63,6 +63,7 @@ namespace Augurk.Entities
             }
 
             var sb = new StringBuilder();
+            sb.AppendLine(Description);
             foreach(var step in Steps)
             {
                 sb.AppendLine(step.ToString());

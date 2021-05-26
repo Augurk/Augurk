@@ -307,22 +307,38 @@ namespace Augurk.Api.Managers
 
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-
                 dbFeature = await session.LoadAsync<DbFeature>(DbFeatureExtensions.GetIdentifier(productName, groupName, feature.Title, hash));
 
-                if(dbFeature != null){
+                if (dbFeature != null)
+                {
                     // Add the new version to the list
                     var versions = new List<string>(dbFeature.Versions);
                     versions.Add(version);
                     // Prevent duplicates
                     dbFeature.Versions = versions.Distinct().ToArray();
                 }
-                else{
+                else
+                {
                     // Create a new feature
                     var processor = new FeatureProcessor();
                     string parentTitle = processor.DetermineParent(feature);
-                    dbFeature = new DbFeature(feature, productName, groupName, parentTitle, version);
+                    dbFeature = new DbFeature(feature, productName, groupName, parentTitle, version) { Hash = hash };
                     await session.StoreAsync(dbFeature, dbFeature.GetIdentifier());
+                }
+
+                var wronglyStampedFeatures = session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                       .Where(f => f.Product == productName && f.Group == groupName && f.Title == feature.Title && f.Hash != hash);
+
+                foreach (var wronglyStampedFeature in (await wronglyStampedFeatures.ToListAsync()).Where(f => f.Versions.Contains(version)))
+                {
+                    if (wronglyStampedFeature.Versions.Length == 1)
+                    {
+                        session.Delete(wronglyStampedFeature);
+                    }
+                    else
+                    {
+                        wronglyStampedFeature.Versions = wronglyStampedFeature.Versions.Where(v => v != version).ToArray();
+                    }
                 }
 
                 await session.SaveChangesAsync();

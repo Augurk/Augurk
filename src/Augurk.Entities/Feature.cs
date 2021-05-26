@@ -66,6 +66,7 @@ namespace Augurk.Entities
             var sb = new StringBuilder();
             sb.AppendLine(String.Join(" ", Tags));
             sb.AppendLine(Title);
+            sb.AppendLine(Description);
             if(Background != null){
                 sb.AppendLine(Background.ToString());
             }
