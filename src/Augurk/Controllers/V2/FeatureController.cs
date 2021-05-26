@@ -124,7 +124,7 @@ namespace Augurk.Api.Controllers.V2
             // Build a nice result
             var result = new PostResult();
             result.ApiUrl = $"{Request.Scheme}://{Request.Host.ToString()}{Request.Path}";
-            result.WebUrl = $"{Request.Scheme}://{Request.Host.ToString()}preview/feature/{productName}/{groupName}/{title}/{version}";
+            result.WebUrl = $"{Request.Scheme}://{Request.Host.ToString()}/preview/feature/{productName}/{groupName}/{title}/{version}";
 
             return Accepted(result);
         }
