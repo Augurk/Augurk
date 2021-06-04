@@ -1,21 +1,10 @@
-﻿/*
- Copyright 2018, Augurk
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
 using Augurk.Api.Managers;
 using Augurk.Entities;
 using Augurk.Entities.Analysis;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -49,10 +38,10 @@ namespace Augurk.Api
             await _analysisReportManager.DeleteDbInvocationsAsync(productName, version);
 
             // Collect all features for the provided product/version combination
-            IEnumerable<DbFeature> features = await _featureManager.GetDbFeaturesByProductAndVersionAsync(productName, version);
+            var features = await _featureManager.GetDbFeaturesByProductAndVersionAsync(productName, version);
 
             // Collect all analysisreports for the provided product/version combination
-            IEnumerable<AnalysisReport> reports = _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
+            var reports = _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
 
             if (reports.Any())
             {
@@ -70,7 +59,7 @@ namespace Augurk.Api
         public async Task AnalyzeAndPeristResultsAsync(string productName, string version, DbFeature feature)
         {
             // Collect all analysisreports for the provided product/version combination
-            IEnumerable<AnalysisReport> reports = _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
+            var reports = _analysisReportManager.GetAnalysisReportsByProductAndVersionAsync(productName, version);
 
             if (reports.Any())
             {
@@ -120,8 +109,7 @@ namespace Augurk.Api
                     var localInvocations = GetHighestLocalInvocations(invocation).ToList();
                     var localInvocationSignatures = localInvocations.SelectMany(i =>
                     {
-                        List<string> invocations = new List<string>();
-                        invocations.Add(i.Signature);
+                        var invocations = new List<string> { i.Signature };
                         // Add the interface definitions, if available
                         if (i.InterfaceDefinitions != null)
                         {
@@ -134,7 +122,7 @@ namespace Augurk.Api
                     // Prepare the invocation for storage
                     activeInvocations.AddRange(localInvocations.SelectMany(i =>
                     {
-                        List<DbInvocation> dbInvocations = new List<DbInvocation>();
+                        var dbInvocations = new List<DbInvocation>();
 
                         // Add the current invocation
                         var dbInvocation = new DbInvocation()
@@ -184,8 +172,8 @@ namespace Augurk.Api
 
         private string[] FlattenUntilAMatchIsFound(Invocation invocation, IEnumerable<string> possibleMatches)
         {
-            List<string> invocations = new List<string>();
-            foreach (var inv in invocation.Invocations ?? new Invocation[0])
+            var invocations = new List<string>();
+            foreach (var inv in invocation.Invocations ?? Array.Empty<Invocation>())
             {
                 FlattenUntilAMatchIsFound(inv, invocations, possibleMatches);
             }
@@ -197,7 +185,7 @@ namespace Augurk.Api
             invocations.Add(invocation.Signature);
             if (!possibleMatches.Contains(invocation.Signature))
             {
-                foreach (var inv in invocation.Invocations ?? new Invocation[0])
+                foreach (var inv in invocation.Invocations ?? Array.Empty<Invocation>())
                 {
                     FlattenUntilAMatchIsFound(inv, invocations, possibleMatches);
                 }
@@ -212,8 +200,8 @@ namespace Augurk.Api
                     invocation.Invocations.Descendants(i => i.Invocations).Where(i => i.Signature == target));
             }
 
-            List<Invocation> invocations = new List<Invocation>();
-            foreach (var childInvocation in invocation.Invocations ?? new Invocation[0])
+            var invocations = new List<Invocation>();
+            foreach (var childInvocation in invocation.Invocations ?? Array.Empty<Invocation>())
             {
                 if (childInvocation.Local)
                 {

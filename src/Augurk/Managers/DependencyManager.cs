@@ -1,18 +1,6 @@
-﻿/*
- Copyright 2018-2019, Augurk
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
 using Augurk.Entities;
 using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
@@ -40,11 +28,11 @@ namespace Augurk.Api.Managers
         }
 
         /// <summary>
-        /// Gets the top level feature graphs, that is the graphs 
+        /// Gets the top level feature graphs, that is the graphs
         /// for features that do not have a parent feature.
         /// </summary>
         /// <returns>
-        /// A collection of <see cref="FeatureGraph"/> instances representing 
+        /// A collection of <see cref="FeatureGraph"/> instances representing
         /// the dependency graphs for the unparented features.
         /// </returns>
         public async Task<IEnumerable<FeatureGraph>> GetTopLevelFeatureGraphsAsync()
@@ -100,10 +88,12 @@ namespace Augurk.Api.Managers
         public async Task<FeatureGraph> GetFeatureGraphAsync(string productName, string featureName, string version)
         {
             // Create the result variable
-            var result = new FeatureGraph();
-            result.ProductName = productName;
-            result.FeatureName = featureName;
-            result.Version = version;
+            var result = new FeatureGraph
+            {
+                ProductName = productName,
+                FeatureName = featureName,
+                Version = version
+            };
 
             // For now, just use all tree as a source
             var trees = (await GetTopLevelFeatureGraphsAsync()).ToList();

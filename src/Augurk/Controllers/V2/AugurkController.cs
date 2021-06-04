@@ -1,18 +1,5 @@
-﻿/*
- Copyright 2017-2019, Augurk
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using Augurk.Api.Managers;
 using System.Threading.Tasks;
@@ -20,14 +7,11 @@ using Augurk.Entities;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.IO;
-using System.Net.Http;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Linq;
 using System.Collections.Generic;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Smuggler;
 using Microsoft.AspNetCore.Http;
+using System.Globalization;
 
 namespace Augurk.Api.Controllers.V2
 {
@@ -41,22 +25,16 @@ namespace Augurk.Api.Controllers.V2
     {
         private readonly ICustomizationManager _customizationManager;
         private readonly IConfigurationManager _configurationManager;
-        private readonly IFeatureManager _featureManager;
-        private readonly IExpirationManager _expirationManager;
         private readonly IDocumentStore _documentStore;
         private readonly MigrationManager _migrationManager;
 
         public AugurkController(ICustomizationManager customizationManager,
                                 IConfigurationManager configurationManager,
-                                IFeatureManager featureManager,
-                                IExpirationManager expirationManager,
                                 IDocumentStoreProvider storeProvider,
                                 MigrationManager migrationManager)
         {
             _customizationManager = customizationManager ?? throw new ArgumentNullException(nameof(customizationManager));
             _configurationManager = configurationManager ?? throw new ArgumentNullException(nameof(configurationManager));
-            _featureManager = featureManager ?? throw new ArgumentNullException(nameof(featureManager));
-            _expirationManager = expirationManager ?? throw new ArgumentNullException(nameof(expirationManager));
             _documentStore = storeProvider?.Store ?? throw new ArgumentNullException(nameof(storeProvider));
             _migrationManager = migrationManager ?? throw new ArgumentNullException(nameof(migrationManager));
         }
@@ -78,7 +56,7 @@ namespace Augurk.Api.Controllers.V2
         [Route("customization")]
         [HttpPut]
         [HttpPost]
-        public async Task PersistCustomizationAsync([FromBody]Customization customizationSettings)
+        public async Task PersistCustomizationAsync([FromBody] Customization customizationSettings)
         {
             await _customizationManager.PersistCustomizationSettingsAsync(customizationSettings);
         }
@@ -100,7 +78,7 @@ namespace Augurk.Api.Controllers.V2
         [Route("configuration")]
         [HttpPut]
         [HttpPost]
-        public async Task PersistConfigurationAsync([FromBody]Configuration configuration)
+        public async Task PersistConfigurationAsync([FromBody] Configuration configuration)
         {
             await _configurationManager.PersistConfigurationAsync(configuration);
         }
@@ -111,7 +89,7 @@ namespace Augurk.Api.Controllers.V2
         [Route("import")]
         [HttpPost]
         [DisableRequestSizeLimit]
-        [RequestFormLimits(MultipartBodyLengthLimit = Int32.MaxValue, ValueLengthLimit = Int32.MaxValue)]
+        [RequestFormLimits(MultipartBodyLengthLimit = int.MaxValue, ValueLengthLimit = int.MaxValue)]
         [ProducesResponseType(400)]
         [ProducesResponseType(204)]
         public async Task<ActionResult> Import(IFormFile file)
@@ -123,7 +101,7 @@ namespace Augurk.Api.Controllers.V2
             }
 
             // Store the uploaded file into a temporary location
-            string filePath = Path.GetTempFileName();
+            var filePath = Path.GetTempFileName();
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 // Copy file to temporary location
@@ -162,7 +140,7 @@ namespace Augurk.Api.Controllers.V2
         {
             // Setup an export using RavenDb's Smuggler API
             var exportTimestamp = DateTime.Now;
-            var fileName = $"augurk-{exportTimestamp.ToString("yyyy-dd-M-HHmmss")}.bak";
+            var fileName = $"augurk-{exportTimestamp.ToString("yyyy-dd-M-HHmmss", CultureInfo.InvariantCulture)}.bak";
             var filePath = Path.Combine(Path.GetTempPath(), fileName);
 
             // Setup the export options

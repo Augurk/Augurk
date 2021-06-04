@@ -1,18 +1,5 @@
-/*
- Copyright 2019, Augurk
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System.Threading.Tasks;
 using System;
@@ -36,7 +23,7 @@ namespace Augurk.Api.Managers
 
         public async Task ApplyExpirationPolicyAsync(Configuration configuration)
         {
-            QueryOperationOptions options = new QueryOperationOptions() { AllowStale = true };
+            var options = new QueryOperationOptions() { AllowStale = true };
 
             if (configuration.ExpirationEnabled)
             {
@@ -45,14 +32,14 @@ namespace Augurk.Api.Managers
                                 where regex(d.Version, '{HttpUtility.JavaScriptStringEncode(configuration.ExpirationRegex)}')
                                 update
                                 {{
-                                    if(!this[""@metadata""][""upload-date""]) 
+                                    if(!this[""@metadata""][""upload-date""])
                                     {{
                                         this[""@metadata""][""upload-date""] = new Date(lastModified(d));
                                     }}
 
                                     var expirationDate = new Date(this[""@metadata""][""upload-date""]);
                                     expirationDate.setDate(expirationDate.getDate() + {configuration.ExpirationDays});
-                                    this[""@metadata""][""@expires""] = expirationDate; 
+                                    this[""@metadata""][""@expires""] = expirationDate;
                                     put(id(d), this);
                                 }}";
                 var operation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() { Query = query }, options));
@@ -62,12 +49,12 @@ namespace Augurk.Api.Managers
                             where exists(d.Version) AND NOT regex(d.Version, '{HttpUtility.JavaScriptStringEncode(configuration.ExpirationRegex)}')
                             update
                             {{
-                                if(!this[""@metadata""][""upload-date""]) 
+                                if(!this[""@metadata""][""upload-date""])
                                 {{
                                     this[""@metadata""][""upload-date""] = new Date(lastModified(d));
                                 }}
 
-                                delete this[""@metadata""][""@expires""]; 
+                                delete this[""@metadata""][""@expires""];
                                 put(id(d), this);
                             }}";
                 var secondOperation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() { Query = query }, options));
@@ -82,12 +69,12 @@ namespace Augurk.Api.Managers
                                 where exists(d.Version)
                                 update
                                 {{
-                                    if(!this[""@metadata""][""upload-date""]) 
+                                    if(!this[""@metadata""][""upload-date""])
                                     {{
                                         this[""@metadata""][""upload-date""] = new Date(lastModified(d));
                                     }}
 
-                                    delete this[""@metadata""][""@expires""]; 
+                                    delete this[""@metadata""][""@expires""];
                                     put(id(d), this);
                                 }}";
                 var operation = await _storeProvider.Store.Operations.SendAsync(new PatchByQueryOperation(new IndexQuery() { Query = query }, options));

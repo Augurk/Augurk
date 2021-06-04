@@ -1,18 +1,6 @@
-﻿/*
- Copyright 2017, Augurk
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
 using System.Collections.Generic;
 
 namespace System.Linq
@@ -44,17 +32,17 @@ namespace System.Linq
         private static IEnumerable<T> DescendantsIterator<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childSelector)
         {
             // Go through each item in the source
-            foreach (T value in source)
+            foreach (var value in source)
             {
                 // Yield the current item
                 yield return value;
 
-                IEnumerable<T> enumerable = childSelector(value);
+                var enumerable = childSelector(value);
 
                 // Descent children of the item using the given function
                 if (enumerable != null)
                 {
-                    foreach (T child in enumerable.Descendants(childSelector))
+                    foreach (var child in enumerable.Descendants(childSelector))
                     {
                         // Yield the child
                         yield return child;

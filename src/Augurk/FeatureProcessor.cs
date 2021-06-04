@@ -1,18 +1,5 @@
-﻿/*
- Copyright 2014-2016, Mark Taling
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System;
 using System.Collections.Generic;
@@ -25,10 +12,10 @@ namespace Augurk
     /// </summary>
     public class FeatureProcessor
     {
-        private static readonly List<string> SERVER_TAGS = new List<string>() { "childOf", "parent", "notImplemented", "ignore" };
-        private readonly List<string> _notImplementedTags = new List<string>() { "notImplemented" };
-        private readonly List<string> _ignoreTags = new List<string>() { "ignore" };
-        private readonly List<string> _childTags = new List<string>() { "childOf", "parent" };
+        private static readonly List<string> SERVER_TAGS = new() { "childOf", "parent", "notImplemented", "ignore" };
+        private readonly List<string> _notImplementedTags = new() { "notImplemented" };
+        private readonly List<string> _ignoreTags = new() { "ignore" };
+        private readonly List<string> _childTags = new() { "childOf", "parent" };
 
         /// <summary>
         /// Processes the server tags on the provided feature.
@@ -37,11 +24,11 @@ namespace Augurk
         public void Process(DisplayableFeature feature)
         {
             // Get the server tags
-            IEnumerable<string> serverTags = GetServerTags(feature.Tags);
+            var serverTags = GetServerTags(feature.Tags);
 
             foreach (var tag in serverTags)
             {
-                string[] tagParts = tag.Split(new[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
+                var tagParts = tag.Split(new[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
 
                 if (_notImplementedTags.Contains(tagParts[0]))
                 {
@@ -66,7 +53,7 @@ namespace Augurk
         {
             foreach (var tag in feature.Tags)
             {
-                string[] tagParts = tag.Split(new[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
+                var tagParts = tag.Split(new[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
                 if (_childTags.Contains(tagParts[0]))
                 {
                     return tagParts[1];
@@ -81,11 +68,11 @@ namespace Augurk
         /// </summary>
         private static IEnumerable<string> GetServerTags(IEnumerable<string> tags)
         {
-            List<string> filteredTags = new List<string>();
+            var filteredTags = new List<string>();
 
             foreach (var tag in tags)
             {
-                string[] tagParts = tag.Split(new[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
+                var tagParts = tag.Split(new[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
                 if (SERVER_TAGS.Contains(tagParts[0]))
                 {
                     filteredTags.Add(tag);
@@ -113,11 +100,11 @@ namespace Augurk
         /// </summary>
         public static IEnumerable<string> RemoveServerTags(IEnumerable<string> tags)
         {
-            List<string> filteredTags = new List<string>();
+            var filteredTags = new List<string>();
 
             foreach (var tag in tags)
             {
-                string[] tagParts = tag.Split(new[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
+                var tagParts = tag.Split(new[] { ":" }, 2, StringSplitOptions.RemoveEmptyEntries);
                 if (!SERVER_TAGS.Contains(tagParts[0]))
                 {
                     filteredTags.Add(tag);

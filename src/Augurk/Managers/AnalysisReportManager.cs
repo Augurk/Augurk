@@ -1,27 +1,11 @@
-﻿/*
- Copyright 2018-2019, Augurk
- 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
- http://www.apache.org/licenses/LICENSE-2.0
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Augurk.Entities.Analysis;
 using System.Collections.Generic;
 using System.Linq;
 using Augurk.Api.Indeces.Analysis;
-using Newtonsoft.Json.Linq;
-using Raven.Client.Documents.Queries;
 using Raven.Client.Documents.Operations;
 using Raven.Client.Documents;
 using System;
@@ -55,16 +39,14 @@ namespace Augurk.Api.Managers
         {
             var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
 
-            using (var session = _storeProvider.Store.OpenAsyncSession())
-            {
-                // Store will override the existing report if it already exists
-                await session.StoreAsync(report, $"{productName}/{version}/{report.AnalyzedProject}");
+            // Store will override the existing report if it already exists
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            await session.StoreAsync(report, $"{productName}/{version}/{report.AnalyzedProject}");
 
-                session.SetExpirationAccordingToConfiguration(report, version, configuration);
-                session.Advanced.GetMetadataFor(report)["Product"] = productName;
+            session.SetExpirationAccordingToConfiguration(report, version, configuration);
+            session.Advanced.GetMetadataFor(report)["Product"] = productName;
 
-                await session.SaveChangesAsync();
-            }
+            await session.SaveChangesAsync();
         }
 
         /// <summary>
@@ -75,13 +57,11 @@ namespace Augurk.Api.Managers
         /// <returns>A range of <see cref="AnalysisReport"/> instances stored for the provided product and version.</returns>
         public IEnumerable<AnalysisReport> GetAnalysisReportsByProductAndVersionAsync(string productName, string version)
         {
-            using (var session = _storeProvider.Store.OpenSession())
-            {
-                return session.Query<AnalysisReports_ByProductAndVersion.Entry, AnalysisReports_ByProductAndVersion>()
-                           .Where(report => report.Product == productName && report.Version == version)
-                           .OfType<AnalysisReport>()
-                           .ToList();
-            }
+            using var session = _storeProvider.Store.OpenSession();
+            return session.Query<AnalysisReports_ByProductAndVersion.Entry, AnalysisReports_ByProductAndVersion>()
+                       .Where(report => report.Product == productName && report.Version == version)
+                       .OfType<AnalysisReport>()
+                       .ToList();
         }
 
         /// <summary>
@@ -90,12 +70,10 @@ namespace Augurk.Api.Managers
         /// <returns>Returns a range of <see cref="DbInvocation" /> instances representing the invocations stored in the database.</returns>
         public async Task<IEnumerable<DbInvocation>> GetAllDbInvocations()
         {
-            using (var session = _storeProvider.Store.OpenAsyncSession())
-            {
-                var result = await session.Query<DbInvocation>().ToListAsync();
-                _logger.LogInformation("Retrieved {InvocationCount} invocations", result.Count);
-                return result;
-            }
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            var result = await session.Query<DbInvocation>().ToListAsync();
+            _logger.LogInformation("Retrieved {InvocationCount} invocations", result.Count);
+            return result;
         }
 
         /// <summary>
@@ -108,19 +86,17 @@ namespace Augurk.Api.Managers
         {
             var configuration = await _configurationManager.GetOrCreateConfigurationAsync();
 
-            using (var session = _storeProvider.Store.OpenAsyncSession())
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            foreach (var invocation in invocations)
             {
-                foreach (var invocation in invocations)
-                {
-                    await session.StoreAsync(invocation, $"{productName}/{version}/{invocation.Signature}");
-                    session.SetExpirationAccordingToConfiguration(invocation, version, configuration);
-                    var metadata = session.Advanced.GetMetadataFor(invocation);
-                    metadata["Product"] = productName;
-                    metadata["Version"] = version;
-                }
-
-                await session.SaveChangesAsync();
+                await session.StoreAsync(invocation, $"{productName}/{version}/{invocation.Signature}");
+                session.SetExpirationAccordingToConfiguration(invocation, version, configuration);
+                var metadata = session.Advanced.GetMetadataFor(invocation);
+                metadata["Product"] = productName;
+                metadata["Version"] = version;
             }
+
+            await session.SaveChangesAsync();
         }
 
         /// <summary>

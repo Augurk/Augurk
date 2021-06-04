@@ -1,3 +1,6 @@
+// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -12,7 +15,8 @@ namespace Augurk.UI.Components
         {
             return ApplyRegex(rawContent,
                               @"<(\w+)>",
-                              (match, builder) => {
+                              (match, builder) =>
+                              {
                                   builder.OpenComponent<ArgumentDisplay>(1);
                                   builder.AddAttribute(1, nameof(ArgumentDisplay.ArgumentName), match.Groups[1].Value);
                                   builder.CloseComponent();
@@ -28,7 +32,7 @@ namespace Augurk.UI.Components
 
         private static void ProcessDiagramMatch(Match match, RenderTreeBuilder builder)
         {
-            switch(match.Groups["type"].Value)
+            switch (match.Groups["type"].Value)
             {
                 case "UML":
                     builder.OpenComponent<UmlDisplay>(1);
@@ -60,7 +64,7 @@ namespace Augurk.UI.Components
 
             return builder =>
             {
-                int processedUntilIndex = 0;
+                var processedUntilIndex = 0;
 
                 foreach (Match match in matches)
                 {
