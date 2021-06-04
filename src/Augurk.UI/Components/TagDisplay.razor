@@ -18,8 +18,14 @@
 {
     <Row>
         <p>
-            @if (Tags.Count() == 1) { <i class="bi-tag-fill">&nbsp;</i> }
-            @if (Tags.Count() > 1) { <i class="bi-tags-fill">&nbsp;</i> }
+            @if (Tags.Count() == 1)
+            {
+                <i class="bi-tag-fill">&nbsp;</i>
+            }
+            @if (Tags.Count() > 1)
+            {
+                <i class="bi-tags-fill">&nbsp;</i>
+            }
             @foreach (var tag in Tags)
             {
                 <i>@tag&nbsp;</i>

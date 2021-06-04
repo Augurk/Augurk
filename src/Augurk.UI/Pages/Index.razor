@@ -23,13 +23,12 @@
         <Searchbox />
         @if (_searching)
         {
-        <div class="col-md-6 offset-md-3" style="margin-top: 5px;">
-            <div class="progress">
-                <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: 100%"></div>
+            <div class="col-md-6 offset-md-3" style="margin-top: 5px;">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped bg-success progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                </div>
             </div>
-        </div>
         }
-
     </div>
     <div class="row">
         @foreach(var feature in _latestResults?.FeatureMatches ?? Enumerable.Empty<FeatureMatch>()) {
