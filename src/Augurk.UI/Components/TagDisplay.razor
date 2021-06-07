@@ -1,0 +1,37 @@
+<!--
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+-->
+
+@if (Tags.Count() > 0)
+{
+    <Row>
+        <p>
+            @if (Tags.Count() == 1)
+            {
+                <i class="bi-tag-fill">&nbsp;</i>
+            }
+            @if (Tags.Count() > 1)
+            {
+                <i class="bi-tags-fill">&nbsp;</i>
+            }
+            @foreach (var tag in Tags)
+            {
+                <i>@tag&nbsp;</i>
+            }
+        </p>
+    </Row>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<string> Tags { get; set; } = Enumerable.Empty<string>();
+
+    protected override void OnParametersSet()
+    {
+        if (Tags == null)
+        {
+            Tags = Enumerable.Empty<string>();
+        }
+    }
+}

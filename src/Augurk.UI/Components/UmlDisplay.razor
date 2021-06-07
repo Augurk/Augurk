@@ -1,0 +1,34 @@
+<!--
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+-->
+
+@using System.Web
+@inject IJSRuntime jsRuntime
+
+<div class="uml">
+    <canvas @ref=Canvas></canvas>
+</div>
+
+@if(!String.IsNullOrWhiteSpace(Label))
+{
+    <span class="label">@Label</span>
+}
+
+@code {
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public string DiagramText { get; set; }
+
+    private ElementReference Canvas { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("nomnoml.draw", Canvas, HttpUtility.HtmlDecode(DiagramText.Replace(@"\#", "#")));
+        }
+    }
+}

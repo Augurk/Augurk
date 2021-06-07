@@ -11,5 +11,28 @@
     "coverage-gutters.coverageFileNames": [
         "coverage.info",
     ],
-    "terminal.integrated.cwd": "src/Augurk"
+    "terminal.integrated.cwd": "src/Augurk",
+    "psi-header.lang-config": [
+      {
+        "language": "aspnetcorerazor",
+        "begin": "<!--",
+        "end": "-->"
+      }
+    ],
+    "psi-header.templates": [
+      {
+        "language": "aspnetcorerazor",
+        "template": [
+          "Copyright (c) Augurk. All Rights Reserved.",
+          "Licensed under the Apache License, Version 2.0."
+        ]
+      },
+      {
+        "language": "css",
+        "template": [
+          "Copyright (c) Augurk. All Rights Reserved.",
+          "Licensed under the Apache License, Version 2.0."
+        ]
+      }
+    ]
 }

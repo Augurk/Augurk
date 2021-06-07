@@ -1,4 +1,7 @@
-﻿using NuGet.Versioning;
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
+
+using NuGet.Versioning;
 using System.Collections.Generic;
 
 namespace Augurk.Api
@@ -37,10 +40,8 @@ namespace Augurk.Api
             }
 
             // Try to parse both strings as semantic version
-            SemanticVersion firstSemanticVersion;
-            SemanticVersion secondSemanticVersion;
-            bool firstSemanticVersionParseSucceeded = SemanticVersion.TryParse(first, out firstSemanticVersion);
-            bool secondSemanticVersionParseSucceeded = SemanticVersion.TryParse(second, out secondSemanticVersion);
+            var firstSemanticVersionParseSucceeded = SemanticVersion.TryParse(first, out var firstSemanticVersion);
+            var secondSemanticVersionParseSucceeded = SemanticVersion.TryParse(second, out var secondSemanticVersion);
 
             if (!firstSemanticVersionParseSucceeded && secondSemanticVersionParseSucceeded)
             {

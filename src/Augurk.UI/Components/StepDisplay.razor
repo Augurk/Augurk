@@ -1,0 +1,25 @@
+<!--
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+-->
+
+<li class="step">
+    <KeywordDisplay Keyword="@Step.Keyword" />
+    <span>@Content</span>
+    @if (@Step.TableArgument != null)
+    {
+        <StepTable Table="@Step.TableArgument" />
+    }
+</li>
+
+@code {
+    [Parameter]
+    public Entities.Step Step { get; set; }
+
+    private RenderFragment Content { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Content = ComponentReplacer.ReplaceArguments(Step.Content);
+    }
+}

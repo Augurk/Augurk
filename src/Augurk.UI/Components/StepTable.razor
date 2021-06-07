@@ -1,0 +1,54 @@
+<!--
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+-->
+
+<table class="table table-bordered table-hover table-sm table-striped">
+    <thead aria-expanded="@(!Collapsed)" @onclick="ToggleCollapsed">
+        <tr>
+            @foreach (var column in Table.Columns)
+            {
+                <th scope="col">@column</th>
+            }
+        </tr>
+    </thead>
+    <tbody class=@($"table-body-collapse {(Collapsed ? "collapse" : "")}")>
+        @foreach (var row in Table.Rows)
+        {
+            <tr @onclick="@(async () => await SelectRow(row))">
+                @foreach (var column in row)
+                {
+                    <td class="argument">@column</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter]
+    public Entities.Table Table { get; set; }
+
+    [Parameter]
+    public EventCallback<Dictionary<string, string>> OnRowChosen { get; set; }
+
+    private bool Collapsed { get; set; }
+
+    protected void ToggleCollapsed()
+    {
+        Collapsed = !Collapsed;
+    }
+
+    protected async Task SelectRow(IEnumerable<string> row)
+    {
+        var chosenRow = new Dictionary<string, string>();
+        var tableColumns = Table.Columns.ToList();
+        var rowColumns = row.ToList();
+        for (int i = 0; i < tableColumns.Count; i++)
+        {
+            chosenRow.Add(tableColumns[i], rowColumns[i]);
+        }
+
+        await OnRowChosen.InvokeAsync(chosenRow);
+    }
+}

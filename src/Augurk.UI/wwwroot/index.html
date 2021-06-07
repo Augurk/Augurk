@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Augurk</title>
     <base href="/preview/" />
-    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/_content/BootstrapBlazor/css/bootstrap.blazor.bundle.min.css" rel="stylesheet" />
+    <link href="lib/bootstrap-icons/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="css/app.css" rel="stylesheet" />
     <link href="/Content/icon16.png" rel="shortcut icon" type="image/png" />
     <link href="Augurk.UI.styles.css" rel="stylesheet" />
@@ -21,6 +22,17 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script src="/_content/BootstrapBlazor/js/bootstrap.blazor.bundle.min.js"></script>
+
+    <!-- UML Dependencies -->
+    <script src="lib/graphre/dist/graphre.js"></script>
+    <script src="lib/nomnoml/nomnoml.min.js"></script>
+
+    <!-- Sequence Dependencies -->
+    <script src="lib/snap.svg/snap.svg-min.js"></script>
+    <script src="lib/underscore.js/underscore-min.min.js"></script>
+    <script src="lib/webfont/webfontloader.js"></script>
+    <script src="lib/js-sequence-diagrams/dist/sequence-diagram-min.min.js"></script>
 </body>
 
 </html>

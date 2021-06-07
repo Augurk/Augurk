@@ -1,0 +1,21 @@
+<!--
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+-->
+
+@if (ChosenExample == null)
+{
+    <span class="argument">&lt;@(ArgumentName)&gt;</span>
+}
+else
+{
+    <span class="argument">@ChosenExample[ArgumentName]</span>
+}
+
+@code {
+    [Parameter]
+    public string ArgumentName { get; set; }
+
+    [CascadingParameter]
+    protected Dictionary<string, string> ChosenExample { get; set; }
+}

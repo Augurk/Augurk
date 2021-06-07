@@ -1,18 +1,5 @@
-﻿/*
- Copyright 2015-2019, Augurk
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using Augurk.Entities;
 using Augurk.Entities.Test;
@@ -39,7 +26,7 @@ namespace Augurk.Api
         /// <summary>
         /// Gets or sets the version of the feature.
         /// </summary>
-        [Obsolete]
+        [Obsolete("Use Versions instead")]
         public string Version { get; set; }
 
         /// <summary>
@@ -56,7 +43,7 @@ namespace Augurk.Api
         /// <remarks>
         /// The hash does not include the <see cref="Versions"/> or obsolete <see cref="Version"/> properties.
         /// </remarks>
-        public string Hash{ get; set; }
+        public string Hash { get; set; }
 
         /// <summary>
         /// Gets or sets the title of the parent feature.
@@ -103,7 +90,7 @@ namespace Augurk.Api
             Background = feature.Background;
         }
 
-                /// <summary>
+        /// <summary>
         /// Initializes a new instance of the <see cref="DbFeature"/> class using the provided <see cref="Feature"/> to provide initial values.
         /// </summary>
         /// <param name="feature">The <see cref="Feature"/>that should be used when determining the the initial values.</param>
@@ -115,7 +102,7 @@ namespace Augurk.Api
         {
             Product = product;
             Group = group;
-            Versions = new [] {version};
+            Versions = new[] { version };
             ParentTitle = parentTitle;
 
             // Copy the properties from the provided feature

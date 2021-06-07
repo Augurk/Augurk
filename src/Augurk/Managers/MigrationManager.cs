@@ -1,18 +1,5 @@
-﻿/*
- Copyright 2020, Augurk
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System;
 using System.Linq;
@@ -20,7 +7,6 @@ using System.Threading.Tasks;
 using Augurk.Api.Indeces;
 using Raven.Client.Documents;
 using Microsoft.Extensions.Logging;
-using Raven.Client.Documents.Session;
 
 namespace Augurk.Api.Managers
 {
@@ -44,15 +30,14 @@ namespace Augurk.Api.Managers
         public async Task StartMigrating()
         {
             dynamic features;
-            using(var session = _storeProvider.Store.OpenAsyncSession())
+            using (var session = _storeProvider.Store.OpenAsyncSession())
             {
-                QueryStatistics stats;
                 features = await session.Query<DbFeature, Features_WithoutHash>()
-                                        .Statistics(out stats)
-                                        .Select(f => new {f.Product, f.Group, f.Title})
+                                        .Statistics(out var stats)
+                                        .Select(f => new { f.Product, f.Group, f.Title })
                                         .ToListAsync();
 
-                if(stats.IsStale)
+                if (stats.IsStale)
                 {
                     // The index is stale, it's probably better to wait a bit.
                     var newTask = Task.Delay(60000).ContinueWith(t => StartMigrating());
@@ -61,7 +46,7 @@ namespace Augurk.Api.Managers
 
             };
 
-            foreach(var feature in features)
+            foreach (var feature in features)
             {
                 // Don't await them, let them run in parallel
                 MigrateFeature(feature.Product, feature.Group, feature.Title);
@@ -76,39 +61,38 @@ namespace Augurk.Api.Managers
         /// <param name="title">Title of the feature to migrate.</param>
         public async Task MigrateFeature(string productName, string groupName, string title)
         {
-            using (var session = _storeProvider.Store.OpenAsyncSession())
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            var originalFeatures = await session.Query<DbFeature>()
+                                                .Where(feature => feature.Product == productName
+                                                            && feature.Group == groupName
+                                                            && feature.Title == title)
+                                                .ToListAsync();
+
+            // A check whether it is neccesary to migrate it would be nice
+
+            var newFeatures = from feature in originalFeatures
+                              group feature by feature.CalculateHash()
+                                into groupedFeature
+                              let first = groupedFeature.First()
+                              select new DbFeature(first, first.Product, first.Group, first.ParentTitle)
+                              {
+                                  Hash = groupedFeature.Key,
+                                  Versions = groupedFeature.SelectMany(f => f.Versions ?? new[] { f.Version }).ToArray()
+                              };
+
+            _logger.LogInformation($"Migrating {title} ({productName}/{groupName}) from {originalFeatures.Count} versioned features to {newFeatures.Count()} unversioned features.");
+
+            foreach (var newFeature in newFeatures)
             {
-                var originalFeatures = await session.Query<DbFeature>()
-                                                    .Where(feature => feature.Product == productName
-                                                                && feature.Group == groupName
-                                                                && feature.Title == title)
-                                                    .ToListAsync();
-
-                // A check whether it is neccesary to migrate it would be nice
-
-                var newFeatures = from feature in originalFeatures
-                                  group feature by feature.CalculateHash()
-                                    into groupedFeature
-                                  let first = groupedFeature.First()
-                                  select new DbFeature(first, first.Product, first.Group, first.ParentTitle) {
-                                      Hash = groupedFeature.Key,
-                                      Versions = groupedFeature.SelectMany(f => f.Versions ?? new [] { f.Version }).ToArray()
-                                  };
-
-                _logger.LogInformation($"Migrating {title} ({productName}/{groupName}) from {originalFeatures.Count} versioned features to {newFeatures.Count()} unversioned features.");
-
-                foreach(var newFeature in newFeatures)
-                {
-                    await session.StoreAsync(newFeature, newFeature.GetIdentifier());
-                }
-
-                foreach(var oldFeature in originalFeatures)
-                {
-                    session.Delete(oldFeature);
-                }
-
-                await session.SaveChangesAsync();
+                await session.StoreAsync(newFeature, newFeature.GetIdentifier());
             }
+
+            foreach (var oldFeature in originalFeatures)
+            {
+                session.Delete(oldFeature);
+            }
+
+            await session.SaveChangesAsync();
         }
     }
 }

@@ -1,25 +1,11 @@
-﻿/*
- Copyright 2014-2020, Augurk
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Augurk.Api.Indeces;
 using System;
-using Raven.Client.Documents.Queries;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Operations;
 using Microsoft.Extensions.Logging;
@@ -46,17 +32,15 @@ namespace Augurk.Api.Managers
         /// <returns>Returns a range of productName names.</returns>
         public async Task<IEnumerable<string>> GetProductsAsync()
         {
-            using (var session = _storeProvider.Store.OpenAsyncSession())
-            {
-                var result = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
-                                    .OrderBy(feature => feature.Product)
-                                    .Select(feature => feature.Product)
-                                    .Distinct()
-                                    .ToListAsync();
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            var result = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
+                                .OrderBy(feature => feature.Product)
+                                .Select(feature => feature.Product)
+                                .Distinct()
+                                .ToListAsync();
 
-                _logger.LogInformation("Found {ProductCount} products", result.Count);
-                return result;
-            }
+            _logger.LogInformation("Found {ProductCount} products", result.Count);
+            return result;
         }
 
         /// <summary>
@@ -66,13 +50,11 @@ namespace Augurk.Api.Managers
         /// <returns>The description of the requested product; or, null.</returns>
         public async Task<string> GetProductDescriptionAsync(string productName)
         {
-            using (var session = _storeProvider.Store.OpenAsyncSession())
-            {
-                return await session.Query<DbProduct, Products_ByName>()
-                                    .Where(product => product.Name.Equals(productName, StringComparison.OrdinalIgnoreCase))
-                                    .Select(product => product.DescriptionMarkdown)
-                                    .SingleOrDefaultAsync();
-            }
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            return await session.Query<DbProduct, Products_ByName>()
+                                .Where(product => product.Name.Equals(productName, StringComparison.OrdinalIgnoreCase))
+                                .Select(product => product.DescriptionMarkdown)
+                                .SingleOrDefaultAsync();
         }
 
         /// <summary>
@@ -88,12 +70,10 @@ namespace Augurk.Api.Managers
                 DescriptionMarkdown = descriptionMarkdown
             };
 
-            using (var session = _storeProvider.Store.OpenAsyncSession())
-            {
-                // Using the store method when the product already exists in the database will override it completely, this is acceptable
-                await session.StoreAsync(dbProduct, dbProduct.GetIdentifier());
-                await session.SaveChangesAsync();
-            }
+            // Using the store method when the product already exists in the database will override it completely, this is acceptable
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            await session.StoreAsync(dbProduct, dbProduct.GetIdentifier());
+            await session.SaveChangesAsync();
         }
 
         /// <summary>
@@ -102,13 +82,11 @@ namespace Augurk.Api.Managers
         /// <param name="productName">The name of the product to delete.</param>
         public async Task DeleteProductAsync(string productName)
         {
-            using (var session = _storeProvider.Store.OpenAsyncSession())
-            {
-                await session.Advanced.DocumentStore.Operations.Send(
-                    new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
-                        x.Product == productName))
-                    .WaitForCompletionAsync();
-            }
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            await session.Advanced.DocumentStore.Operations.Send(
+                new DeleteByQueryOperation<DbFeature, Features_ByTitleProductAndGroup>(x =>
+                    x.Product == productName))
+                .WaitForCompletionAsync();
         }
 
         /// <summary>
@@ -118,31 +96,30 @@ namespace Augurk.Api.Managers
         /// <param name="version">The version of the productName to delete.</param>
         public async Task DeleteProductAsync(string productName, string version)
         {
-            using (var session = _storeProvider.Store.OpenAsyncSession())
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            var dbFeatures = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
+                                          .Where(f => f.Product == productName
+                                                   && f.Version == version)
+                                           .OfType<DbFeature>()
+                                           .ToListAsync();
+
+            foreach (var dbFeature in dbFeatures)
             {
-                var dbFeatures = await session.Query<Features_ByTitleProductAndGroup.QueryModel, Features_ByTitleProductAndGroup>()
-                                              .Where(f => f.Product == productName
-                                                       && f.Version == version)
-                                               .OfType<DbFeature>()
-                                               .ToListAsync();
-
-                foreach(var dbFeature in dbFeatures){
-                    if(dbFeature.Versions.Length == 1)
-                    {
-                        // Remove the feature as this is the only version
-                        session.Delete(dbFeature);
-                    }
-                    else
-                    {
-                        // Remove this version, but let the feature remain as it contains other versions
-                        var versions = dbFeature.Versions.ToList();
-                        versions.Remove(version);
-                        dbFeature.Versions = versions.ToArray();
-                    }
+                if (dbFeature.Versions.Length == 1)
+                {
+                    // Remove the feature as this is the only version
+                    session.Delete(dbFeature);
                 }
-
-                await session.SaveChangesAsync();
+                else
+                {
+                    // Remove this version, but let the feature remain as it contains other versions
+                    var versions = dbFeature.Versions.ToList();
+                    versions.Remove(version);
+                    dbFeature.Versions = versions.ToArray();
+                }
             }
+
+            await session.SaveChangesAsync();
         }
 
         /// <summary>
@@ -152,16 +129,14 @@ namespace Augurk.Api.Managers
         /// <returns>Returns a range of tags for the provided <paramref name="productName">productName</paramref>.</returns>
         public async Task<IEnumerable<string>> GetTagsAsync(string productName)
         {
-            using (var session = _storeProvider.Store.OpenAsyncSession())
-            {
-                return await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
-                                    .Where(feature => feature.Product.Equals(productName, StringComparison.CurrentCultureIgnoreCase))
-                                    .OrderBy(feature => feature.Tag)
-                                    .Select(feature => feature.Tag)
-                                    .Distinct()
-                                    .Take(512)
-                                    .ToListAsync();
-            }
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            return await session.Query<Features_ByProductAndBranch.TaggedFeature, Features_ByProductAndBranch>()
+                                .Where(feature => feature.Product.Equals(productName, StringComparison.CurrentCultureIgnoreCase))
+                                .OrderBy(feature => feature.Tag)
+                                .Select(feature => feature.Tag)
+                                .Distinct()
+                                .Take(512)
+                                .ToListAsync();
         }
     }
 }

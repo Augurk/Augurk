@@ -1,28 +1,12 @@
-﻿/*
- Copyright 2020, Augurk
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-*/
+﻿// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
 using Augurk.Api.Managers;
 using Augurk.Entities;
 using Augurk.Entities.Search;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Augurk.Api.Controllers.V2
@@ -51,10 +35,10 @@ namespace Augurk.Api.Controllers.V2
         /// <returns>Returns a range of <see cref="FeatureDescription"/> instance describing the features.</returns>
         [Route("")]
         [HttpGet]
-        public async Task<SearchResults> GetFeaturesForProductAndGroupAsync([FromQuery(Name = "q")]string query)
+        public async Task<SearchResults> GetFeaturesForProductAndGroupAsync([FromQuery(Name = "q")] string query)
         {
             // Search for features
-            var featureMatches =  await _featureManager.Search(query);
+            var featureMatches = await _featureManager.Search(query);
 
             // Prepare the results
             var results = new SearchResults

@@ -1,0 +1,21 @@
+/*
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+ */
+
+div.sequence{
+    background-color: #FDF6E6;
+    border: solid black;
+    text-align: center;
+}
+
+div.sequence g rect {
+  fill: #FDF6E6;
+}
+
+span.label {
+    display: block;
+    text-align: center;
+    font-style: italic;
+    font-weight: bold;
+}

@@ -1,0 +1,35 @@
+<!--
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+-->
+
+@using System.Web
+@inject IJSRuntime jsRuntime
+
+<div @ref=Div class="sequence">
+
+</div>
+
+@if(!String.IsNullOrWhiteSpace(Label))
+{
+    <span class="label">@Label</span>
+}
+
+@code {
+    [Parameter]
+    public string Label { get; set; }
+
+    [Parameter]
+    public string DiagramText { get; set; }
+
+    private ElementReference Div { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var diagram = await jsRuntime.InvokeAsync<IJSObjectReference>("Diagram.parse", HttpUtility.HtmlDecode(DiagramText.Replace(@"\#", "#")));
+            await diagram.InvokeVoidAsync("drawSVG", Div, new { theme = "snapSimple" });
+        }
+    }
+}

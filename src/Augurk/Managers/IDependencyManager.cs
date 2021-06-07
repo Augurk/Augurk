@@ -1,18 +1,6 @@
-/*
- Copyright 2019, Augurk
+// Copyright (c) Augurk. All Rights Reserved.
+// Licensed under the Apache License, Version 2.0.
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and 
- limitations under the License.
-*/
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Augurk.Entities;
@@ -22,11 +10,11 @@ namespace Augurk.Api.Managers
     public interface IDependencyManager
     {
         /// <summary>
-        /// Gets the top level feature graphs, that is the graphs 
+        /// Gets the top level feature graphs, that is the graphs
         /// for features that do not have a parent feature.
         /// </summary>
         /// <returns>
-        /// A collection of <see cref="FeatureGraph"/> instances representing 
+        /// A collection of <see cref="FeatureGraph"/> instances representing
         /// the dependency graphs for the unparented features.
         /// </returns>
         Task<IEnumerable<FeatureGraph>> GetTopLevelFeatureGraphsAsync();

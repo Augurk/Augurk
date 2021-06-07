@@ -1,0 +1,41 @@
+<!--
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+-->
+
+<TagDisplay Tags="@Scenario.Tags" />
+<Collapse ShowArrow="true">
+    <CollapseItems>
+        <CollapseItem Text="@Scenario.Title" IsCollapsed="false">
+            <CascadingValue Value="ChosenExample">
+                <Markdown Input="@Scenario.Description" />
+                <ul>
+                    @foreach (var step in Scenario.Steps)
+                    {
+                        <StepDisplay Step="@step" />
+                    }
+                </ul>
+                @if (Scenario.ExampleSets != null && Scenario.ExampleSets.Count() > 0)
+                {
+                    @foreach (var exampleSet in Scenario.ExampleSets)
+                    {
+                        <ExamplesTable ExampleSet="@exampleSet" OnExampleChosen="OnExampleChosen" />
+                    }
+                }
+            </CascadingValue>
+        </CollapseItem>
+    </CollapseItems>
+</Collapse>
+<br/>
+
+@code {
+    [Parameter]
+    public Scenario Scenario { get; set; }
+
+    private Dictionary<string, string> ChosenExample = null;
+
+    protected void OnExampleChosen(Dictionary<string, string> chosenExample)
+    {
+        ChosenExample = chosenExample;
+    }
+}

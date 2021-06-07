@@ -3,11 +3,36 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "twitter-bootstrap@4.3.1",
-      "destination": "wwwroot/lib/bootstrap",
+      "library": "bootstrap-icons@1.5.0",
+      "destination": "wwwroot/lib/bootstrap-icons",
+      "provider": "jsdelivr",
       "files": [
-        "css/bootstrap.min.css",
-        "css/bootstrap.min.css.map"
+        "font/bootstrap-icons.min.css",
+        "font/fonts/bootstrap-icons.woff",
+        "font/fonts/bootstrap-icons.woff2"
+      ]
+    },
+    {
+      "library": "graphre@0.1.3",
+      "destination": "wwwroot/lib/graphre",
+      "provider": "jsdelivr",
+      "files": [
+        "dist/graphre.js"
+      ]
+    },
+    {
+      "library": "@rokt33r/js-sequence-diagrams@2.0.6-2",
+      "destination": "wwwroot/lib/js-sequence-diagrams",
+      "provider": "jsdelivr",
+      "files": [
+        "dist/sequence-diagram-min.min.js"
+      ]
+    },
+    {
+      "library": "nomnoml@1.3.1",
+      "destination": "wwwroot/lib/nomnoml",
+      "files": [
+        "nomnoml.min.js"
       ]
     },
     {
@@ -20,6 +45,27 @@
         "font/fonts/open-iconic.svg",
         "font/fonts/open-iconic.ttf",
         "font/fonts/open-iconic.woff"
+      ]
+    },
+    {
+      "library": "snap.svg@0.5.1",
+      "destination": "wwwroot/lib/snap.svg",
+      "files": [
+        "snap.svg-min.js"
+      ]
+    },
+    {
+      "library": "underscore.js@1.13.1",
+      "destination": "wwwroot/lib/underscore.js",
+      "files": [
+        "underscore-min.min.js"
+      ]
+    },
+    {
+      "library": "webfont@1.6.28",
+      "destination": "wwwroot/lib/webfont",
+      "files": [
+        "webfontloader.js"
       ]
     }
   ]
