@@ -8,11 +8,14 @@
 
 <div class="container-fluid">
     <div style="margin-bottom: -20px">
-    <TagDisplay Tags="@CurrentFeature?.Tags" />
-</div>
+        <TagDisplay Tags="@CurrentFeature?.Tags" />
+    </div>
     <div class="sticky-top" style="padding-top:10px">
-        <Row>
+        <Row ItemsPerRow="ItemsPerRow.Two">
             <h3>@CurrentFeature?.Title</h3>
+            <span class="float-right">
+                <Switch OnText="Uncollapse All" OffText="Collapse All" @bind-Value=CollapseAllScenarios />
+            </span>
         </Row>
     </div>
     @if (FeatureIsNotImplemented)
@@ -39,10 +42,12 @@
     @if (CurrentFeature != null)
     {
         <Row ItemsPerRow="ItemsPerRow.One">
-            @foreach (var scenario in @CurrentFeature?.Scenarios)
-            {
-                <ScenarioDisplay Scenario="@scenario" />
-            }
+            <CascadingValue Value="CollapseAllScenarios">
+                @foreach (var scenario in @CurrentFeature?.Scenarios)
+                {
+                    <ScenarioDisplay Scenario="@scenario" />
+                }
+            </CascadingValue>
         </Row>
     }
 </div>
@@ -63,6 +68,7 @@
     private DisplayableFeature CurrentFeature { get; set; }
     private bool FeatureIsNotImplemented { get; set; }
     private bool FeatureIsIgnored { get; set; }
+    private bool CollapseAllScenarios { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
