@@ -7,10 +7,14 @@
 @inject FeatureService FeatureService
 
 <div class="container-fluid">
+    <div style="margin-bottom: -20px">
     <TagDisplay Tags="@CurrentFeature?.Tags" />
-    <Row>
-        <h3>@CurrentFeature?.Title</h3>
-    </Row>
+</div>
+    <div class="sticky-top" style="padding-top:10px">
+        <Row>
+            <h3>@CurrentFeature?.Title</h3>
+        </Row>
+    </div>
     @if (FeatureIsNotImplemented)
     {
         <Row>
@@ -30,7 +34,7 @@
         </Row>
     }
     <div class="description">
-        <Markdown Input="@CurrentFeature?.Description" />
+        <Markdown Input="@CurrentFeature?.Description" LinkHandler="@HandleLink" />
     </div>
     @if (CurrentFeature != null)
     {
@@ -65,5 +69,9 @@
         CurrentFeature = await FeatureService.GetFeatureAsync(Product, Group, FeatureTitle, Version);
         FeatureIsNotImplemented = CurrentFeature.Properties.HasFlag(FeatureProperties.NotImplemented);
         FeatureIsIgnored = CurrentFeature.Properties.HasFlag(FeatureProperties.Ignore);
+    }
+
+    private string HandleLink(string linkText){
+        return $"feature/{Product}/{Group}/{linkText}/{Version}";
     }
 }
