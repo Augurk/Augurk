@@ -6,3 +6,8 @@
 .argument {
   color: #B21515;
 }
+
+.horizontal-scrollview {
+  overflow-x: scroll;
+  max-width: 1400px;
+}
