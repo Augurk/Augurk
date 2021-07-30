@@ -50,6 +50,15 @@
             </CascadingValue>
         </Row>
     }
+    else if(NotFound)
+    {
+        <Row>
+            <Card Color="Color.Warning">
+                <CardHeader><i class="bi-exclamation-square-fill text-warning">&nbsp;</i>Feature cannot be found</CardHeader>
+                <CardBody>The feature you requested cannot be found, do you want to <NavLink href="#" onclick="window.history.back();">go back</NavLink>?.</CardBody>
+            </Card>
+        </Row>
+    }
 </div>
 
 @code {
@@ -70,10 +79,7 @@
     private bool FeatureIsIgnored { get; set; }
     private bool CollapseAllScenarios { get; set; }
 
-    protected override async Task OnInitializedAsync()
-    {
-        //await HandleNavigation();
-    }
+    private bool NotFound { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -83,8 +89,9 @@
     private async Task HandleNavigation()
     {
         CurrentFeature = await FeatureService.GetFeatureAsync(Product, Group, FeatureTitle, Version);
-        FeatureIsNotImplemented = CurrentFeature.Properties.HasFlag(FeatureProperties.NotImplemented);
-        FeatureIsIgnored = CurrentFeature.Properties.HasFlag(FeatureProperties.Ignore);
+        FeatureIsNotImplemented = CurrentFeature?.Properties.HasFlag(FeatureProperties.NotImplemented) ?? false;
+        FeatureIsIgnored = CurrentFeature?.Properties.HasFlag(FeatureProperties.Ignore) ?? false;
+        NotFound = CurrentFeature == null;
     }
 
     private string HandleLink(string linkText){
