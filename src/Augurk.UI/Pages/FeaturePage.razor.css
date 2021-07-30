@@ -6,3 +6,14 @@
 .description {
   margin-bottom: 10px;
 }
+
+.title-row.on-top{
+  height: 45px;
+  overflow: hidden;
+}
+
+.title-row.on-top > * > * > * > h3 {
+  /*white-space: nowrap;*/
+  text-overflow: ellipsis;
+  overflow: hidden;
+}

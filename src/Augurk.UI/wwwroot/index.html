@@ -33,6 +33,23 @@
     <script src="lib/underscore.js/underscore-min.min.js"></script>
     <script src="lib/webfont/webfontloader.js"></script>
     <script src="lib/js-sequence-diagrams/dist/sequence-diagram-min.min.js"></script>
+
+    <script lang="javascript">
+        $(function(){
+        $(window).scroll(function() {
+            var scroll = $(window).scrollTop();
+            $('.sticky-top').each(function(index, element)
+                {
+                    if($(element).offset().top <= scroll){
+                        $(element).addClass("on-top");
+                    }
+                    else{
+                        $(element).removeClass("on-top");
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
