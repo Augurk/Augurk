@@ -41,14 +41,12 @@
     </div>
     @if (CurrentFeature != null)
     {
-        <Row ItemsPerRow="ItemsPerRow.One">
-            <CascadingValue Value="CollapseAllScenarios">
-                @foreach (var scenario in @CurrentFeature?.Scenarios)
-                {
-                    <ScenarioDisplay Scenario="@scenario" />
-                }
-            </CascadingValue>
-        </Row>
+        <CascadingValue Value="CollapseAllScenarios">
+            @foreach (var scenario in @CurrentFeature?.Scenarios)
+            {
+                <ScenarioDisplay Scenario="@scenario" />
+            }
+        </CascadingValue>
     }
     else if(NotFound)
     {
