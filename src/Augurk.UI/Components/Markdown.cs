@@ -52,14 +52,18 @@ namespace Augurk.UI.Components
             const string regex = @"\[(?<feature>[^\]]+)\]\z|\[(?<feature>[^\]]+)\](?=[^\(])";
             StringBuilder sb = new StringBuilder();
             int prevPosition = 0;
-            foreach(Match match in Regex.Matches(rawContent, regex))
+            var lh = LinkHandler;
+            if(lh != null)
             {
-                sb.Append(rawContent.Substring(prevPosition, match.Index - prevPosition));
-                sb.Append(match.Value);
-                // Only encode the whitespaces, as the markdown handler does not appreciate them
-                sb.AppendFormat(CultureInfo.InvariantCulture, "({0})", LinkHandler(match.Groups["feature"].Value).Replace(" ", "%20"));
+                foreach(Match match in Regex.Matches(rawContent, regex))
+                {
+                    sb.Append(rawContent.Substring(prevPosition, match.Index - prevPosition));
+                    sb.Append(match.Value);
+                    // Only encode the whitespaces, as the markdown handler does not appreciate them
+                    sb.AppendFormat(CultureInfo.InvariantCulture, "({0})", lh(match.Groups["feature"].Value).Replace(" ", "%20"));
 
-                prevPosition = match.Index + match.Length;
+                    prevPosition = match.Index + match.Length;
+                }
             }
             sb.Append(rawContent.Substring(prevPosition));
 

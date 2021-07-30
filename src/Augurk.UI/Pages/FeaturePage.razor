@@ -72,6 +72,16 @@
 
     protected override async Task OnInitializedAsync()
     {
+        //await HandleNavigation();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await HandleNavigation();
+    }
+
+    private async Task HandleNavigation()
+    {
         CurrentFeature = await FeatureService.GetFeatureAsync(Product, Group, FeatureTitle, Version);
         FeatureIsNotImplemented = CurrentFeature.Properties.HasFlag(FeatureProperties.NotImplemented);
         FeatureIsIgnored = CurrentFeature.Properties.HasFlag(FeatureProperties.Ignore);
