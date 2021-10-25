@@ -16,7 +16,7 @@ jobs:
 - job: net5
   displayName: .NET Self Contained
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-20.04
   steps:
   - task: UseGitVersion@5
     displayName: Set version
@@ -89,7 +89,7 @@ jobs:
   variables:
     imageName: augurk/augurk
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-20.04
   steps:
     - task: UseGitVersion@5
       displayName: Set version
