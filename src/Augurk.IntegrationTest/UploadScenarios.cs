@@ -55,7 +55,7 @@ namespace Augurk.IntegrationTest
             });
 
             // Assert
-            var actualFeature = result.ResponseBody.ReadAsJson<Feature>();
+            var actualFeature = result.ReadAsJson<Feature>();
             actualFeature.Title.ShouldBe(expectedFeature.Title);
             actualFeature.Description.ShouldBe(expectedFeature.Description);
         }
@@ -85,7 +85,7 @@ namespace Augurk.IntegrationTest
             });
 
             // Assert
-            var actualProductDescription = result.ResponseBody.ReadAsText();
+            var actualProductDescription = result.ReadAsText();
             actualProductDescription.ShouldBe(expectedProductDescription);
         }
     }

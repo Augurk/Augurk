@@ -1,6 +1,5 @@
 using System;
 using Alba;
-using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -39,7 +38,7 @@ namespace Augurk.IntegrationTest
                     configure.UseStartup<Startup>();
                 });
 
-            System = new SystemUnderTest(builder);
+            System = new AlbaHost(builder);
         }
 
         /// <summary>
@@ -52,9 +51,9 @@ namespace Augurk.IntegrationTest
         }
 
         /// <summary>
-        /// Gets the <see cref="SystemUnderTest" />.
+        /// Gets the <see cref="AlbaHost" />.
         /// </summary>
-        public SystemUnderTest System { get; private set; }
+        public AlbaHost System { get; private set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IDocumentStore" /> to use.
