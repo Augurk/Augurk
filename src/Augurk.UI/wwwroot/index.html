@@ -35,6 +35,11 @@
     <script src="lib/js-sequence-diagrams/dist/sequence-diagram-min.min.js"></script>
 
     <script lang="javascript">
+        /*
+            CSS is unable to determine whether an item is currently on top of the viewport,
+            as such it needs a little help. Any item with the sticky-top class, gets the on-top
+            class when it touches the top of the viewport.
+        */
         $(function(){
         $(window).scroll(function() {
             var scroll = $(window).scrollTop();
