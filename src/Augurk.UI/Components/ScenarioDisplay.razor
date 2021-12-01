@@ -6,7 +6,7 @@
 <TagDisplay Tags="@Scenario.Tags" />
 <Collapse ShowArrow="true">
     <CollapseItems>
-        <CollapseItem Text="@Scenario.Title" IsCollapsed="false">
+        <CollapseItem TitleColor="Color.Success" Text="@Scenario.Title" IsCollapsed="@Collapsed">
             <CascadingValue Value="ChosenExample">
                 <Markdown Input="@Scenario.Description" />
                 <ul>
@@ -31,6 +31,9 @@
 @code {
     [Parameter]
     public Scenario Scenario { get; set; }
+
+    [CascadingParameter]
+    public bool Collapsed { get; set; } = false;
 
     private Dictionary<string, string> ChosenExample = null;
 

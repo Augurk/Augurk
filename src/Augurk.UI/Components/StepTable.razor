@@ -2,28 +2,29 @@
  * Copyright (c) Augurk. All Rights Reserved.
  * Licensed under the Apache License, Version 2.0.
 -->
-
-<table class="table table-bordered table-hover table-sm table-striped">
-    <thead aria-expanded="@(!Collapsed)" @onclick="ToggleCollapsed">
-        <tr>
-            @foreach (var column in Table.Columns)
-            {
-                <th scope="col">@column</th>
-            }
-        </tr>
-    </thead>
-    <tbody class=@($"table-body-collapse {(Collapsed ? "collapse" : "")}")>
-        @foreach (var row in Table.Rows)
-        {
-            <tr @onclick="@(async () => await SelectRow(row))">
-                @foreach (var column in row)
+<div class="horizontal-scrollview">
+    <table class="table table-bordered table-hover table-sm table-striped">
+        <thead aria-expanded="@(!Collapsed)" @onclick="ToggleCollapsed">
+            <tr>
+                @foreach (var column in Table.Columns)
                 {
-                    <td class="argument">@column</td>
+                    <th scope="col">@column</th>
                 }
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody class=@($"table-body-collapse {(Collapsed ? "collapse" : "")}")>
+            @foreach (var row in Table.Rows)
+            {
+                <tr @onclick="@(async () => await SelectRow(row))">
+                    @foreach (var column in row)
+                    {
+                        <td class="argument">@column</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 @code {
     [Parameter]

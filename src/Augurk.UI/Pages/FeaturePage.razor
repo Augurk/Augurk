@@ -7,10 +7,17 @@
 @inject FeatureService FeatureService
 
 <div class="container-fluid">
-    <TagDisplay Tags="@CurrentFeature?.Tags" />
-    <Row>
-        <h3>@CurrentFeature?.Title</h3>
-    </Row>
+    <div style="margin-bottom: -20px">
+        <TagDisplay Tags="@CurrentFeature?.Tags" />
+    </div>
+    <div class="title-row sticky-top" style="padding-top:10px">
+        <Row ItemsPerRow="ItemsPerRow.Two">
+            <h3>@CurrentFeature?.Title</h3>
+            <span class="float-end">
+                <Switch OnText="Uncollapse All" OffText="Collapse All" @bind-Value=CollapseAllScenarios />
+            </span>
+        </Row>
+    </div>
     @if (FeatureIsNotImplemented)
     {
         <Row>
@@ -30,15 +37,24 @@
         </Row>
     }
     <div class="description">
-        <Markdown Input="@CurrentFeature?.Description" />
+        <Markdown Input="@CurrentFeature?.Description" LinkHandler="@HandleLink" />
     </div>
     @if (CurrentFeature != null)
     {
-        <Row ItemsPerRow="ItemsPerRow.One">
+        <CascadingValue Value="CollapseAllScenarios">
             @foreach (var scenario in @CurrentFeature?.Scenarios)
             {
                 <ScenarioDisplay Scenario="@scenario" />
             }
+        </CascadingValue>
+    }
+    else if(NotFound)
+    {
+        <Row>
+            <Card Color="Color.Warning">
+                <CardHeader><i class="bi-exclamation-square-fill text-warning">&nbsp;</i>Feature cannot be found</CardHeader>
+                <CardBody>The feature you requested cannot be found, do you want to <NavLink href="#" onclick="window.history.back();">go back</NavLink>?.</CardBody>
+            </Card>
         </Row>
     }
 </div>
@@ -59,11 +75,24 @@
     private DisplayableFeature CurrentFeature { get; set; }
     private bool FeatureIsNotImplemented { get; set; }
     private bool FeatureIsIgnored { get; set; }
+    private bool CollapseAllScenarios { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    private bool NotFound { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await HandleNavigation();
+    }
+
+    private async Task HandleNavigation()
     {
         CurrentFeature = await FeatureService.GetFeatureAsync(Product, Group, FeatureTitle, Version);
-        FeatureIsNotImplemented = CurrentFeature.Properties.HasFlag(FeatureProperties.NotImplemented);
-        FeatureIsIgnored = CurrentFeature.Properties.HasFlag(FeatureProperties.Ignore);
+        FeatureIsNotImplemented = CurrentFeature?.Properties.HasFlag(FeatureProperties.NotImplemented) ?? false;
+        FeatureIsIgnored = CurrentFeature?.Properties.HasFlag(FeatureProperties.Ignore) ?? false;
+        NotFound = CurrentFeature == null;
+    }
+
+    private string HandleLink(string linkText){
+        return $"feature/{Product}/{Group}/{linkText}/{Version}";
     }
 }
