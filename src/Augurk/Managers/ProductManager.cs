@@ -30,7 +30,7 @@ namespace Augurk.Api.Managers
         /// Gets all available products.
         /// </summary>
         /// <returns>Returns a range of productName names.</returns>
-        public async Task<IEnumerable<string>> GetProductsAsync()
+        public async Task<IEnumerable<string>> GetProductTitlesAsync()
         {
             using var session = _storeProvider.Store.OpenAsyncSession();
             var result = await session.Query<DbFeature, Features_ByTitleProductAndGroup>()
@@ -64,15 +64,25 @@ namespace Augurk.Api.Managers
         /// <param name="descriptionMarkdown">The description that should be persisted.</param>
         public async Task InsertOrUpdateProductDescriptionAsync(string productName, string descriptionMarkdown)
         {
-            var dbProduct = new DbProduct()
-            {
-                Name = productName,
-                DescriptionMarkdown = descriptionMarkdown
-            };
-
-            // Using the store method when the product already exists in the database will override it completely, this is acceptable
             using var session = _storeProvider.Store.OpenAsyncSession();
-            await session.StoreAsync(dbProduct, dbProduct.GetIdentifier());
+            var dbProduct = await session.LoadAsync<DbProduct>(DbProductExtensions.GetIdentifier(productName));
+            
+            if(dbProduct != null)
+            {
+                // There is no point in updating the productName, as it is the identifier we used to find this document.
+                dbProduct.DescriptionMarkdown = descriptionMarkdown;
+            }
+            else
+            {
+                dbProduct = new DbProduct()
+                {
+                    Name = productName,
+                    DescriptionMarkdown = descriptionMarkdown
+                };
+                
+                await session.StoreAsync(dbProduct, dbProduct.GetIdentifier());
+            }
+        
             await session.SaveChangesAsync();
         }
 
