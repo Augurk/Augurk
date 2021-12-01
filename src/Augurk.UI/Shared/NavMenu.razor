@@ -3,6 +3,8 @@
  * Licensed under the Apache License, Version 2.0.
 -->
 
+@inject Augurk.UI.Services.AugurkService AugurkService
+
 <div class="top-row pl-4 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Augurk</a>
@@ -30,6 +32,7 @@
             </NavLink>
         </li>
     </ul>
+    <Badge Color="Color.Success">Version: @Version</Badge>
 </div>
 
 @code {
@@ -37,8 +40,15 @@
 
     private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
+    private string Version;
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Version = await AugurkService.GetVersionAsync();
     }
 }
