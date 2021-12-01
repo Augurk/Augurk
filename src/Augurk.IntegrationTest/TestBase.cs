@@ -15,13 +15,7 @@
 */
 
 using System;
-using System.Threading.Tasks;
 using Alba;
-using Augurk.Api;
-using Augurk.Entities;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Indexes;
 using Raven.TestDriver;
@@ -73,7 +67,7 @@ namespace Augurk.IntegrationTest
         /// <summary>
         /// Gets the <see cref="SystemUnderTest" />.
         /// </summary>
-        protected SystemUnderTest System { get { return _fixture.System; } }
+        protected AlbaHost System { get { return _fixture.System; } }
 
         /// <summary>
         /// Gets the <see cref="IDocumentStore" />.
