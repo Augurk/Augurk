@@ -1,12 +1,12 @@
 ﻿/*
  Copyright 2014-2017, Augurk
- 
+
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
- 
+
  http://www.apache.org/licenses/LICENSE-2.0
- 
+
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,7 +32,7 @@ AugurkControllers.controller('productController', ['$rootScope', '$scope', '$rou
             $scope.showProductName = productDescription ? productDescription[0] !== "#" : true;
         });
 
-        $scope.productName = $routeParams.productName;       
+        $scope.productName = $routeParams.productName;
     }
 ]);
 
@@ -150,7 +150,7 @@ AugurkControllers.controller('menuController', ['$rootScope', '$scope', '$routeP
                 }
 
                 var result = false;
-                
+
                 $.each($scope.filter.tags, function (index, tag) {
                     if (tag.features.some(function (feature) { return feature.title === featureName; })) {
                         // Set the value
@@ -181,7 +181,7 @@ AugurkControllers.controller('navbarController', ['$rootScope', '$scope', 'produ
             customizationService.get().$promise.then(function(customization) {
                 setCustomization($rootScope, customization);
             });
-        
+
 
         $scope.currentProduct = productService.currentProduct;
         $scope.$on('currentProductChanged', function (event, data) {
@@ -229,7 +229,7 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
             var ajaxRequest = $.ajax({
                 cache: false,
                 type: 'POST',
-                url: 'api/v2/import',
+                url: '/api/v2/import',
                 contentType: false,
                 processData: false,
                 data: formData
@@ -243,7 +243,7 @@ AugurkControllers.controller('configurationController', ['$rootScope', '$scope',
         };
 
         $scope.export = function () {
-            window.open('api/v2/export', '_blank', '');
+            window.open('/api/v2/export', '_blank', '');
         };
     }
 ]);

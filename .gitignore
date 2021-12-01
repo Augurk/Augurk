@@ -141,7 +141,7 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
-# TODO: Comment the next line if you want to checkin your web deploy settings 
+# TODO: Comment the next line if you want to checkin your web deploy settings
 # but database connection strings (with potential passwords) will be unencrypted
 *.publishproj
 
@@ -237,7 +237,7 @@ _Pvt_Extensions
 *.feature.cs
 
 # LibMan libraries
-src/Augurk/wwwroot/libs
+src/Augurk/wwwroot/legacy/libs
 src/Augurk.UI/wwwroot/lib
 
 # Test coverage files

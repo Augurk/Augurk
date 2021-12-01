@@ -110,7 +110,7 @@ namespace Augurk.Api.Controllers.V2
             var result = new PostResult
             {
                 ApiUrl = $"{Request.Scheme}://{Request.Host}{Request.Path}",
-                WebUrl = $"{Request.Scheme}://{Request.Host}/preview/feature/{productName}/{groupName}/{title}/{version}"
+                WebUrl = $"{Request.Scheme}://{Request.Host}/feature/{productName}/{groupName}/{title}/{version}"
             };
 
             return Accepted(result);

@@ -21,7 +21,8 @@
         }
     </div>
     <div class="row">
-        @foreach(var feature in _latestResults?.FeatureMatches ?? Enumerable.Empty<FeatureMatch>()) {
+        @foreach(var feature in _latestResults?.FeatureMatches ?? Enumerable.Empty<FeatureMatch>())
+        {
             <FeatureResult Feature="feature" />
         }
     </div>
