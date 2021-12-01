@@ -25,7 +25,7 @@ namespace Augurk.Api.Controllers
         public async Task<IEnumerable<string>> GetAsync()
         {
             // NOTE: Using the ProductManager for backwards compatability
-            return await _productManager.GetProductsAsync();
+            return await _productManager.GetProductTitlesAsync();
         }
     }
 }

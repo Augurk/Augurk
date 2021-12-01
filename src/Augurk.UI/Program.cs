@@ -22,6 +22,7 @@ namespace Augurk.UI
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             builder.Services.AddScoped<SearchService>();
             builder.Services.AddScoped<FeatureService>();
+            builder.Services.AddScoped<ProductService>();
 
             await builder.Build().RunAsync();
         }

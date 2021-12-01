@@ -5,6 +5,7 @@
 
 @page "/"
 @inject SearchService SearchService
+@inject ProductService ProductService
 @using Augurk.Entities.Search
 @using Augurk.UI.Components
 
@@ -26,16 +27,27 @@
             <FeatureResult Feature="feature" />
         }
     </div>
+    <div class="row">
+        @foreach(var product in _products ?? Enumerable.Empty<Product>()) {
+            <ProductCard Product="product" />
+        }
+    </div>
 </div>
 
 @code {
     private SearchResults _latestResults;
     private bool _searching;
+    private IEnumerable<Product> _products;
 
     protected override void OnInitialized()
     {
         SearchService.OnSearchResultsChanged += OnSearchResultsChanged;
         SearchService.OnSearchStateChanged += OnSearchStateChanged;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _products = await ProductService.GetProductsAsync();
     }
 
     private async Task OnSearchResultsChanged(SearchResults newResults)

@@ -25,6 +25,34 @@ namespace Augurk.Test.Managers
         public async Task GetsProducts()
         {
             // Arrange
+
+
+            var documentStoreProvider = DocumentStoreProvider;
+            var pm = new ProductManager(documentStoreProvider, logger);
+            await pm.InsertOrUpdateProductDescriptionAsync("Product1", string.Empty);
+            await pm.InsertOrUpdateProductDescriptionAsync("Product2", string.Empty);
+            WaitForIndexing(documentStoreProvider.Store);
+
+            // Act (using a new instance)
+            var sut = new ProductManager(documentStoreProvider, logger);
+            var result = (await sut.GetProductsAsync())?.ToList();
+
+            // Assert
+            result.ShouldNotBeNull();
+            result.Count.ShouldBe(2);
+            result[0].Name.ShouldBe("Product1");
+            result[0].DisplayName.ShouldBe(result[0].Name);
+            result[1].Name.ShouldBe("Product2");
+            result[1].DisplayName.ShouldBe(result[1].Name);
+        }
+
+        /// <summary>
+        /// Tests that the <see cref="ProductManager" /> can retrieved stored products.
+        /// </summary>
+        [Fact]
+        public async Task GetsProductTitless()
+        {
+            // Arrange
             var documentStoreProvider = DocumentStoreProvider;
 
             await documentStoreProvider.StoreDbFeatureAsync("Product1", "Group", "Title", "Version");
@@ -34,7 +62,7 @@ namespace Augurk.Test.Managers
 
             // Act
             var sut = new ProductManager(documentStoreProvider, logger);
-            var result = await sut.GetProductsAsync();
+            var result = await sut.GetProductTitlesAsync();
 
             // Assert
             result.ShouldNotBeNull();

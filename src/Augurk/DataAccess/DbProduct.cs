@@ -14,6 +14,16 @@ namespace Augurk.Api
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets the display name of this product.
+        /// </summary>
+        public string DisplayName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the short description for this product in markdown syntax.
+        /// </summary>
+        public string ShortDescriptionMarkdown { get; set; }
+
+        /// <summary>
         /// Gets or sets the description for this product in markdown syntax.
         /// </summary>
         public string DescriptionMarkdown { get; set; }
