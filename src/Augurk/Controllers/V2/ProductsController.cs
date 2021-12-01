@@ -33,7 +33,7 @@ namespace Augurk.Api.Controllers.V2
         [HttpGet]
         public async Task<IEnumerable<string>> GetProductsAsync()
         {
-            return await _productsManager.GetProductsAsync();
+            return await _productsManager.GetProductTitlesAsync();
         }
 
         /// <summary>

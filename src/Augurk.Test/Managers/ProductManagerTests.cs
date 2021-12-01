@@ -34,7 +34,7 @@ namespace Augurk.Test.Managers
 
             // Act
             var sut = new ProductManager(documentStoreProvider, logger);
-            var result = await sut.GetProductsAsync();
+            var result = await sut.GetProductTitlesAsync();
 
             // Assert
             result.ShouldNotBeNull();

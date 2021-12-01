@@ -12,7 +12,7 @@ namespace Augurk.Api.Managers
         /// Gets all available products.
         /// </summary>
         /// <returns>Returns a range of productName names.</returns>
-        Task<IEnumerable<string>> GetProductsAsync();
+        Task<IEnumerable<string>> GetProductTitlesAsync();
 
         /// <summary>
         /// Gets the description of the provided product.
