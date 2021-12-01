@@ -6,9 +6,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.IO;
-using System.Text;
 using Augurk.Entities;
+using System.Linq;
 
 namespace Augurk.Api.Controllers.V3
 {
@@ -34,7 +33,7 @@ namespace Augurk.Api.Controllers.V3
         [HttpGet]
         public async Task<IEnumerable<Product>> GetProductsAsync()
         {
-            return await _productsManager.GetProductsAsync();
+            return (await _productsManager.GetProductsAsync()).ToList();
         }
     }
 }
