@@ -9,6 +9,7 @@ using System;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Operations;
 using Microsoft.Extensions.Logging;
+using Augurk.Entities;
 
 namespace Augurk.Api.Managers
 {
@@ -24,6 +25,25 @@ namespace Augurk.Api.Managers
         {
             _storeProvider = storeProvider ?? throw new ArgumentNullException(nameof(storeProvider));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        /// <summary>
+        /// Gets all available products.
+        /// </summary>
+        /// <returns>Returns a collection containing all products.</returns>
+        public async Task<IEnumerable<Product>> GetProductsAsync()
+        {
+            using var session = _storeProvider.Store.OpenAsyncSession();
+            var result = await session.Query<DbProduct>()
+                                .ToListAsync();
+
+            _logger.LogInformation("Found {ProductCount} products", result.Count);
+            return result.Select(product => new Product {
+                                    Name = product.Name,
+                                    DisplayName = product.DisplayName ?? product.Name,
+                                    ShortDescription = product.ShortDescriptionMarkdown,
+                                    Description = product.DescriptionMarkdown
+                                 }).OrderBy(product => product.DisplayName);
         }
 
         /// <summary>

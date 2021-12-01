@@ -3,11 +3,19 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Augurk.Entities;
 
 namespace Augurk.Api.Managers
 {
     public interface IProductManager
     {
+
+        /// <summary>
+        /// Gets all available products.
+        /// </summary>
+        /// <returns>Returns a collection containing all products.</returns>
+        Task<IEnumerable<Product>> GetProductsAsync();
+
         /// <summary>
         /// Gets all available products.
         /// </summary>
