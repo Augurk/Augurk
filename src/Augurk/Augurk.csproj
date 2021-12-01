@@ -11,6 +11,7 @@
     <EmbeddedResource Remove="CompiledIndexCache\**" />
     <None Remove="CompiledIndexCache\**" />
     <Content Remove="license.json" />
+    <Content Update="libman.json" CopyToPublishDirectory="Never" />
   </ItemGroup>
 
   <ItemGroup>
