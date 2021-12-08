@@ -85,14 +85,14 @@ namespace Augurk
             });
 
             // Add Swagger support at the appropriate endpoints
-            app.UseSwagger(options => options.RouteTemplate = "doc/api/{documentName}");
+            app.UseSwagger(options => options.RouteTemplate = "doc/api/{documentName}.json");
             app.UseSwaggerUI(options =>
             {
                 options.RoutePrefix = "doc/ui";
 
                 foreach (var description in provider.ApiVersionDescriptions)
                 {
-                    options.SwaggerEndpoint($"/doc/api/{description.GroupName}", description.GroupName.ToUpperInvariant());
+                    options.SwaggerEndpoint($"/doc/api/{description.GroupName}.json", description.GroupName.ToUpperInvariant());
                 }
             });
         }

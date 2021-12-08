@@ -67,7 +67,7 @@ namespace Augurk.Api.Managers
             if (originalConfiguration == null
                 || originalConfiguration.ExpirationDays != configuration.ExpirationDays
                 || originalConfiguration.ExpirationEnabled != configuration.ExpirationEnabled
-                || !originalConfiguration.ExpirationRegex.Equals(configuration.ExpirationRegex, StringComparison.Ordinal)
+                || (!originalConfiguration.ExpirationRegex?.Equals(configuration.ExpirationRegex, StringComparison.Ordinal)).GetValueOrDefault()
                 )
             {
                 await _expirationManager.ApplyExpirationPolicyAsync(configuration);

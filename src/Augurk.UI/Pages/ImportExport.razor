@@ -1,0 +1,46 @@
+<!--
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+-->
+@inject Augurk.UI.Services.ConfigurationService ConfigurationService
+
+<Card class="mt-2">
+    <CardHeader>Import & Export</CardHeader>
+    <CardBody>
+        <Row ItemsPerRow="ItemsPerRow.Two">
+            <Card>
+                <CardHeader>Import</CardHeader>
+                <CardBody>
+                    Choose a file to import and then click the import button to restore the data from the selected file into this instance of Augurk.<br/>
+                    <br/>
+                    <b>Note</b>: This will <b>overwrite</b> any existing <b>products, groups, features and tags</b> that have matching names with data from the imported file.
+                    <br/>
+                    <InputUpload BrowserButtonClass="btn-success" @bind-Value="ImportFile" />
+                    <div class="mt-2">
+                        <Button Color="Color.Danger" class="float-end" IsAsync="true" OnClick="@ImportAsync">Import</Button>
+                    </div>
+                </CardBody>
+            </Card>
+            <Card>
+                <CardHeader>Export</CardHeader>
+                <CardBody>
+                    Use the export button to download an export of all the data contained within Augurk as a file. This file could be used to import the same data into another instance of Augurk.<br/>
+                    <br/>
+                    <b>Note</b>: This includes <b>products, groups, features and tags</b>.
+                    <div class="mt-2">
+                        <a href="/api/v2/export" target="_blank" class="btn btn-success float-end">Export</a>
+                    </div>
+                </CardBody>
+            </Card>
+        </Row>
+    </CardBody>
+</Card>
+
+@code {
+    private IBrowserFile ImportFile { get; set; }
+
+    private async Task ImportAsync()
+    {
+        await ConfigurationService.ImportBackupAsync(ImportFile);
+    }
+}

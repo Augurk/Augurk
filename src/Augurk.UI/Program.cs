@@ -25,6 +25,7 @@ namespace Augurk.UI
             builder.Services.AddScoped<SearchService>();
             builder.Services.AddScoped<FeatureService>();
             builder.Services.AddScoped<ProductService>();
+            builder.Services.AddScoped<ConfigurationService>();
 
             await builder.Build().RunAsync();
         }
