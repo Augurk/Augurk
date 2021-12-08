@@ -10,7 +10,7 @@
         @if(Model != null)
         {
             <p><i>Use the features in this panel to customize this Augurk instance to better suit your needs.</i></p>
-            <FloatingLabel DisplayText="Instance Name" Value="@Model.InstanceName" />
+            <FloatingLabel PlaceHolder="Instance Name" DisplayText="Instance Name" @bind-Value="Model.InstanceName" />
             <div class="mt-2">
                 <Button Color="Color.Success" class="float-end" IsAsync="true" OnClick="@SaveChangesAsync">Save Changes</Button>
             </div>
