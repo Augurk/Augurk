@@ -6,54 +6,9 @@
 
 <h1>Customization &amp; Configuration</h1>
 
-<Card class="mt-2">
-    <CardHeader>Customization</CardHeader>
-    <CardBody>
-        <p><i>Use the features in this panel to customize this Augurk instance to better suit your needs.</i></p>
-        <FloatingLabel DisplayText="Instance Name" TValue="string" />
-        <div class="mt-2">
-            <Button Color="Color.Success" class="float-end">Save Changes</Button>
-        </div>
-    </CardBody>
-</Card>
+<Customization />
 
-<Card class="mt-2">
-    <CardHeader>Configuration</CardHeader>
-    <CardBody>
-        <p><i>Use the features in this panel to configure the behaviour of this Augurk instance. Make sure you know what you are doing!</i></p>
-        <Card class="mt-2">
-            <CardHeader>Expire features</CardHeader>
-            <CardBody>
-                <p>
-                    Features can be configured to expire after a configured number of days when their version matches a configured regular expression.<br/>
-                    <i>Changing these settings only affects features that are published after the change has been made.</i>
-                </p>
-                <Switch Value="false" OnText="On" OffText="Off" OnColor="Color.Success" />
-                <Row ItemsPerRow="ItemsPerRow.Two">
-                    <FloatingLabel DisplayText="Expire after day(s)" TValue="int" />
-                    <FloatingLabel DisplayText="Version Regular Expression" TValue="string" />
-                </Row>
-            </CardBody>
-        </Card>
-        <Card class="mt-2">
-            <CardHeader>Show feature dependencies (Alpha)</CardHeader>
-            <CardBody>
-                <p>
-                    When working with features, you hardly ever describe a feature that is designed to work in a vacuum. Most features are build on top of other features, or are themselves the foundation for other features. Augurk can detect these inter-feature dependencies and will display them along with the feature descriptions to help create a better understanding of the feature within its full context.<br/>
-                    <br/>
-                    <b>Instructions</b>: Additional data is required to analyze the dependencies within your features. This data can be collected using the Augurk Analyzers.
-                    At this moment there is only a C# version available, please visit its projectpage for instructions on how to collect the data: link<br/>
-                    <br/>
-                    <i>This feature is currently in Alpha. As of yet, there is no formal support for this feature, but any and all feedback is much appreciated.</i>
-                </p>
-                <Switch Value="false" OnText="On" OffText="Off" OnColor="Color.Success" />
-            </CardBody>
-        </Card>
-        <div class="mt-2">
-            <Button Color="Color.Success" class="float-end">Save Changes</Button>
-        </div>
-    </CardBody>
-</Card>
+<Configuration />
 
 <Card class="mt-2">
     <CardHeader>Import & Export</CardHeader>
@@ -64,6 +19,7 @@
                 <CardBody>
                     Choose a file to import and then click the import button to restore the data from the selected file into this instance of Augurk.<br/>
                     <b>Note</b>: This will <b>overwrite</b> any existing <b>products, groups, features and tags</b> that have matching names with data from the imported file.
+                    <br/>
                     <div class="mt-2">
                         <Button Color="Color.Danger" class="float-end">Import</Button>
                     </div>
@@ -73,6 +29,7 @@
                 <CardHeader>Export</CardHeader>
                 <CardBody>
                     Use the export button to download an export of all the data contained within Augurk as a file. This file could be used to import the same data into another instance of Augurk.<br/>
+                    <br/>
                     <b>Note</b>: This includes <b>products, groups, features and tags</b>.
                     <div class="mt-2">
                         <Button Color="Color.Success" class="float-end">Export</Button>

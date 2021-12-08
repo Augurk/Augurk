@@ -1,0 +1,37 @@
+<!--
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+-->
+@inject Augurk.UI.Services.ConfigurationService ConfigurationService
+
+<Card class="mt-2">
+    <CardHeader>Customization</CardHeader>
+    <CardBody>
+        @if(Model != null)
+        {
+            <p><i>Use the features in this panel to customize this Augurk instance to better suit your needs.</i></p>
+            <FloatingLabel DisplayText="Instance Name" Value="@Model.InstanceName" />
+            <div class="mt-2">
+                <Button Color="Color.Success" class="float-end" IsAsync="true" OnClick="@SaveChangesAsync">Save Changes</Button>
+            </div>
+        }
+        else
+        {
+            <SkeletonParagraph />
+        }
+    </CardBody>
+</Card>
+
+@code {
+    private Entities.Customization Model { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        Model = await ConfigurationService.GetCustomizationAsync();
+    }
+
+    private async Task SaveChangesAsync()
+    {
+        await ConfigurationService.SaveCustomizationAsync(Model);
+    }
+}
