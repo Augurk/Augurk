@@ -16,6 +16,10 @@ namespace Augurk.UI.Services
 
         public event Func<Product, Task> OnProductChanged;
 
+        public async Task ClearContext(){
+            await SetCurrentProduct(null);
+        }
+
         public async Task SetCurrentProduct(Product product)
         {
             CurrentProduct = product;

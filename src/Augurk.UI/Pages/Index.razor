@@ -4,8 +4,9 @@
 -->
 
 @page "/"
-@inject SearchService SearchService
+@inject ContextService ContextService
 @inject ProductService ProductService
+@inject SearchService SearchService
 @using Augurk.Entities.Search
 @using Augurk.UI.Components
 
@@ -47,6 +48,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        await ContextService.ClearContext();
         _products = await ProductService.GetProductsAsync();
     }
 

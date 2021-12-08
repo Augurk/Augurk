@@ -78,7 +78,14 @@
 
     private async Task OnCurrentProductChanged(Product product)
     {
-        Groups = await ProductService.GetGroupsAsync(product.Name);
+        if(product != null)
+        {
+            Groups = await ProductService.GetGroupsAsync(product.Name);
+        }
+        else
+        {
+            Groups = null;
+        }
         StateHasChanged();
     }
 }
