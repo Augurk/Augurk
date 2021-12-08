@@ -29,6 +29,10 @@ namespace Augurk.Api.Managers
         /// </summary>
         public async Task StartMigrating()
         {
+            // Migrate the Products
+            await MigrateProducts();
+
+            // This migration should be slightly rewritten to make sure it is only handled once
             dynamic features;
             using (var session = _storeProvider.Store.OpenAsyncSession())
             {
@@ -93,6 +97,44 @@ namespace Augurk.Api.Managers
             }
 
             await session.SaveChangesAsync();
+        }
+
+        public async Task MigrateProducts()
+        {
+            var session = _storeProvider.Store.OpenAsyncSession();
+
+            DbMigrations migrations = await session.LoadAsync<DbMigrations>(DbMigrations.ID) ?? new();
+
+            // Only start the migration if it hasn't been completed before
+            if(!migrations.ProductFromFeatures)
+            {
+                var productsByFeature = await session.Query<DbFeature>() 
+                                                     .Select(feature => feature.Product)
+                                                     .ToListAsync();
+
+                var actualProducts = await session.Query<DbProduct>()
+                                                  .Select(product => product.Name)
+                                                  .ToListAsync();
+
+                // Determine the missing products
+                var missingProducts = productsByFeature.Except(actualProducts).ToList();
+
+                if(missingProducts.Count > 0)
+                {
+                    foreach(var productName in missingProducts)
+                    {
+                        System.Console.WriteLine($"Adding product {productName}");
+                        var product = new DbProduct {Name = productName};
+                        await session.StoreAsync(product, product.GetIdentifier());
+                    }
+                }
+                
+                migrations.ProductFromFeatures = true;
+                await session.StoreAsync(migrations, DbMigrations.ID);
+
+                await session.SaveChangesAsync();
+
+            }       
         }
     }
 }
