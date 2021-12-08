@@ -9,15 +9,18 @@
 @if (Product != null)
 {
     <div class="card m-2" style="width: 18rem;">
+        <a href="product/@Product.Name/">
         <div class="card-body">
-            <h5 class="card-title">
+            <h6 class="card-title">
+                <span class="oi oi-box color-augurk-main"></span>
                 @Product.DisplayName
-            </h5>
+            </h6>
             <p class="card-text">
-                @(Product.ShortDescription)
+                @Product.ShortDescription
             </p>
-            <a href="product/@Product.Name" class="btn btn-primary pull-right">Go to product page</a>
+
         </div>
+        </a>
     </div>
 }
 

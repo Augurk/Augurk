@@ -53,3 +53,17 @@ a, .btn-link {
     right: 0.75rem;
     top: 0.5rem;
 }
+
+.color-augurk-main {
+    color: #447604;
+}
+
+.btn-primary {
+    background-color: #447604;
+    border-color: #447604;
+}
+
+.btn-primary:hover {
+    background-color: #119822;
+    border-color: #119822;
+}

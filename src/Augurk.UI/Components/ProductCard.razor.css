@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+ */
+
+a, a:hover, a:visited {
+    color: black;
+}
+
+.card {
+    min-height: 125px;
+    max-height: 125px;
+    height: 125px;
+}
+
+.card-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

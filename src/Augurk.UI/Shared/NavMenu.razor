@@ -4,6 +4,8 @@
 -->
 
 @inject Augurk.UI.Services.AugurkService AugurkService
+@inject ContextService ContextService
+@inject ProductService ProductService
 
 <div class="top-row pl-4 navbar navbar-dark">
     <div class="container-fluid">
@@ -21,6 +23,25 @@
                 <span class="oi oi-home" aria-hidden="true"></span> Home
             </NavLink>
         </li>
+        @if(ContextService.CurrentProduct != null)
+        {
+        <li class="nav-item px-3">
+            <NavLink class="nav-link"  href=@($"product/{ContextService.CurrentProduct.Name}/") Match="NavLinkMatch.All">
+                <span class="oi oi-box" aria-hidden="true"></span> @ContextService.CurrentProduct.DisplayName
+            </NavLink>
+        </li>
+        }
+        @foreach(var group in Groups ?? Enumerable.Empty<Group>())
+        {
+            @foreach(var feature in group.Features?? Enumerable.Empty<FeatureDescription>())
+            {
+        <li class="nav-item px-3">
+            <NavLink class="nav-link"  href=@($"/feature/{ContextService.CurrentProduct.Name}/{group.Name}/{feature.Title}/{feature.LatestVersion}") Match="NavLinkMatch.All">
+                <span class="oi oi-document" aria-hidden="true"></span> @feature.Title
+            </NavLink>
+        </li>
+            }
+        }
     </ul>
     <ul class="nav flex-column mt-auto">
         <li class="nav-item px-3">
@@ -42,6 +63,8 @@
 
     private string Version;
 
+    private IEnumerable<Group> Groups;
+
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
@@ -49,6 +72,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        ContextService.OnProductChanged += OnCurrentProductChanged;
         Version = await AugurkService.GetVersionAsync();
+    }
+
+    private async Task OnCurrentProductChanged(Product product)
+    {
+        Groups = await ProductService.GetGroupsAsync(product.Name);
+        StateHasChanged();
     }
 }

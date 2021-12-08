@@ -1,0 +1,34 @@
+<!--
+ * Copyright (c) Augurk. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0.
+-->
+
+@page "/product/{productName}/"
+@inject ContextService ContextService
+@inject ProductService ProductService
+
+<div class="container-fluid">
+    <div class="title-row sticky-top" style="padding-top:10px">
+        <Row ItemsPerRow="ItemsPerRow.Two">
+            <h3><span class="oi oi-box color-augurk-main"></span> @Product?.DisplayName</h3>
+        </Row>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string ProductName {get;set;}
+
+    public Product Product { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await HandleNavigation();
+    }
+
+    private async Task HandleNavigation()
+    {
+        Product = await ProductService.GetProductAsync(ProductName);
+        await ContextService.SetCurrentProduct(Product);
+    }
+}
