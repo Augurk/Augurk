@@ -3,9 +3,11 @@
 
 using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Augurk.Entities;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace Augurk.UI.Services
 {
@@ -36,6 +38,14 @@ namespace Augurk.UI.Services
         public async Task SaveCustomizationAsync(Customization customization)
         {
             await _client.PostAsJsonAsync("/api/v2/customization", customization);
+        }
+
+        public async Task ImportBackupAsync(IBrowserFile backupFile)
+        {
+            var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(backupFile.OpenReadStream(int.MaxValue));
+            content.Add(fileContent, "file", backupFile.Name);
+            await _client.PostAsync("/api/v2/import", content);
         }
     }
 }
