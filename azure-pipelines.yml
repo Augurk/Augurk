@@ -14,7 +14,7 @@ variables:
 
 jobs:
 - job: net5
-  displayName: .NET Self Contained
+  displayName: .NET Framework Dependent
   pool:
     vmImage: ubuntu-20.04
   steps:
@@ -66,7 +66,7 @@ jobs:
     inputs:
       command: publish
       publishWebProjects: True
-      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) --self-contained true -r win10-x64 /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
+      arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) /p:Version=$(GitVersion.MajorMinorPatch) /p:InformationalVersion=$(GitVersion.InformationalVersion)'
       zipAfterPublish: true
       workingDirectory: src/Augurk
     displayName: dotnet publish
