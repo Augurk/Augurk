@@ -12,6 +12,9 @@
         <Row ItemsPerRow="ItemsPerRow.Two">
             <h3><span class="oi oi-box color-augurk-main"></span> @Product?.DisplayName</h3>
         </Row>
+        <Row ItemsPerRow="ItemsPerRow.One">
+            <Markdown Input=@Product?.Description />
+        </Row>
     </div>
 </div>
 
