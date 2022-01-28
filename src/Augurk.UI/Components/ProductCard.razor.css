@@ -13,7 +13,7 @@ a, a:hover, a:visited {
     height: 125px;
 }
 
-.card-title {
+.title {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

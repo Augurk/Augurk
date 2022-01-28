@@ -11,9 +11,10 @@
 {
     <div class="card m-2" style="width: 18rem;">
         <div class="card-body">
-            <h5 class="card-title">
+            <h6>
+                <span class="oi oi-document color-augurk-main"></span>
                 @Feature.FeatureName
-            </h5>
+            </h6>
             @foreach (var tag in Feature.Tags ?? Enumerable.Empty<string>())
             {
                 <span class="badge badge-secondary m-1">@tag</span>
