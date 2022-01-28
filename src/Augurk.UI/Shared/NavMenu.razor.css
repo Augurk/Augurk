@@ -25,11 +25,14 @@
   font-size: 1.1rem;
   vertical-align: text-top;
   top: -2px;
+  padding-right: 20px;
 }
 
 .nav-item {
   font-size: 0.9rem;
   padding-bottom: 0.5rem;
+  max-width: 250px;
+  overflow-x: clip;
 }
 
   .nav-item:first-of-type {
@@ -46,7 +49,6 @@
       height: 3rem;
       display: flex;
       align-items: center;
-      line-height: 3rem;
   }
 
 .nav-item ::deep a.active {
