@@ -10,7 +10,7 @@
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and 
+ See the License for the specific language governing permissions and
  limitations under the License.
 */
 using System;
@@ -44,6 +44,7 @@ namespace Augurk.Test.Managers
         public async Task StoresAnalysisReport()
         {
             // Arrange
+            configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration());
             var documentStoreProvider = DocumentStoreProvider;
             var expectedReport = new AnalysisReport
             {
@@ -106,7 +107,7 @@ namespace Augurk.Test.Managers
         }
 
         /// <summary>
-        /// Tests that the <see cref="AnalysisReportManager" /> is able to retrieve previously stored 
+        /// Tests that the <see cref="AnalysisReportManager" /> is able to retrieve previously stored
         /// <see cref="AnalysisReport" /> instances.
         /// </summary>
         [Fact]
@@ -193,6 +194,7 @@ namespace Augurk.Test.Managers
         public async Task PersistsDbInvocations()
         {
             // Arrange
+            configurationManager.GetOrCreateConfigurationAsync().Returns(new Configuration());
             var documentStoreProvider = DocumentStoreProvider;
             var expectedInvocation1 = new DbInvocation { Signature = "Foo()" };
             var expectedInvocation2 = new DbInvocation { Signature = "Bar()" };
