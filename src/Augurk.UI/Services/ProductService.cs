@@ -26,9 +26,7 @@ namespace Augurk.UI.Services
         public async Task<IEnumerable<Product>> GetProductsAsync()
         {
             var httpResult = await _client.GetAsync($"/api/v3/products/");
-            Console.WriteLine(httpResult.IsSuccessStatusCode);
-           
-            if(!httpResult.IsSuccessStatusCode || httpResult.StatusCode == HttpStatusCode.NoContent)
+            if (!httpResult.IsSuccessStatusCode || httpResult.StatusCode == HttpStatusCode.NoContent)
             {
                 return null;
             }
@@ -46,9 +44,7 @@ namespace Augurk.UI.Services
         public async Task<IEnumerable<Group>> GetGroupsAsync(string productName)
         {
             var httpResult = await _client.GetAsync($"/api/v2/products/{productName}/groups/");
-            Console.WriteLine(httpResult.IsSuccessStatusCode);
-           
-            if(!httpResult.IsSuccessStatusCode || httpResult.StatusCode == HttpStatusCode.NoContent)
+            if (!httpResult.IsSuccessStatusCode || httpResult.StatusCode == HttpStatusCode.NoContent)
             {
                 return null;
             }
