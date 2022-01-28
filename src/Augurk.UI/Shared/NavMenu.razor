@@ -26,7 +26,7 @@
         @if(ContextService.CurrentProduct != null)
         {
         <li class="nav-item px-3">
-            <NavLink class="nav-link"  href=@($"product/{ContextService.CurrentProduct.Name}/") Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href=@($"product/{ContextService.CurrentProduct.Name}/") Match="NavLinkMatch.All">
                 <span class="oi oi-box" aria-hidden="true"></span>@ContextService.CurrentProduct.DisplayName
             </NavLink>
         </li>
@@ -36,7 +36,7 @@
             @foreach(var feature in group.Features?? Enumerable.Empty<FeatureDescription>())
             {
         <li class="nav-item px-3">
-            <NavLink class="nav-link"  href=@($"/feature/{ContextService.CurrentProduct.Name}/{group.Name}/{feature.Title}/{feature.LatestVersion}") Match="NavLinkMatch.All">
+            <NavLink class="nav-link" href=@($"/feature/{ContextService.CurrentProduct.Name}/{group.Name}/{feature.Title}/{feature.LatestVersion}/") @onclick="() => {MostRecentOpened = feature;}" Match="NavLinkMatch.All">
                 @if(feature.ChildFeatures != null && feature.ChildFeatures.Any())
                 {
                 <span class="oi oi-folder" aria-hidden="true"></span>
@@ -47,10 +47,21 @@
                 <span>@feature.Title</span>
             </NavLink>
         </li>
+                @if(feature.ChildFeatures != null && feature.ChildFeatures.Any() && feature == MostRecentOpened)
+                {
+                    @foreach(var childFeature in feature.ChildFeatures)
+                    {
+        <li class="nav-item child px-3">
+            <NavLink class="nav-link" href=@($"/feature/{ContextService.CurrentProduct.Name}/{group.Name}/{childFeature.Title}/{childFeature.LatestVersion}/") Match="NavLinkMatch.All">
+                <span class="oi oi-document" aria-hidden="true"></span>
+                <span>@childFeature.Title</span>
+            </NavLink>
+        </li>
+                    }
+                }
             }
         }
     </ul>
-
 
 </div>
 <div class="@NavMenuCssClass d-flex flex-column nav-sidebar bottom" @onclick="ToggleNavMenu">
@@ -75,6 +86,8 @@
     private string Version;
 
     private IEnumerable<Group> Groups;
+
+    private FeatureDescription MostRecentOpened;
 
     private void ToggleNavMenu()
     {

@@ -94,3 +94,8 @@
 .top .nav-item:last-of-type .oi::after {
   display: none;
 }
+
+.nav-item.child ::deep a
+{
+  margin-left: 10px;
+}
