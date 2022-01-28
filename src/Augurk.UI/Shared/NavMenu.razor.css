@@ -7,8 +7,14 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-.nav-sidebar {
-  min-height: calc(100% - 3.5rem);
+.nav-sidebar.top {
+  min-height: calc(100% - 3.5rem - 150px);
+  max-height: calc(100% - 3.5rem - 150px);
+  overflow: auto;
+}
+
+.nav-sidebar.bottom {
+  min-height: 150px;
 }
 
 .top-row {
@@ -70,4 +76,21 @@
       /* Never collapse the sidebar for wide screens */
       display: block;
   }
+}
+
+.top .oi::after {
+    content:"";
+    width: 1px;
+    height: 31px;
+    background-color: rgba(255, 255, 255, 0.5);
+    display: block;
+    z-index: -1;
+    position: absolute;
+    left: 8px;
+    top: 18px;
+}
+
+.top .nav-item:first-of-type .oi::after,
+.top .nav-item:last-of-type .oi::after {
+  display: none;
 }

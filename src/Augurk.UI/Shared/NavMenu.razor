@@ -16,7 +16,7 @@
     </div>
 </div>
 
-<div class="@NavMenuCssClass d-flex flex-column nav-sidebar" @onclick="ToggleNavMenu">
+<div class="@NavMenuCssClass d-flex flex-column nav-sidebar top" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
@@ -37,12 +37,23 @@
             {
         <li class="nav-item px-3">
             <NavLink class="nav-link"  href=@($"/feature/{ContextService.CurrentProduct.Name}/{group.Name}/{feature.Title}/{feature.LatestVersion}") Match="NavLinkMatch.All">
-                <span class="oi oi-document" aria-hidden="true"></span><span>@feature.Title</span>
+                @if(feature.ChildFeatures != null && feature.ChildFeatures.Any())
+                {
+                <span class="oi oi-folder" aria-hidden="true"></span>
+                }
+                else{
+                <span class="oi oi-document" aria-hidden="true"></span>
+                }
+                <span>@feature.Title</span>
             </NavLink>
         </li>
             }
         }
     </ul>
+
+
+</div>
+<div class="@NavMenuCssClass d-flex flex-column nav-sidebar bottom" @onclick="ToggleNavMenu">
     <ul class="nav flex-column mt-auto">
         <li class="nav-item px-3">
             <NavLink class="nav-link" href="/configure" Match="NavLinkMatch.All">
