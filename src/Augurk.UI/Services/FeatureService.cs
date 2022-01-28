@@ -23,9 +23,7 @@ namespace Augurk.UI.Services
         public async Task<DisplayableFeature> GetFeatureAsync(string product, string group, string featureTitle, string version)
         {
             var httpResult = await _client.GetAsync($"/api/v2/products/{product}/groups/{group}/features/{featureTitle}/versions/{version}");
-            Console.WriteLine(httpResult.IsSuccessStatusCode);
-           
-            if(!httpResult.IsSuccessStatusCode || httpResult.StatusCode == HttpStatusCode.NoContent)
+            if (!httpResult.IsSuccessStatusCode || httpResult.StatusCode == HttpStatusCode.NoContent)
             {
                 return null;
             }
