@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/Augurk/bin/Debug/net5.0/Augurk.dll",
+            "program": "${workspaceFolder}/src/Augurk/bin/Debug/net6.0/Augurk.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Augurk",
             "justMyCode": false,
@@ -42,6 +42,15 @@
             "type": "coreclr",
             "request": "attach",
             "processId": "${command:pickProcess}"
+        },
+        {
+            "name": "Blazor WebAssembly",
+            "type": "blazorwasm",
+            "request": "launch",
+            "browser": "edge",
+            "url": "https://localhost:5001",
+            "hosted": true,
+            "program": "${workspaceFolder}/src/Augurk/bin/Debug/net6.0/Augurk.dll"
         }
     ,]
 }
