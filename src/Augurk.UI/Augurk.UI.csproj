@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="BootstrapBlazor" Version="6.5.10" />
-    <PackageReference Include="Markdig" Version="0.28.1" />
+    <PackageReference Include="Markdig" Version="0.30.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.4" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.161" />
