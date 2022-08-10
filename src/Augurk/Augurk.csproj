@@ -23,7 +23,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.8" />
     <PackageReference Include="Microsoft.Web.LibraryManager.Build" Version="2.1.175" />
-    <PackageReference Include="NuGet.Versioning" Version="6.2.1" />
+    <PackageReference Include="NuGet.Versioning" Version="6.3.0" />
     <PackageReference Include="RavenDB.Embedded" Version="5.4.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
