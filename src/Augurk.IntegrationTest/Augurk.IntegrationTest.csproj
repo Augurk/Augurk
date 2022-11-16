@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Alba" Version="7.0.0" />
+    <PackageReference Include="Alba" Version="7.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.0" />
     <PackageReference Include="RavenDB.TestDriver" Version="5.4.4" />
     <PackageReference Include="Shouldly" Version="4.1.0" />
