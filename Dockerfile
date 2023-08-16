@@ -29,7 +29,7 @@ WORKDIR /app/Augurk.IntegrationTest
 ENTRYPOINT [ "dotnet", "test", "--logger:trx" ]
 
 # build output image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:7.0-alpine AS runtime
 WORKDIR /app
 COPY --from=build /app/Augurk/out ./
 ENTRYPOINT ["dotnet", "Augurk.dll"]
