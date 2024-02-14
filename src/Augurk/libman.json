@@ -86,12 +86,16 @@
       "files": [ "dagre.min.js" ]
     },
     {
-      "library": "nomnoml@0.2.0",
+      "library": "nomnoml@1.3.1",
       "destination": "wwwroot/libs/nomnoml",
       "files": [
-        "nomnoml.min.js",
-        "nomnoml.min.js.map"
+        "nomnoml.js",
+        "webapp.js"
       ]
+    },
+    {
+      "library": "open-iconic@1.1.1",
+      "destination": "wwwroot/libs/open-iconic"
     },
     {
       "provider": "jsdelivr",

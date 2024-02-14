@@ -4,17 +4,19 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+using Augurk.Api.Managers;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
 using Raven.Client.Documents.Indexes;
 using Raven.Client.Documents.Operations.Expiration;
 using Raven.Embedded;
-using Augurk.Api.Managers;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Augurk
 {
@@ -23,6 +25,26 @@ namespace Augurk
     /// </summary>
     public class DocumentStoreProvider : IDocumentStoreProvider, IHostedService
     {
+        /// <summary>
+        /// Raven DB License data model.
+        /// </summary>
+        public class RavenDBLicense
+        {
+            /// <summary>
+            /// Gets or sets the identifier.
+            /// </summary>
+            public string Id { get; set; }
+            /// <summary>
+            /// Gets or sets the name.
+            /// </summary>
+            public string Name { get; set; }
+            /// <summary>
+            /// Gets or sets the keys.
+            /// </summary>
+            public string[] Keys { get; set; }
+        }
+
+        private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
         private readonly ILogger<DocumentStoreProvider> _logger;
         private readonly ILogger<MigrationManager> _migrationLogger;
@@ -30,8 +52,9 @@ namespace Augurk
         /// <summary>
         /// Default constructor for this class.
         /// </summary>
-        public DocumentStoreProvider(IWebHostEnvironment environment, ILogger<DocumentStoreProvider> logger, ILogger<MigrationManager> migrationLogger)
+        public DocumentStoreProvider(IConfiguration configuration, IWebHostEnvironment environment, ILogger<DocumentStoreProvider> logger, ILogger<MigrationManager> migrationLogger)
         {
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _environment = environment ?? throw new ArgumentNullException(nameof(environment));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _migrationLogger = migrationLogger ?? throw new ArgumentNullException(nameof(migrationLogger));
@@ -48,21 +71,32 @@ namespace Augurk
         /// <param name="cancellationToken">A <see cref="CancellationToken" /> that is triggered when startup is cancelled.</param>
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            var currentBinariesDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+
             // Build the options for the server
             var dotNetVersion = Environment.Version.ToString();
             _logger.LogInformation("Configuring embedded RavenDb server to use version {DotNetVersion} of .NET.", dotNetVersion);
             var serverOptions = new ServerOptions
             {
                 AcceptEula = true,
-                DataDirectory = Path.Combine(Environment.CurrentDirectory, "data"),
+                DataDirectory = Path.Combine(currentBinariesDirectory, "data"),
                 FrameworkVersion = dotNetVersion,
             };
 
             // Setup logging for RavenDB during development
             if (_environment.IsDevelopment())
             {
+                // Put down license.json from secrets if not found
+                var licensePath = Path.Combine(currentBinariesDirectory, "RavenDBServer", "license.json");
+                if (!File.Exists(licensePath))
+                {
+                    var license = new RavenDBLicense();
+                    _configuration.Bind("license", license);
+                    await File.WriteAllTextAsync(licensePath, JsonSerializer.Serialize(license, new JsonSerializerOptions { WriteIndented = true }), cancellationToken);
+                }
+
                 // Enable diagnostic logging
-                serverOptions.LogsPath = Path.Combine(Environment.CurrentDirectory, "logs");
+                serverOptions.LogsPath = Path.Combine(currentBinariesDirectory, "logs");
                 serverOptions.CommandLineArgs.Add("--Logs.Mode=Information");
             }
 
