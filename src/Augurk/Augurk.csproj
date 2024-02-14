@@ -1,8 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
+    <UserSecretsId>RavenDBLicenseSecret</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,7 +11,6 @@
     <Content Remove="CompiledIndexCache\**" />
     <EmbeddedResource Remove="CompiledIndexCache\**" />
     <None Remove="CompiledIndexCache\**" />
-    <Content Remove="license.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <Target Name="CopyRavenDBLicense" AfterTargets="Publish">
-    <Copy SourceFiles="license.json" DestinationFolder="$(PublishDir)/RavenDBServer" />
+    <Copy SourceFiles="license.json" DestinationFolder="$(PublishDir)/RavenDBServer" Condition="Exists('license.json')" />
   </Target>
 
 </Project>
