@@ -1,5 +1,6 @@
 Augurk
 ======
+[![BuiltWithDot.Net shield](https://builtwithdot.net/project/389/augurk-gherkin-documentation-csharp/badge)](https://builtwithdot.net/project/389/augurk-gherkin-documentation-csharp)
 
 Augurk is an always improving, open source, living documentation system designed to get maximum value out of [Gherkin](https://github.com/cucumber/cucumber/wiki/Gherkin)-based specifications. By continuously listening to the struggles and desires of various agile teams, Augurk aims to be the most natural fit for anyone wishing to publish their living documentation.
 
